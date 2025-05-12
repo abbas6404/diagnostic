@@ -35,6 +35,8 @@ class RolesAndPermissionsSeeder extends Seeder
             
             // Permission management
             'assign permissions',
+            'view permissions',
+           
             
             // Dashboard access
             'access admin dashboard',
@@ -83,6 +85,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $superAdmin = User::create([
             'name' => 'Super Admin',
             'email' => 'superadmin@example.com',
+            'phone' => '01742184298',
             'password' => Hash::make('password')
         ]);
         $superAdmin->assignRole('Super Admin');

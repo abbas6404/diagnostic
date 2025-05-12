@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('state')->nullable();
             $table->string('zip')->nullable();
             $table->string('country')->nullable();
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
 
             $table->string('profile_photo_path')->nullable();
             

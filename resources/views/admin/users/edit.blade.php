@@ -76,6 +76,7 @@
                             <label class="form-label">User Roles</label>
                             <div class="card">
                                 <div class="card-body">
+                                    @if(isset($canAssignRoles) && $canAssignRoles)
                                     <div class="roles-section">
                                         @foreach ($roles as $role)
                                             <div class="form-check mb-2">
@@ -100,17 +101,32 @@
                                             </div>
                                         @enderror
                                     </div>
+                                    <div class="form-text text-muted mt-2">
+                                        Select at least one role for the user. Each role grants different permissions in the system.
+                                    </div>
+                                    @else
+                                    <div class="alert alert-info mb-0">
+                                        <i class="fas fa-info-circle me-2"></i> You don't have permission to change user roles.
+                                        <div class="mt-2">
+                                            <strong>Current roles:</strong>
+                                            @forelse($user->roles as $role)
+                                                <span class="badge me-1 {{ $role->name === 'Super Admin' ? 'bg-danger' : ($role->name === 'Admin' ? 'bg-primary' : ($role->name === 'Moderator' ? 'bg-warning' : 'bg-secondary')) }} px-3 py-2">
+                                                    {{ $role->name }}
+                                                </span>
+                                            @empty
+                                                <span class="text-muted">No roles assigned</span>
+                                            @endforelse
+                                        </div>
+                                    </div>
+                                    @endif
+                                    
+                                    @if ($user->email === 'superadmin@example.com')
+                                        <div class="alert alert-warning mt-3">
+                                            <i class="fas fa-exclamation-triangle mr-1"></i> The system Super Admin role cannot be removed from this user.
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                            <div class="form-text text-muted mt-2">
-                                Select at least one role for the user. Each role grants different permissions in the system.
-                            </div>
-                            
-                            @if ($user->email === 'superadmin@example.com')
-                                <div class="alert alert-warning mt-3">
-                                    <i class="fas fa-exclamation-triangle mr-1"></i> The system Super Admin role cannot be removed from this user.
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>

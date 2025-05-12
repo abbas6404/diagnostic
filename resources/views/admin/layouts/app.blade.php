@@ -678,6 +678,7 @@
                 </div>
             </div>
             
+            <div class="sidebar-heading">Management</div>
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
@@ -685,35 +686,37 @@
                         <span>Dashboard</span>
                     </a>
                 </li>
-            </ul>
-
-            <div class="sidebar-heading">User Management</div>
-            <ul class="nav flex-column">
+                @can('view users')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
                         <i class="fas fa-users"></i>
                         <span>Users</span>
-                        @if(\App\Models\User::count() > 0)
-                            <span class="badge bg-primary rounded-pill">{{ \App\Models\User::count() }}</span>
-                        @endif
                     </a>
                 </li>
+                @endcan
+                
+                @can('view roles')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}" href="{{ route('admin.roles.index') }}">
                         <i class="fas fa-user-tag"></i>
                         <span>Roles</span>
                     </a>
                 </li>
+                @endcan
+                
+                @can('view permissions')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}" href="{{ route('admin.permissions.index') }}">
                         <i class="fas fa-key"></i>
                         <span>Permissions</span>
                     </a>
                 </li>
+                @endcan
             </ul>
 
             <div class="sidebar-heading">Content</div>
             <ul class="nav flex-column">
+                @can('manage posts')
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-newspaper"></i>
@@ -721,40 +724,55 @@
                         <span class="badge bg-success rounded-pill">New</span>
                     </a>
                 </li>
+                @endcan
+                
+                @can('manage comments')
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-comments"></i>
                         <span>Comments</span>
                     </a>
                 </li>
+                @endcan
+                
+                @can('manage media')
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-image"></i>
                         <span>Media</span>
                     </a>
                 </li>
+                @endcan
             </ul>
 
             <div class="sidebar-heading">System</div>
             <ul class="nav flex-column">
+                @can('manage settings')
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-cogs"></i>
                         <span>Settings</span>
                     </a>
                 </li>
+                @endcan
+                
+                @can('view reports')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.reports') ? 'active' : '' }}" href="{{ route('admin.reports') }}">
                         <i class="fas fa-chart-bar"></i>
                         <span>Reports</span>
                     </a>
                 </li>
+                @endcan
+                
+                @can('manage backups')
                 <li class="nav-item">
                     <a class="nav-link" href="#">
                         <i class="fas fa-database"></i>
                         <span>Backups</span>
                     </a>
                 </li>
+                @endcan
             </ul>
 
             <div class="sidebar-footer">

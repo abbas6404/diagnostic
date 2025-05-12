@@ -137,6 +137,7 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\HelperServiceProvider::class,
         App\Providers\PermissionServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
     ])->toArray(),
 
 ];

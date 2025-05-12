@@ -6,13 +6,49 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
+    /**
+     * Check if the current user has a specific permission
+     * 
+     * @param string $permission
+     * @return bool
+     */
+    private function userHasPermission($permission)
+    {
+        $userId = Auth::id();
+        
+        // Check direct permissions
+        $hasDirectPermission = DB::table('model_has_permissions')
+            ->join('permissions', 'model_has_permissions.permission_id', '=', 'permissions.id')
+            ->where('model_has_permissions.model_id', $userId)
+            ->where('model_has_permissions.model_type', User::class)
+            ->where('permissions.name', $permission)
+            ->exists();
+            
+        if ($hasDirectPermission) {
+            return true;
+        }
+        
+        // Check permissions via roles
+        $hasRolePermission = DB::table('model_has_roles')
+            ->join('role_has_permissions', 'model_has_roles.role_id', '=', 'role_has_permissions.role_id')
+            ->join('permissions', 'role_has_permissions.permission_id', '=', 'permissions.id')
+            ->where('model_has_roles.model_id', $userId)
+            ->where('model_has_roles.model_type', User::class)
+            ->where('permissions.name', $permission)
+            ->exists();
+            
+        return $hasRolePermission;
+    }
+
     /**
      * Display a listing of users.
      */
@@ -27,6 +63,12 @@ class UserController extends Controller
      */
     public function create()
     {
+        // Check if user has permission to assign roles
+        if (!$this->userHasPermission('assign permissions')) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'You do not have permission to create users with roles.');
+        }
+        
         $roles = Role::all();
         return view('admin.users.create', compact('roles'));
     }
@@ -36,6 +78,12 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        // Check if user has permission to assign roles
+        if (!$this->userHasPermission('assign permissions')) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'You do not have permission to assign roles.');
+        }
+        
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
@@ -62,10 +110,14 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        // Get all roles
         $roles = Role::all();
         $userRoles = $user->roles->pluck('id')->toArray();
         
-        return view('admin.users.edit', compact('user', 'roles', 'userRoles'));
+        // Check if current user can assign permissions
+        $canAssignRoles = $this->userHasPermission('assign permissions');
+        
+        return view('admin.users.edit', compact('user', 'roles', 'userRoles', 'canAssignRoles'));
     }
 
     /**
@@ -82,8 +134,12 @@ class UserController extends Controller
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'roles' => ['required', 'array'],
         ];
+        
+        // Only require roles if user has permission to assign them
+        if ($this->userHasPermission('assign permissions')) {
+            $rules['roles'] = ['required', 'array'];
+        }
 
         // Password is optional on update
         if ($request->filled('password')) {
@@ -103,9 +159,12 @@ class UserController extends Controller
             ]);
         }
 
-        // Convert role IDs to integers and retrieve role names or objects
-        $roles = Role::whereIn('id', array_map('intval', $request->roles))->get();
-        $user->syncRoles($roles);
+        // Only update roles if user has permission to assign them
+        if ($this->userHasPermission('assign permissions') && $request->has('roles')) {
+            // Convert role IDs to integers and retrieve role names or objects
+            $roles = Role::whereIn('id', array_map('intval', $request->roles))->get();
+            $user->syncRoles($roles);
+        }
 
         return redirect()->route('admin.users.index')
             ->with('success', 'User updated successfully.');
@@ -121,8 +180,16 @@ class UserController extends Controller
             return back()->with('error', 'You cannot delete your own account.');
         }
 
+        // Check if user is Super Admin
+        $isSuperAdmin = DB::table('model_has_roles')
+            ->join('roles', 'model_has_roles.role_id', '=', 'roles.id')
+            ->where('model_has_roles.model_id', $user->id)
+            ->where('model_has_roles.model_type', User::class)
+            ->where('roles.name', 'Super Admin')
+            ->exists();
+
         // Prevent deleting the original super admin
-        if ($user->hasRole('Super Admin') && $user->email === 'superadmin@example.com') {
+        if ($isSuperAdmin && $user->email === 'superadmin@example.com') {
             return back()->with('error', 'Cannot delete the system Super Admin account.');
         }
 

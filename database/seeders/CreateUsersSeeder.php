@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
 class CreateUsersSeeder extends Seeder
 {
@@ -13,12 +14,21 @@ class CreateUsersSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create 10 users with the 'User' role
-        User::factory(10)->create()->each(function ($user) {
-            $userRole = Role::where('name', 'User')->first();
+        // Get the 'User' role
+        $userRole = Role::where('name', 'User')->first();
+        
+        // Create users with specific email addresses and password
+        for ($i = 1; $i <= 10; $i++) {
+            $user = User::create([
+                'name' => 'User ' . $i,
+                'email' => 'aio' . $i . '@gmail.com',
+                'password' => Hash::make('12345678'),
+            ]);
+            
+            // Assign the 'User' role
             if ($userRole) {
                 $user->assignRole($userRole);
             }
-        });
+        }
     }
 } 
