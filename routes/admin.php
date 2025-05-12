@@ -86,4 +86,13 @@ Route::delete('/users/{user}', [UserController::class, 'destroy'])
 // Reports route with permission middleware
 Route::get('/reports', function() {
     return view('admin.reports');
-})->middleware(['permission:view reports'])->name('reports'); 
+})->middleware(['permission:view reports'])->name('reports');
+
+// Settings routes - protected by permissions
+Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'settings'], function() {
+    Route::get('/', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/general', [App\Http\Controllers\Admin\SettingsController::class, 'updateGeneral'])->name('settings.update.general');
+    Route::post('/security', [App\Http\Controllers\Admin\SettingsController::class, 'updateSecurity'])->name('settings.update.security');
+    Route::post('/email', [App\Http\Controllers\Admin\SettingsController::class, 'updateEmail'])->name('settings.update.email');
+    Route::post('/email/test', [App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.email.test');
+}); 

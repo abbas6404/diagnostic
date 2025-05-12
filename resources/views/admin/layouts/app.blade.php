@@ -749,7 +749,7 @@
             <ul class="nav flex-column">
                 @can('manage settings')
                 <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
                         <i class="fas fa-cogs"></i>
                         <span>Settings</span>
                     </a>
