@@ -95,4 +95,8 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setting
     Route::post('/security', [App\Http\Controllers\Admin\SettingsController::class, 'updateSecurity'])->name('settings.update.security');
     Route::post('/email', [App\Http\Controllers\Admin\SettingsController::class, 'updateEmail'])->name('settings.update.email');
     Route::post('/email/test', [App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.email.test');
-}); 
+});
+
+// Admin Profile routes
+Route::get('/profile/password', [AdminController::class, 'showChangePasswordForm'])->name('profile.password');
+Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update'); 

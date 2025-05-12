@@ -9,6 +9,8 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -85,5 +87,36 @@ class AdminController extends Controller
             'recentUsers', 
             'activities'
         ));
+    }
+
+    /**
+     * Show the password change form
+     */
+    public function showChangePasswordForm()
+    {
+        return view('admin.profile.change-password');
+    }
+    
+    /**
+     * Update the admin's password
+     */
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', function ($attribute, $value, $fail) {
+                if (!Hash::check($value, Auth::user()->password)) {
+                    $fail('The current password is incorrect.');
+                }
+            }],
+            'password' => ['required', 'string', 'min:8', 'confirmed', 'different:current_password'],
+        ]);
+        
+        // Update password
+        Auth::user()->update([
+            'password' => Hash::make($request->password),
+        ]);
+        
+        return redirect()->route('admin.profile.password')
+            ->with('success', 'Password updated successfully.');
     }
 } 

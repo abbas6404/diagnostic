@@ -923,7 +923,7 @@
                                         <a class="dropdown-item rounded-3" href="#">
                                             <i class="fas fa-user"></i> My Profile
                                         </a>
-                                        <a class="dropdown-item rounded-3" href="#">
+                                        <a class="dropdown-item rounded-3" href="{{ route('admin.profile.password') }}">
                                             <i class="fas fa-cog"></i> Account Settings
                                         </a>
                                         <a class="dropdown-item rounded-3" href="#">
