@@ -35,7 +35,7 @@ class LoginController extends Controller
         $user = Auth::user();
         
         if (!$user) {
-            return route('dashboard');
+            return route('login');
         }
         
         // Check if user has permission to access admin dashboard

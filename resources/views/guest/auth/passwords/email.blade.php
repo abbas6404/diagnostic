@@ -1,87 +1,97 @@
 @extends('layouts.app')
 
-@section('title', 'Forgot Password')
+@section('title', 'Forgot Password - AIO HealthCare')
 
 @push('styles')
 <style>
     body {
-        background-color: #f0f2fa;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%234e73df' fill-opacity='0.05'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    
-    .forgot-container {
-        min-height: 100vh;
+        background-color: #1976D2;
+        background-image: url("{{ asset('images/login_bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 0;
+    }
+    
+    .forgot-container {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        width: 100%;
+        position: relative;
+        z-index: 10;
     }
     
     .forgot-wrapper {
         width: 100%;
         max-width: 1000px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        border-radius: 20px;
+        overflow: hidden;
+        max-height: 100vh;
+        height: calc(100vh - 100px);
+        margin: 0 auto;
+        background-color: white;
+        position: relative;
+        z-index: 20;
     }
     
     .forgot-card {
         border: none;
-        border-radius: 1.5rem;
+        border-radius: 0;
         overflow: hidden;
-        background-color: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        background-color: #ffffff;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
     
     .forgot-header {
         text-align: center;
-        padding: 2.5rem 1rem 1.5rem;
+        padding: 2rem 2rem 1rem;
     }
     
     .forgot-logo {
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
     
     .forgot-logo-icon {
-        width: 50px;
-        height: 50px;
-        background-color: #4e73df;
+        width: 80px;
+        height: 80px;
+        background-color: #1976D2;
         color: white;
-        border-radius: 12px;
+        border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
-        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+        font-size: 2.2rem;
+        box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
     }
     
     .forgot-title {
         font-weight: 700;
-        font-size: 1.75rem;
+        font-size: 2rem;
         margin-bottom: 0.5rem;
+        color: #333;
     }
     
     .forgot-subtitle {
         color: #6b7280;
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
     
     .forgot-form-container {
-        padding: 0 2.5rem 2.5rem;
-    }
-    
-    .form-control {
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid #e2e8f0;
-        height: 3.25rem;
-        font-size: 0.95rem;
-        background-color: #f9fafc;
-        transition: all 0.2s ease;
-    }
-    
-    .form-control:focus {
-        border-color: #4e73df;
-        background-color: white;
-        box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.15);
+        padding: 0 3rem 2rem;
+        flex: 1;
+        overflow-y: auto;
     }
     
     .form-label {
@@ -91,37 +101,57 @@
         font-size: 0.95rem;
     }
     
-    .input-group-text {
-        background-color: #f9fafc;
-        border-color: #e2e8f0;
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #e2e8f0;
+        height: 3rem;
+        font-size: 0.95rem;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+    
+    .form-control:focus {
+        border-color: #1976D2;
+        background-color: white;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+        outline: none;
+    }
+    
+    .input-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         color: #6b7280;
-        border-radius: 0.75rem;
-    }
-    
-    .input-group .form-control {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-    
-    .input-group-text {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
+        z-index: 10;
+        font-size: 0.9rem;
     }
     
     .btn-primary {
-        background-color: #4e73df;
+        background-color: #1976D2;
         border: none;
-        border-radius: 0.75rem;
+        border-radius: 0.5rem;
         padding: 0.75rem 1.5rem;
         font-weight: 600;
-        height: 3.25rem;
+        height: 3rem;
         transition: all 0.2s ease;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     
     .btn-primary:hover {
-        background-color: #3a5ccc;
+        background-color: #1565C0;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.2);
+        box-shadow: 0 5px 15px rgba(25, 118, 210, 0.2);
     }
     
     .forgot-footer {
@@ -130,7 +160,7 @@
     }
     
     .forgot-footer a {
-        color: #4e73df;
+        color: #1976D2;
         font-weight: 500;
         text-decoration: none;
     }
@@ -140,71 +170,81 @@
     }
     
     .features-section {
-        background-color: #4e73df;
+        background: linear-gradient(135deg, #2979c0 0%, #2161a0 100%);
         color: white;
-        padding: 2.5rem;
-        border-radius: 1.5rem;
-        position: relative;
-        overflow: hidden;
+        padding: 2.5rem 2rem;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        overflow-y: auto;
     }
     
-    .features-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 100%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-        transform: rotate(30deg);
-        z-index: 0;
-    }
-    
-    .features-content {
-        position: relative;
-        z-index: 1;
+    .feature-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        line-height: 1.2;
     }
     
     .feature-item {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         margin-bottom: 1.5rem;
-        padding: 1rem;
+        padding: 1.25rem;
         background-color: rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     
     .feature-item:hover {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.2);
         transform: translateX(5px);
     }
     
     .feature-icon {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
         background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-right: 1rem;
+        font-size: 1.25rem;
     }
     
     .feature-item h5 {
-        font-size: 1rem;
+        font-size: 1.15rem;
         margin-bottom: 0.15rem;
         font-weight: 600;
     }
     
     .feature-item p {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         margin-bottom: 0;
         opacity: 0.8;
+    }
+    
+    .footer-text {
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .heartbeat-icon {
+        font-size: 3rem;
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: heartbeat 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes heartbeat {
+        0% { transform: scale(1); }
+        14% { transform: scale(1.1); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.1); }
+        70% { transform: scale(1); }
     }
     
     .alert-success {
@@ -214,17 +254,72 @@
         border-radius: 0.75rem;
         padding: 1rem;
     }
+    
+    .support-text {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 1.5rem;
+    }
+    
+    .back-to-login {
+        display: inline-flex;
+        align-items: center;
+        color: #1976D2;
+        font-weight: 500;
+        text-decoration: none;
+        margin-top: 1rem;
+    }
+    
+    .back-to-login:hover {
+        text-decoration: underline;
+    }
+    
+    .row.g-0 {
+        height: 100%;
+    }
+    
+    .col-lg-5, .col-lg-7 {
+        height: 100%;
+    }
+    
+    @media (max-height: 700px) {
+        .forgot-wrapper {
+            height: calc(100vh - 40px);
+            border-radius: 0;
+        }
+        
+        .forgot-logo-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+        
+        .forgot-header {
+            padding: 1.5rem 2rem 0.5rem;
+        }
+        
+        .feature-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-icon {
+            width: 35px;
+            height: 35px;
+        }
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="forgot-container">
     <div class="forgot-wrapper">
-        <div class="row g-4">
-            <div class="col-lg-4">
+        <div class="row g-0">
+            <div class="col-lg-5">
                 <div class="features-section">
-                    <div class="features-content">
-                        <h2 class="fw-bold mb-4">Password Recovery</h2>
+                    <div>
+                        <h1 class="feature-title">AIO HealthCare</h1>
                         
                         <div class="feature-item">
                             <div class="feature-icon">
@@ -255,11 +350,26 @@
                                 <p>Keep your account secure</p>
                             </div>
                         </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-lock"></i>
+                            </div>
+                            <div>
+                                <h5>Identity Verification</h5>
+                                <p>Confirm your identity safely</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-text">
+                        <i class="fas fa-heartbeat heartbeat-icon"></i>
+                        <p>Improving healthcare management</p>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="forgot-card">
                     <div class="forgot-header">
                         <div class="forgot-logo">
@@ -272,22 +382,20 @@
                     </div>
 
                     <div class="forgot-form-container">
-                    @if (session('status'))
+                        @if (session('status'))
                             <div class="alert alert-success mb-4" role="alert">
                                 <i class="fas fa-check-circle me-2"></i> {{ session('status') }}
-                        </div>
-                    @endif
+                            </div>
+                        @endif
 
-                    <form method="POST" action="{{ route('password.email') }}">
-                        @csrf
+                        <form method="POST" action="{{ route('password.email') }}">
+                            @csrf
 
                             <div class="mb-4">
                                 <label for="email" class="form-label">Email Address</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-envelope"></i>
-                                    </span>
-                                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Enter your email address">
+                                    <i class="fas fa-envelope input-icon"></i>
+                                    <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus>
                                 </div>
 
                                 @error('email')
@@ -295,19 +403,23 @@
                                         <strong>{{ $message }}</strong>
                                     </span>
                                 @enderror
-                        </div>
+                            </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mb-4">
+                            <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-paper-plane me-2"></i> Send Password Reset Link
-                                </button>
+                            </button>
                             
-                            <div class="forgot-footer">
-                                <p class="mb-0 small">
-                                    <a href="{{ route('login') }}"><i class="fas fa-arrow-left me-1"></i> Back to Login</a>
-                                </p>
+                            <div class="support-text">
+                                For access issues, please contact IT support
+                            </div>
+                            
+                            <div class="text-center mt-4">
+                                <a href="{{ route('login') }}" class="back-to-login">
+                                    <i class="fas fa-arrow-left me-2"></i> Back to Login
+                                </a>
                             </div>
                         </form>
-                        </div>
+                    </div>
                 </div>
             </div>
         </div>

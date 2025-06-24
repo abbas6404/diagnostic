@@ -1,87 +1,99 @@
 @extends('layouts.app')
 
-@section('title', 'Login')
+@section('title', 'Login - AIO HealthCare')
 
 @push('styles')
 <style>
     body {
-        background-color: #f0f2fa;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%234e73df' fill-opacity='0.05'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    
-    .login-container {
-        min-height: 100vh;
+        background-color: #1976D2;
+        background-image: url("{{ asset('images/login_bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        height: 100vh;
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        overflow: hidden;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 2rem 0;
     }
+    
+    .login-container {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+        width: 100%;
+        position: relative;
+        z-index: 10;
+    }
+    
+    /* Semi-transparent overlay to ensure text readability */
+   
     
     .login-wrapper {
         width: 100%;
         max-width: 1000px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        border-radius: 20px;
+        overflow: hidden;
+        max-height: 100vh;
+        height: calc(100vh - 100px);
+        margin: 0 auto;
+        background-color: white;
+        position: relative;
+        z-index: 20;
     }
     
     .login-card {
         border: none;
-        border-radius: 1.5rem;
-        overflow: hidden;
-        background-color: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-radius: 0;
+        background-color: #ffffff;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
     }
     
     .login-header {
         text-align: center;
-        padding: 2.5rem 1rem 1.5rem;
+        padding: 2rem 2rem 1rem;
     }
     
     .login-logo {
-        margin-bottom: 1rem;
+        margin-bottom: 1.5rem;
     }
     
     .login-logo-icon {
-        width: 50px;
-        height: 50px;
-        background-color: #4e73df;
+        width: 80px;
+        height: 80px;
+        background-color: #1976D2;
         color: white;
-        border-radius: 12px;
+        border-radius: 50%;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.5rem;
-        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.3);
+        font-size: 2.2rem;
+        box-shadow: 0 5px 15px rgba(25, 118, 210, 0.3);
     }
     
     .login-title {
         font-weight: 700;
-        font-size: 1.75rem;
+        font-size: 2rem;
         margin-bottom: 0.5rem;
+        color: #333;
     }
     
     .login-subtitle {
         color: #6b7280;
-        font-size: 0.95rem;
+        font-size: 1rem;
     }
     
     .login-form-container {
-        padding: 0 2.5rem 2.5rem;
-    }
-    
-    .form-control {
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid #e2e8f0;
-        height: 3.25rem;
-        font-size: 0.95rem;
-        background-color: #f9fafc;
-        transition: all 0.2s ease;
-    }
-    
-    .form-control:focus {
-        border-color: #4e73df;
-        background-color: white;
-        box-shadow: 0 0 0 0.15rem rgba(78, 115, 223, 0.15);
+        padding: 0 3rem 2rem;
+        flex: 1;
+        overflow-y: auto;
     }
     
     .form-label {
@@ -91,90 +103,62 @@
         font-size: 0.95rem;
     }
     
-    .input-group-text {
-        background-color: #f9fafc;
-        border-color: #e2e8f0;
+    .form-control {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1rem 0.75rem 2.5rem;
+        border: 1px solid #e2e8f0;
+        height: 3rem;
+        font-size: 0.95rem;
+        background-color: #ffffff;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+    
+    .form-control:focus {
+        border-color: #1976D2;
+        background-color: white;
+        box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+        outline: none;
+    }
+    
+    .input-group {
+        position: relative;
+        margin-bottom: 1.5rem;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
         color: #6b7280;
-        border-radius: 0.75rem;
-    }
-    
-    .input-group .form-control {
-        border-top-left-radius: 0;
-        border-bottom-left-radius: 0;
-    }
-    
-    .input-group-text {
-        border-top-right-radius: 0;
-        border-bottom-right-radius: 0;
+        z-index: 10;
+        font-size: 0.9rem;
     }
     
     .btn-primary {
-        background-color: #4e73df;
+        background-color: #1976D2;
         border: none;
-        border-radius: 0.75rem;
+        border-radius: 0.5rem;
         padding: 0.75rem 1.5rem;
         font-weight: 600;
-        height: 3.25rem;
+        height: 3rem;
         transition: all 0.2s ease;
-    }
-    
-    .btn-primary:hover {
-        background-color: #3a5ccc;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(78, 115, 223, 0.2);
-    }
-    
-    .login-divider {
-        display: flex;
-        align-items: center;
-        margin: 1.5rem 0;
-    }
-    
-    .login-divider-line {
-        flex-grow: 1;
-        height: 1px;
-        background-color: #e2e8f0;
-    }
-    
-    .login-divider-text {
-        padding: 0 1rem;
-        color: #6b7280;
-        font-size: 0.8rem;
-        font-weight: 500;
-    }
-    
-    .social-btn {
+        width: 100%;
         display: flex;
         align-items: center;
         justify-content: center;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.75rem;
-        padding: 0.75rem 1rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-        width: 100%;
-        height: 3.25rem;
-        text-decoration: none;
-        color: #4b5563;
-        background-color: white;
-        font-size: 0.95rem;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
     }
     
-    .social-btn:hover {
-        background-color: #f9fafb;
+    .btn-primary:hover {
+        background-color: #1565C0;
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        text-decoration: none;
-    }
-    
-    .social-btn svg {
-        margin-right: 0.75rem;
+        box-shadow: 0 5px 15px rgba(25, 118, 210, 0.2);
     }
     
     .form-check-input:checked {
-        background-color: #4e73df;
-        border-color: #4e73df;
+        background-color: #1976D2;
+        border-color: #1976D2;
     }
     
     .login-footer {
@@ -183,7 +167,7 @@
     }
     
     .login-footer a {
-        color: #4e73df;
+        color: #1976D2;
         font-weight: 500;
         text-decoration: none;
     }
@@ -193,97 +177,146 @@
     }
     
     .features-section {
-        background-color: #4e73df;
+        background: linear-gradient(135deg, #1976D2 0%, #1565C0 100%);
         color: white;
-        padding: 2.5rem;
-        border-radius: 1.5rem;
-        position: relative;
-        overflow: hidden;
+        padding: 2.5rem 2rem;
         height: 100%;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        overflow-y: auto;
     }
     
-    .features-section::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 100%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-        transform: rotate(30deg);
-        z-index: 0;
-    }
-    
-    .features-content {
-        position: relative;
-        z-index: 1;
+    .feature-title {
+        font-size: 2.2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        line-height: 1.2;
     }
     
     .feature-item {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         margin-bottom: 1.5rem;
-        padding: 1rem;
+        padding: 1.25rem;
         background-color: rgba(255, 255, 255, 0.1);
         border-radius: 1rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     
     .feature-item:hover {
-        background-color: rgba(255, 255, 255, 0.15);
+        background-color: rgba(255, 255, 255, 0.2);
         transform: translateX(5px);
     }
     
     .feature-icon {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
         background-color: rgba(255, 255, 255, 0.2);
-        border-radius: 10px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin-right: 1rem;
+        font-size: 1.25rem;
     }
     
     .feature-item h5 {
-        font-size: 1rem;
+        font-size: 1.15rem;
         margin-bottom: 0.15rem;
         font-weight: 600;
     }
     
     .feature-item p {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         margin-bottom: 0;
         opacity: 0.8;
     }
     
-    .users-section {
-        margin-top: auto;
-        position: relative;
-        z-index: 1;
+    .footer-text {
+        text-align: center;
+        margin-top: 1rem;
     }
     
-    .users-avatars {
+    .heartbeat-icon {
+        font-size: 3rem;
+        display: block;
+        text-align: center;
+        margin-bottom: 1rem;
+        animation: heartbeat 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes heartbeat {
+        0% { transform: scale(1); }
+        14% { transform: scale(1.1); }
+        28% { transform: scale(1); }
+        42% { transform: scale(1.1); }
+        70% { transform: scale(1); }
+    }
+    
+    .forgot-password {
+        text-align: right;
+        font-size: 0.9rem;
+    }
+    
+    .remember-me {
         display: flex;
         align-items: center;
-        margin-bottom: 0.75rem;
     }
     
-    .users-avatars img {
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        border: 2px solid white;
-        margin-right: -10px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
-    
-    .users-text {
+    .remember-me label {
         font-size: 0.9rem;
-        opacity: 0.9;
+        color: #6b7280;
+        margin-left: 0.5rem;
+    }
+    
+    .form-check-input {
+        width: 1rem;
+        height: 1rem;
+        margin-top: 0.25rem;
+        border: 1px solid #cbd5e0;
+    }
+    
+    .support-text {
+        text-align: center;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 1.5rem;
+    }
+    
+    .row.g-0 {
+        height: 100%;
+    }
+    
+    .col-lg-5, .col-lg-7 {
+        height: 100%;
+    }
+    
+    @media (max-height: 700px) {
+        .login-wrapper {
+            height: calc(100vh - 40px);
+            border-radius: 0;
+        }
+        
+        .login-logo-icon {
+            width: 60px;
+            height: 60px;
+            font-size: 1.8rem;
+        }
+        
+        .login-header {
+            padding: 1.5rem 2rem 0.5rem;
+        }
+        
+        .feature-item {
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-icon {
+            width: 35px;
+            height: 35px;
+        }
     }
 </style>
 @endpush
@@ -291,65 +324,70 @@
 @section('content')
 <div class="login-container">
     <div class="login-wrapper">
-        <div class="row g-4">
-            <div class="col-lg-4">
+        <div class="row g-0">
+            <div class="col-lg-5">
                 <div class="features-section">
-                    <div class="features-content">
-                        <h2 class="fw-bold mb-4">Welcome Back!</h2>
+                    <div>
+                        <h1 class="feature-title">AIO HealthCare</h1>
                         
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-shield-alt"></i>
+                                <i class="fas fa-user-md"></i>
                             </div>
                             <div>
-                                <h5>Secure Access Control</h5>
-                                <p>Protect your application resources</p>
+                                <h5>Staff Management</h5>
+                                <p>Manage doctors and staff efficiently</p>
                             </div>
                         </div>
                         
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-users"></i>
+                                <i class="fas fa-procedures"></i>
                             </div>
                             <div>
-                                <h5>Role Management</h5>
-                                <p>Define user access levels</p>
+                                <h5>Patient Records</h5>
+                                <p>Complete electronic health records</p>
                             </div>
                         </div>
                         
                         <div class="feature-item">
                             <div class="feature-icon">
-                                <i class="fas fa-cogs"></i>
+                                <i class="fas fa-calendar-check"></i>
                             </div>
                             <div>
-                                <h5>Permission Control</h5>
-                                <p>Fine-grained access settings</p>
+                                <h5>Appointment System</h5>
+                                <p>Schedule and manage appointments</p>
+                            </div>
+                        </div>
+                        
+                        <div class="feature-item">
+                            <div class="feature-icon">
+                                <i class="fas fa-pills"></i>
+                            </div>
+                            <div>
+                                <h5>Pharmacy Integration</h5>
+                                <p>Manage prescriptions and inventory</p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="users-section">
-                        <div class="users-avatars">
-                            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="User">
-                            <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="User">
-                            <img src="https://randomuser.me/api/portraits/men/67.jpg" alt="User">
-                            <img src="https://randomuser.me/api/portraits/women/21.jpg" alt="User">
-                        </div>
-                        <div class="users-text">Join 1000+ users already managing their application permissions</div>
+                    <div class="footer-text">
+                        <i class="fas fa-heartbeat heartbeat-icon"></i>
+                        <p>Improving healthcare management</p>
                     </div>
                 </div>
             </div>
             
-            <div class="col-lg-8">
+            <div class="col-lg-7">
                 <div class="login-card">
                     <div class="login-header">
                         <div class="login-logo">
                             <div class="login-logo-icon">
-                                <i class="fas fa-shield-alt"></i>
+                                <i class="fas fa-hospital"></i>
                             </div>
                         </div>
-                        <h1 class="login-title">Sign in to your account</h1>
-                        <p class="login-subtitle">Enter your credentials to access your account</p>
+                        <h1 class="login-title">Welcome to AIO HealthCare</h1>
+                        <p class="login-subtitle">Sign in to access your hospital management dashboard</p>
                     </div>
                     
                     <div class="login-form-container">
@@ -357,12 +395,10 @@
                             @csrf
                             
                             <div class="mb-3">
-                                <label for="login" class="form-label">Email or Phone</label>
+                                <label for="login" class="form-label">Staff ID / Email</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-envelope"></i>
-                                    </span>
-                                    <input id="login" type="text" class="form-control @error('login') is-invalid @enderror @error('email') is-invalid @enderror @error('phone') is-invalid @enderror" name="login" value="{{ old('login') }}" required autocomplete="login" autofocus placeholder="Enter your email or phone">
+                                    <i class="fas fa-user input-icon"></i>
+                                    <input id="login" type="text" class="form-control @error('login') is-invalid @enderror @error('email') is-invalid @enderror @error('phone') is-invalid @enderror" name="login" value="{{ old('login') }}" required autocomplete="login" autofocus>
                                 </div>
                                 
                                 @error('login')
@@ -387,10 +423,8 @@
                             <div class="mb-4">
                                 <label for="password" class="form-label">Password</label>
                                 <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-lock"></i>
-                                    </span>
-                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                                    <i class="fas fa-lock input-icon"></i>
+                                    <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="current-password">
                                 </div>
 
                                 @error('password')
@@ -401,54 +435,24 @@
                             </div>
 
                             <div class="d-flex justify-content-between align-items-center mb-4">
-                                <div class="form-check">
+                                <div class="remember-me">
                                     <input class="form-check-input" type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
-                                    <label class="form-check-label small" for="remember">
-                                        Remember Me
-                                    </label>
+                                    <label for="remember">Remember Me</label>
                                 </div>
                                 
-                                @if (Route::has('password.request'))
-                                    <a class="text-primary text-decoration-none small" href="{{ route('password.request') }}">
-                                        Forgot Password?
-                                    </a>
-                                @endif
+                                <div class="forgot-password">
+                                    @if (Route::has('password.request'))
+                                        <a href="{{ route('password.request') }}">Forgot Password?</a>
+                                    @endif
+                                </div>
                             </div>
 
-                            <button type="submit" class="btn btn-primary w-100 mb-4">
-                                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i> Access Healthcare Portal
                             </button>
                             
-                            <div class="login-divider">
-                                <div class="login-divider-line"></div>
-                                <div class="login-divider-text">OR CONTINUE WITH</div>
-                                <div class="login-divider-line"></div>
-                            </div>
-                            
-                            <div class="row g-3 mb-4">
-                                <div class="col-sm-6">
-                                    <a href="#" class="social-btn">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
-                                            <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
-                                            <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
-                                            <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
-                                            <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
-                                        </svg>
-                                        Google
-                                    </a>
-                                </div>
-                                <div class="col-sm-6">
-                                    <a href="#" class="social-btn">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" style="color: #1877F2;">
-                                            <path fill="currentColor" d="M24 12.073c0-5.8-4.702-10.5-10.5-10.5s-10.5 4.7-10.5 10.5c0 5.24 3.84 9.584 8.86 10.373v-7.337h-2.666v-3.037h2.666V9.98c0-2.63 1.568-4.085 3.97-4.085 1.15 0 2.35.205 2.35.205v2.584h-1.322c-1.304 0-1.71.81-1.71 1.64v1.97h2.912l-.465 3.036H16.16v7.337c5.02-.788 8.84-5.131 8.84-10.373z"/>
-                                        </svg>
-                                        Facebook
-                                    </a>
-                                </div>
-                            </div>
-                            
-                            <div class="login-footer">
-                                <p class="mb-0 small">Contact admin for access</p>
+                            <div class="support-text">
+                                For access issues, please contact IT support
                             </div>
                         </form>
                     </div>

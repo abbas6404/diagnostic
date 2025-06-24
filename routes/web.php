@@ -23,6 +23,11 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+// Add home route that redirects to login
+Route::get('/home', function () {
+    return redirect()->route('login');
+})->name('home');
+
 // Redirect any other routes to login
 Route::fallback(function () {
     return redirect()->route('login');
