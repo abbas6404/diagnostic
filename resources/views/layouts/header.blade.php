@@ -1,7 +1,7 @@
 <header class="bg-white shadow-sm sticky-top">
     <nav class="navbar navbar-expand-lg navbar-light">
         <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="{{ url('/') }}">
+            <a class="navbar-brand d-flex align-items-center" href="{{ route('login') }}">
                 <i class="fas fa-shield-alt text-primary me-2"></i>
                 {{ config('app.name', 'Laravel') }}
             </a>
@@ -12,21 +12,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
                 <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('home') ? 'active' : '' }}" href="{{ route('home') }}">
-                            <i class="fas fa-home me-1"></i> Home
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('about') ? 'active' : '' }}" href="{{ route('about') }}">
-                            <i class="fas fa-info-circle me-1"></i> About
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('contact') ? 'active' : '' }}" href="{{ route('contact') }}">
-                            <i class="fas fa-envelope me-1"></i> Contact
-                        </a>
-                    </li>
+                    <!-- Removed navigation links to keep only login functionality -->
                 </ul>
 
                 <!-- Right Side Of Navbar -->

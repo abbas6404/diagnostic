@@ -88,18 +88,11 @@
             box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
             border-radius: 0.5rem;
         }
-        
-        footer {
-            background-color: #fff;
-            border-top: 1px solid #e3e6f0;
-        }
     </style>
     @stack('styles')
 </head>
 <body>
     <div id="app">
-        @include('layouts.header')
-
         @hasSection('page_header')
             <div class="page-header">
             <div class="container">
@@ -127,8 +120,6 @@
                 @yield('content')
             </div>
         </main>
-        
-        @include('layouts.footer')
     </div>
     
     <!-- Scripts -->

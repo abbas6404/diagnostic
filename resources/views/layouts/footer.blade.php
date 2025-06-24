@@ -17,14 +17,10 @@
             <div class="col-md-2 col-sm-6 mb-3 mb-md-0">
                 <h6 class="fw-bold mb-4">Quick Links</h6>
                 <ul class="list-unstyled">
-                    <li class="mb-2"><a href="{{ route('home') }}" class="text-decoration-none text-secondary">Home</a></li>
-                    <li class="mb-2"><a href="{{ route('about') }}" class="text-decoration-none text-secondary">About</a></li>
-                    <li class="mb-2"><a href="{{ route('contact') }}" class="text-decoration-none text-secondary">Contact</a></li>
                     @auth
                         <li class="mb-2"><a href="{{ route('dashboard') }}" class="text-decoration-none text-secondary">Dashboard</a></li>
                     @else
                         <li class="mb-2"><a href="{{ route('login') }}" class="text-decoration-none text-secondary">Login</a></li>
-                        <li class="mb-2"><a href="{{ route('register') }}" class="text-decoration-none text-secondary">Register</a></li>
                     @endauth
                 </ul>
             </div>

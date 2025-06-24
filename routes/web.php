@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Guest\HomeController;
 use App\Http\Controllers\Guest\AboutController;
 use App\Http\Controllers\Guest\ContactController;
@@ -17,8 +18,17 @@ use App\Http\Controllers\User\DashboardController;
 |
 */
 
-// Guest routes
-Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/about', [AboutController::class, 'index'])->name('about');
-Route::get('/contact', [ContactController::class, 'index'])->name('contact');
-Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+// Redirect all traffic to login page
+Route::get('/', function () {
+    return redirect()->route('login');
+});
+
+// Redirect any other routes to login
+Route::fallback(function () {
+    return redirect()->route('login');
+});
+
+// Remove all guest routes
+// Route::get('/about', [AboutController::class, 'index'])->name('about');
+// Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+// Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
