@@ -30,10 +30,12 @@
             --danger-color: #e63946;
             --light-color: #f8f9fa;
             --dark-color: #212529;
-            --sidebar-width: 280px;
+            --sidebar-width: 255px;
             --header-height: 70px;
             --card-border-radius: 12px;
             --transition-speed: 0.3s;
+            --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            --box-shadow-hover: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -64,7 +66,7 @@
             left: 0;
             padding: 0;
             z-index: 1031;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--box-shadow);
             transition: all var(--transition-speed);
             overflow-y: auto;
             overflow-x: hidden;
@@ -82,7 +84,7 @@
             padding: 1.5rem;
             display: flex;
             align-items: center;
-            background: white;
+            background: linear-gradient(to right, rgba(67, 97, 238, 0.03), transparent);
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
 
@@ -94,15 +96,17 @@
 
         .sidebar-brand .sidebar-logo i {
             font-size: 1.5rem;
-            background: var(--primary-color);
             color: white;
+        }
+        
+        .logo-circle {
+            background: var(--primary-color);
             width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 10px;
-            margin-right: 10px;
             box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
         }
 
@@ -112,24 +116,38 @@
         }
 
         .sidebar-toggle-btn {
-            background: transparent;
+            background: white;
             border: none;
-            color: #888;
+            color: #555;
             cursor: pointer;
             transition: all 0.3s;
-            padding: 5px;
-            width: 30px;
-            height: 30px;
+            width: 40px;
+            height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 6px;
+            border-radius: 0 10px 10px 0;
+            position: fixed;
+            left: var(--sidebar-width);
+            top: 10px;
+            z-index: 1032;
+            box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-toggle-btn i {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            transition: all 0.3s;
         }
 
         .sidebar-toggle-btn:hover {
             color: var(--primary-color);
             background: rgba(67, 97, 238, 0.05);
-            transform: scale(1.1);
+            width: 45px;
+        }
+        
+        .sidebar-toggle-btn:hover i {
+            transform: scale(1.2);
         }
 
         .sidebar-user {
@@ -175,30 +193,35 @@
 
         .sidebar .nav-item {
             position: relative;
-            margin: 4px 12px;
+            margin: 0px 12px;
         }
 
         .sidebar .nav-link {
             color: #555;
-            padding: 0.7rem 1.2rem;
-            font-weight: 500;
+            padding: 0.6rem 1.2rem;
+            font-weight: 400;
             display: flex;
             align-items: center;
             transition: all 0.2s;
             border-radius: 8px;
             position: relative;
             overflow: hidden;
+            margin-bottom: 4px;
         }
 
         .sidebar .nav-link:hover {
             color: var(--primary-color);
             background-color: rgba(67, 97, 238, 0.05);
+            transform: translateX(3px);
         }
 
         .sidebar .nav-link.active {
             color: var(--primary-color);
-            background-color: rgba(67, 97, 238, 0.08);
+            background: linear-gradient(90deg, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.05));
             font-weight: 600;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            transform: translateX(5px);
         }
 
         .sidebar .nav-link.active::before {
@@ -221,10 +244,29 @@
             transition: all 0.3s;
         }
 
-        .sidebar .nav-link:hover i,
+        .sidebar .nav-link:hover i {
+            opacity: 1;
+            color: var(--primary-color);
+        }
+
         .sidebar .nav-link.active i {
             opacity: 1;
             color: var(--primary-color);
+            transform: scale(1.2);
+            filter: drop-shadow(0 0 2px rgba(67, 97, 238, 0.3));
+            animation: iconPulse 2s infinite;
+        }
+
+        @keyframes iconPulse {
+            0% {
+                filter: drop-shadow(0 0 2px rgba(67, 97, 238, 0.3));
+            }
+            50% {
+                filter: drop-shadow(0 0 5px rgba(67, 97, 238, 0.5));
+            }
+            100% {
+                filter: drop-shadow(0 0 2px rgba(67, 97, 238, 0.3));
+            }
         }
 
         .sidebar .nav-link .badge {
@@ -251,7 +293,7 @@
             margin-top: 1rem;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
         }
 
         .sidebar-footer a {
@@ -259,25 +301,24 @@
             text-decoration: none;
             transition: all 0.2s;
             font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background-color: rgba(0, 0, 0, 0.03);
         }
 
         .sidebar-footer a:hover {
             color: var(--primary-color);
+            background-color: rgba(67, 97, 238, 0.08);
         }
 
-        .sidebar-footer .online-status {
-            display: flex;
-            align-items: center;
-        }
-
-        .sidebar-footer .online-status i {
-            color: #22c55e;
-            font-size: 10px;
-            margin-right: 6px;
+        .sidebar-footer a i {
+            margin-right: 8px;
         }
 
         .sidebar-collapsed .sidebar {
-            width: 70px;
+            width: 65px;
         }
 
         .sidebar-collapsed .sidebar .sidebar-heading,
@@ -300,7 +341,7 @@
         }
 
         .sidebar-collapsed .content-container {
-            margin-left: 70px;
+            margin-left: 65px;
         }
 
         .sidebar-collapsed .sidebar-user {
@@ -317,11 +358,21 @@
         }
 
         .sidebar-collapsed .sidebar-toggle-btn {
+            left: 65px;
+
+            background: var(--primary-color);
+        }
+        .sidebar-collapsed .sidebar-toggle-btn:hover i {
             transform: rotate(180deg);
         }
+        
+        .sidebar-collapsed .sidebar-toggle-btn i {
+            color: white;
+        }
 
-        .sidebar-collapsed .sidebar-toggle-btn:hover {
-            transform: rotate(180deg) scale(1.1);
+        .sidebar-collapsed .sidebar-toggle-btn i:hover {
+            transform: rotate(180deg);
+            background: var(--primary-light);
         }
 
         @media (max-width: 991.98px) {
@@ -331,7 +382,7 @@
             
             .sidebar.show {
                 transform: translateX(0);
-                width: 280px;
+                width: 255px;
             }
             
             .content-container {
@@ -391,16 +442,32 @@
         .admin-navbar {
             height: var(--header-height);
             background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--box-shadow);
             padding: 0 1.5rem;
             position: relative;
             width: 100%;
             z-index: 1030;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 10px;
         }
 
-        .admin-navbar::before {
-            display: none;
+        .admin-navbar h5 {
+            color: var(--dark-color);
+            font-size: 1.25rem;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .admin-navbar h5:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 20px;
+            width: 5px;
+            background: var(--primary-color);
+            border-radius: 5px;
         }
 
         .admin-navbar .navbar-brand {
@@ -645,149 +712,115 @@
             justify-content: center;
         }
 
+        /* Footer styles */
+        .footer {
+            margin-top: auto;
+        }
+
+        /* Main content spacing */
+        .main-content {
+            padding: 20px;
+            background-color: transparent;
+        }
+
+        /* Breadcrumb styling */
+        .breadcrumb {
+            margin-bottom: 0;
+            background-color: transparent;
+        }
+
+        .breadcrumb-item a {
+            color: var(--primary-color);
+        }
+
+        /* Dashboard cards */
+        .card {
+            border: none;
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--box-shadow);
+            transition: all 0.3s;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--box-shadow-hover);
+        }
+
+        .card-header {
+            background-color: transparent;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 1.25rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Dashboard header */
+        .admin-dashboard-header {
+            background-color: #fff;
+            border-radius: var(--card-border-radius);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: var(--box-shadow);
+            border-left: 5px solid var(--primary-color);
+        }
+        
+        .admin-dashboard-header h1 {
+            margin-bottom: 5px;
+            color: #333;
+        }
+        
+        .admin-dashboard-header p {
+            font-size: 1rem;
+            opacity: 0.7;
+        }
+
+        /* Button styles */
+        .btn-primary {
+            background: linear-gradient(45deg, var(--primary-color), var(--primary-light));
+            border: none;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(67, 97, 238, 0.2);
+        }
+
+        .submenu {
+            margin-left: 20px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+          
+           
+        }
+        
+        .submenu .nav-link {
+            padding: 6px 10px 6px 20px;
+            font-size: 0.95rem;
+
+        }
+
         @stack('styles')
     </style>
 </head>
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-brand">
-                <div class="sidebar-logo">
-                    <i class="fas fa-shield-alt"></i>
-                    <span class="fw-bold">Control Panel</span>
-                </div>
-                <button class="sidebar-toggle-btn" id="sidebar-toggle-btn">
-                    <i class="fas fa-angle-left"></i>
-                </button>
-            </div>
-            
-            <div class="sidebar-user">
-                <div class="sidebar-user-avatar">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                </div>
-                <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">{{ Auth::user()->name }}</div>
-                    <div class="sidebar-user-role">
-                        @if(Auth::user()->roles->isNotEmpty())
-                            {{ Auth::user()->roles->first()->name }}
-                        @else
-                            User
-                        @endif
-                    </div>
-                </div>
-            </div>
-            
-            <div class="sidebar-heading">Management</div>
-            <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-                @can('view users')
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
-                        <i class="fas fa-users"></i>
-                        <span>Users</span>
-                    </a>
-                </li>
-                @endcan
-                
-                @can('view roles')
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.roles.*') ? 'active' : '' }}" href="{{ route('admin.roles.index') }}">
-                        <i class="fas fa-user-tag"></i>
-                        <span>Roles</span>
-                    </a>
-                </li>
-                @endcan
-                
-                @can('view permissions')
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.permissions.*') ? 'active' : '' }}" href="{{ route('admin.permissions.index') }}">
-                        <i class="fas fa-key"></i>
-                        <span>Permissions</span>
-                    </a>
-                </li>
-                @endcan
-            </ul>
+        @include('admin.layouts.sidebar')
 
-            <div class="sidebar-heading">Content</div>
-            <ul class="nav flex-column">
-                @can('manage posts')
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-newspaper"></i>
-                        <span>Posts</span>
-                        <span class="badge bg-success rounded-pill">New</span>
-                    </a>
-                </li>
-                @endcan
-                
-                @can('manage comments')
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-comments"></i>
-                        <span>Comments</span>
-                    </a>
-                </li>
-                @endcan
-                
-                @can('manage media')
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-image"></i>
-                        <span>Media</span>
-                    </a>
-                </li>
-                @endcan
-            </ul>
-
-            <div class="sidebar-heading">System</div>
-            <ul class="nav flex-column">
-                @can('manage settings')
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}" href="{{ route('admin.settings.index') }}">
-                        <i class="fas fa-cogs"></i>
-                        <span>Settings</span>
-                    </a>
-                </li>
-                @endcan
-                
-                @can('view reports')
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('admin.reports') ? 'active' : '' }}" href="{{ route('admin.reports') }}">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Reports</span>
-                    </a>
-                </li>
-                @endcan
-                
-                @can('manage backups')
-                <li class="nav-item">
-                    <a class="nav-link" href="#">
-                        <i class="fas fa-database"></i>
-                        <span>Backups</span>
-                    </a>
-                </li>
-                @endcan
-            </ul>
-
-            <div class="sidebar-footer">
-                <div class="online-status">
-                    <i class="fas fa-circle"></i>
-                    <span>Online</span>
-                </div>
-                <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form-sidebar').submit();">
-                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
-                </a>
-                <form id="logout-form-sidebar" action="{{ route('logout') }}" method="POST" class="d-none">
-                    @csrf
-                </form>
-            </div>
-        </div>
+        <!-- Sidebar Toggle Button -->
+        <button class="sidebar-toggle-btn" id="sidebar-toggle-btn">
+            <i class="fas fa-angle-left"></i>
+        </button>
 
         <!-- Content Container -->
         <div class="content-container">
@@ -795,156 +828,7 @@
             <div class="sidebar-overlay"></div>
         
             <!-- Top Navbar -->
-            <nav class="navbar navbar-expand-lg admin-navbar">
-                <div class="container-fluid">
-                    <!-- Mobile Toggle Button -->
-                    <button class="navbar-toggler border-0 me-3" type="button" id="sidebar-toggle">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    
-                    <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-                        <i class="fas fa-home"></i> Site Home
-                    </a>
-                    
-                    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </button>
-
-                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                        <!-- Right Side Of Navbar -->
-                        <ul class="navbar-nav ms-auto align-items-center">
-                            <!-- Enhanced Search -->
-                            <li class="nav-item me-3">
-                                <form class="search-bar-navbar" action="#" method="GET">
-                                    <i class="fas fa-search search-icon"></i>
-                                    <input class="form-control form-control-sm" type="search" placeholder="Search..." aria-label="Search">
-                                </form>
-                            </li>
-                            
-                            <!-- Action Buttons -->
-                            <li class="nav-item me-2">
-                                <a href="#" class="nav-link">
-                                    <i class="fas fa-plus-circle"></i>
-                                </a>
-                            </li>
-                            
-                            <!-- Notifications -->
-                            <li class="nav-item dropdown me-2">
-                                <a id="notificationsDropdown" class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="notification-icon">
-                                        <i class="fas fa-bell"></i>
-                                        <span class="notification-badge">3</span>
-                                    </div>
-                                </a>
-                                <div class="dropdown-menu dropdown-menu-end border-0 shadow-lg rounded-4 p-0 overflow-hidden" aria-labelledby="notificationsDropdown" style="width: 320px;">
-                                    <div class="p-3 border-bottom bg-primary text-white">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h6 class="mb-0 fw-bold">Notifications</h6>
-                                            <a href="#" class="text-white small opacity-75">Mark all as read</a>
-                                        </div>
-                                    </div>
-                                    <div class="p-2">
-                                        <a href="#" class="dropdown-item p-2 rounded-3">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-3 p-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="background: linear-gradient(45deg, var(--primary-color), var(--primary-light)); width: 45px; height: 45px;">
-                                                    <i class="fas fa-user-plus"></i>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 fw-medium">New user registered</p>
-                                                    <div class="text-muted small d-flex align-items-center">
-                                                        <i class="far fa-clock me-1"></i> 5 minutes ago
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <a href="#" class="dropdown-item p-2 rounded-3">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-3 p-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="background: linear-gradient(45deg, var(--success-color), var(--info-color)); width: 45px; height: 45px;">
-                                                    <i class="fas fa-key"></i>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 fw-medium">Permission updated</p>
-                                                    <div class="text-muted small d-flex align-items-center">
-                                                        <i class="far fa-clock me-1"></i> 1 hour ago
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                        <a href="#" class="dropdown-item p-2 rounded-3">
-                                            <div class="d-flex align-items-center">
-                                                <div class="flex-shrink-0 me-3 p-2 rounded-circle text-white d-flex align-items-center justify-content-center" style="background: linear-gradient(45deg, var(--warning-color), var(--danger-color)); width: 45px; height: 45px;">
-                                                    <i class="fas fa-exclamation-triangle"></i>
-                                                </div>
-                                                <div class="flex-grow-1">
-                                                    <p class="mb-0 fw-medium">System alert</p>
-                                                    <div class="text-muted small d-flex align-items-center">
-                                                        <i class="far fa-clock me-1"></i> Yesterday
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </div>
-                                    <a href="#" class="dropdown-item text-center border-top py-3 fw-medium text-primary">
-                                        View all notifications <i class="fas fa-chevron-right ms-1 small"></i>
-                                    </a>
-                                </div>
-                            </li>
-                            
-                            <!-- User Profile -->
-                            <li class="nav-item dropdown profile-dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <div class="d-flex align-items-center">
-                                        <div class="avatar-circle">
-                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                        </div>
-                                        <div class="d-none d-md-flex flex-column ms-1 me-1">
-                                            <span class="fw-medium text-dark" style="font-size: 14px; line-height: 1.2">{{ Auth::user()->name }}</span>
-                                            <small class="text-muted" style="font-size: 12px; line-height: 1">
-                                                @if(Auth::user()->roles->isNotEmpty())
-                                                    {{ Auth::user()->roles->first()->name }}
-                                                @else
-                                                    User
-                                                @endif
-                                            </small>
-                                        </div>
-                                        <i class="fas fa-chevron-down d-none d-md-block ms-1 text-muted" style="font-size: 12px;"></i>
-                                    </div>
-                                </a>
-
-                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <div class="profile-header text-center">
-                                        <div class="avatar-lg mx-auto mb-3">
-                                            {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
-                                        </div>
-                                        <h5 class="mb-0">{{ Auth::user()->name }}</h5>
-                                        <p class="mb-0 text-muted">{{ Auth::user()->email }}</p>
-                                    </div>
-                                    <div class="p-1">
-                                        <a class="dropdown-item rounded-3" href="#">
-                                            <i class="fas fa-user"></i> My Profile
-                                        </a>
-                                        <a class="dropdown-item rounded-3" href="{{ route('admin.profile.password') }}">
-                                            <i class="fas fa-cog"></i> Account Settings
-                                        </a>
-                                        <a class="dropdown-item rounded-3" href="#">
-                                            <i class="fas fa-list"></i> Activity Log
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a class="dropdown-item rounded-3" href="{{ route('logout') }}"
-                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                                            <i class="fas fa-sign-out-alt"></i> {{ __('Logout') }}
-                                        </a>
-
-                                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                            @csrf
-                                        </form>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </nav>
+            @include('admin.layouts.header')
 
             <!-- Main Content -->
             <div class="main-content">
@@ -970,6 +854,9 @@
 
                 @yield('content')
             </div>
+            
+            <!-- Footer -->
+            @include('admin.layouts.footer')
         </div>
     </div>
     

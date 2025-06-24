@@ -1,19 +1,21 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dashboard')
+@section('title', 'Admin Dashboard')
 
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid px-0">
     <!-- Page Heading -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h1 class="h3 mb-0 fw-bold">Admin Dashboard</h1>
-            <p class="text-muted mb-0">Welcome back, {{ Auth::user()->name }}</p>
-        </div>
-        <div>
-            <a href="#" class="btn btn-primary rounded-pill shadow-sm">
-                <i class="fas fa-download me-1"></i> Generate Report
-            </a>
+    <div class="admin-dashboard-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="h3 mb-0 fw-bold">Admin Dashboard</h1>
+                <p class="text-muted mb-0">Welcome back, {{ Auth::user()->name }}</p>
+            </div>
+            <div>
+                <a href="#" class="btn btn-primary rounded-pill shadow-sm">
+                    <i class="fas fa-download me-1"></i> Generate Report
+                </a>
+            </div>
         </div>
     </div>
 
