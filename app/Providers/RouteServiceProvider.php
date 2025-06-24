@@ -79,9 +79,9 @@ class RouteServiceProvider extends ServiceProvider
                 Route::post('login', [LoginController::class, 'login']);
                 Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 
-                // Registration Routes
-                Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-                Route::post('register', [RegisterController::class, 'register']);
+                // Registration Routes - Commented out to disable public registration
+                // Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+                // Route::post('register', [RegisterController::class, 'register']);
 
                 // Password Reset Routes
                 Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');

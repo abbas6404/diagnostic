@@ -35,16 +35,8 @@
                     @guest
                         @if (Route::has('login'))
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('login') }}">
+                                <a class="btn btn-primary" href="{{ route('login') }}">
                                     <i class="fas fa-sign-in-alt me-1"></i> {{ __('Login') }}
-                                </a>
-                            </li>
-                        @endif
-
-                        @if (Route::has('register'))
-                            <li class="nav-item">
-                                <a class="btn btn-primary ms-2" href="{{ route('register') }}">
-                                    <i class="fas fa-user-plus me-1"></i> {{ __('Register') }}
                                 </a>
                             </li>
                         @endif
