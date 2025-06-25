@@ -244,6 +244,26 @@
             transition: all 0.3s;
         }
 
+        /* Submenu icon styling */
+        .submenu-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 10px;
+            transition: transform 0.3s ease;
+            color: #888;
+        }
+        
+        .nav-link:hover .submenu-icon {
+            color: var(--primary-color);
+        }
+        
+        .has-submenu[aria-expanded="true"] .submenu-icon {
+            transform: translateY(-50%) rotate(180deg);
+            color: var(--primary-color);
+        }
+
         .sidebar .nav-link:hover i {
             opacity: 1;
             color: var(--primary-color);
@@ -365,7 +385,7 @@
         .sidebar-collapsed .sidebar-toggle-btn:hover i {
             transform: rotate(180deg);
         }
-        
+
         .sidebar-collapsed .sidebar-toggle-btn i {
             color: white;
         }
@@ -904,8 +924,43 @@
                 });
             }
             
+            // Initialize Bootstrap collapse for all submenu items
+            const collapseElements = document.querySelectorAll('.sidebar .collapse');
+            collapseElements.forEach(function(collapseEl) {
+                // Create Bootstrap collapse instance
+                const bsCollapse = new bootstrap.Collapse(collapseEl, {
+                    toggle: false
+                });
+                
+                // Get the trigger element
+                const trigger = document.querySelector(`[data-bs-target="#${collapseEl.id}"]`);
+                if (trigger) {
+                    // Listen for Bootstrap collapse events
+                    collapseEl.addEventListener('show.bs.collapse', function() {
+                        trigger.setAttribute('aria-expanded', 'true');
+                    });
+                    
+                    collapseEl.addEventListener('hide.bs.collapse', function() {
+                        trigger.setAttribute('aria-expanded', 'false');
+                    });
+                    
+                    // Handle click on menu items with submenu
+                    trigger.addEventListener('click', function(e) {
+                        // Don't process if clicking on submenu items
+                        if (e.target.closest('.submenu')) {
+                            return;
+                        }
+                        
+                        e.preventDefault();
+                        
+                        // Toggle the collapse
+                        bsCollapse.toggle();
+                    });
+                }
+            });
+            
             // Close sidebar when clicking on a nav link on mobile
-            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            const navLinks = document.querySelectorAll('.sidebar .nav-link:not(.has-submenu)');
             navLinks.forEach(function(link) {
                 link.addEventListener('click', function() {
                     if (window.innerWidth < 992) {
