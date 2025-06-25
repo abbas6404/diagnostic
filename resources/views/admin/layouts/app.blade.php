@@ -824,7 +824,7 @@
         }
         
         .submenu .nav-link {
-            padding: 6px 10px 6px 20px;
+            padding: 6px 10px 6px 10px;
             font-size: 0.95rem;
 
         }

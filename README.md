@@ -23,7 +23,7 @@ A Laravel-based role and permission management system that provides a robust fou
 
 1. Clone the repository:
 ```bash
-git clone [your-repository-url]
+git clone https://github.com/abbas6404/diagnostic.git
 cd role_permission_template
 ```
 
