@@ -819,8 +819,6 @@
             margin-left: 20px;
             background-color: rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-          
-           
         }
         
         .submenu .nav-link {
