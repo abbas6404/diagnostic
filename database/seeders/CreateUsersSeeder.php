@@ -16,19 +16,20 @@ class CreateUsersSeeder extends Seeder
     {
         // Get the 'User' role
         $userRole = Role::where('name', 'User')->first();
-        
+
         // Create users with specific email addresses and password
         for ($i = 1; $i <= 10; $i++) {
             $user = User::create([
                 'name' => 'User ' . $i,
+                'phone' => '123456789' . $i,
                 'email' => 'aio' . $i . '@gmail.com',
                 'password' => Hash::make('12345678'),
             ]);
-            
+
             // Assign the 'User' role
             if ($userRole) {
                 $user->assignRole($userRole);
             }
         }
     }
-} 
+}

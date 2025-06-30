@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,14 +11,15 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Custom styles -->
     <style>
         :root {
@@ -70,13 +72,16 @@
             transition: all var(--transition-speed);
             overflow-y: auto;
             overflow-x: hidden;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none; /* IE and Edge */
+            scrollbar-width: none;
+            /* Firefox */
+            -ms-overflow-style: none;
+            /* IE and Edge */
             border-right: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .sidebar::-webkit-scrollbar {
-            width: 0; /* Chrome, Safari, Opera */
+            width: 0;
+            /* Chrome, Safari, Opera */
             display: none;
         }
 
@@ -98,7 +103,7 @@
             font-size: 1.5rem;
             color: white;
         }
-        
+
         .logo-circle {
             background: var(--primary-color);
             width: 40px;
@@ -145,7 +150,7 @@
             background: rgba(67, 97, 238, 0.05);
             width: 45px;
         }
-        
+
         .sidebar-toggle-btn:hover i {
             transform: scale(1.2);
         }
@@ -254,11 +259,11 @@
             transition: transform 0.3s ease;
             color: #888;
         }
-        
+
         .nav-link:hover .submenu-icon {
             color: var(--primary-color);
         }
-        
+
         .has-submenu[aria-expanded="true"] .submenu-icon {
             transform: translateY(-50%) rotate(180deg);
             color: var(--primary-color);
@@ -281,9 +286,11 @@
             0% {
                 filter: drop-shadow(0 0 2px rgba(67, 97, 238, 0.3));
             }
+
             50% {
                 filter: drop-shadow(0 0 5px rgba(67, 97, 238, 0.5));
             }
+
             100% {
                 filter: drop-shadow(0 0 2px rgba(67, 97, 238, 0.3));
             }
@@ -382,6 +389,7 @@
 
             background: var(--primary-color);
         }
+
         .sidebar-collapsed .sidebar-toggle-btn:hover i {
             transform: rotate(180deg);
         }
@@ -399,20 +407,20 @@
             .sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.show {
                 transform: translateX(0);
                 width: 255px;
             }
-            
+
             .content-container {
                 margin-left: 0;
             }
-            
+
             .sidebar-collapsed .content-container {
                 margin-left: 0;
             }
-            
+
             .sidebar-overlay {
                 position: fixed;
                 top: 0;
@@ -425,15 +433,15 @@
                 backdrop-filter: blur(2px);
                 -webkit-backdrop-filter: blur(2px);
             }
-            
+
             .sidebar-overlay.show {
                 display: block;
             }
-            
+
             .sidebar-collapsed .sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar-collapsed .sidebar.show {
                 transform: translateX(0);
             }
@@ -445,8 +453,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         /* Content Container */
@@ -477,7 +490,7 @@
             position: relative;
             padding-left: 15px;
         }
-        
+
         .admin-navbar h5:before {
             content: '';
             position: absolute;
@@ -786,12 +799,12 @@
             box-shadow: var(--box-shadow);
             border-left: 5px solid var(--primary-color);
         }
-        
+
         .admin-dashboard-header h1 {
             margin-bottom: 5px;
             color: #333;
         }
-        
+
         .admin-dashboard-header p {
             font-size: 1rem;
             opacity: 0.7;
@@ -804,12 +817,12 @@
             box-shadow: 0 4px 10px rgba(67, 97, 238, 0.3);
             transition: all 0.3s;
         }
-        
+
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 15px rgba(67, 97, 238, 0.4);
         }
-        
+
         .btn-primary:active {
             transform: translateY(0);
             box-shadow: 0 2px 5px rgba(67, 97, 238, 0.2);
@@ -819,19 +832,20 @@
             margin-left: 20px;
             background-color: rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-          
-           
+
+
         }
-        
+
         .submenu .nav-link {
             padding: 6px 10px 6px 10px;
             font-size: 0.95rem;
 
         }
 
+        </style>
         @stack('styles')
-    </style>
 </head>
+
 <body>
     <div class="admin-layout">
         <!-- Sidebar -->
@@ -846,13 +860,13 @@
         <div class="content-container">
             <!-- Sidebar Overlay for mobile -->
             <div class="sidebar-overlay"></div>
-        
+
             <!-- Top Navbar -->
             @include('admin.layouts.header')
 
             <!-- Main Content -->
             <div class="main-content">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-check-circle me-2"></i>
@@ -862,7 +876,7 @@
                     </div>
                 @endif
 
-                @if(session('error'))
+                @if (session('error'))
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <div class="d-flex align-items-center">
                             <i class="fas fa-exclamation-circle me-2"></i>
@@ -874,16 +888,16 @@
 
                 @yield('content')
             </div>
-            
+
             <!-- Footer -->
             @include('admin.layouts.footer')
         </div>
     </div>
-    
+
     <!-- Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
+
     <script>
         // Enhanced sidebar toggle functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -893,21 +907,22 @@
             const sidebarOverlay = document.querySelector('.sidebar-overlay');
             const adminLayout = document.querySelector('.admin-layout');
             const contentContainer = document.querySelector('.content-container');
-            
+
             // Check for saved sidebar state
             if (localStorage.getItem('sidebarCollapsed') === 'true') {
                 adminLayout.classList.add('sidebar-collapsed');
             }
-            
+
             // Sidebar toggle button inside sidebar
             if (sidebarToggleBtn) {
                 sidebarToggleBtn.addEventListener('click', function(e) {
                     e.preventDefault();
                     adminLayout.classList.toggle('sidebar-collapsed');
-                    localStorage.setItem('sidebarCollapsed', adminLayout.classList.contains('sidebar-collapsed'));
+                    localStorage.setItem('sidebarCollapsed', adminLayout.classList.contains(
+                        'sidebar-collapsed'));
                 });
             }
-            
+
             // Mobile sidebar toggle
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function() {
@@ -915,7 +930,7 @@
                     sidebarOverlay.classList.toggle('show');
                 });
             }
-            
+
             // Overlay click event
             if (sidebarOverlay) {
                 sidebarOverlay.addEventListener('click', function() {
@@ -923,7 +938,7 @@
                     sidebarOverlay.classList.remove('show');
                 });
             }
-            
+
             // Initialize Bootstrap collapse for all submenu items
             const collapseElements = document.querySelectorAll('.sidebar .collapse');
             collapseElements.forEach(function(collapseEl) {
@@ -931,7 +946,7 @@
                 const bsCollapse = new bootstrap.Collapse(collapseEl, {
                     toggle: false
                 });
-                
+
                 // Get the trigger element
                 const trigger = document.querySelector(`[data-bs-target="#${collapseEl.id}"]`);
                 if (trigger) {
@@ -939,26 +954,26 @@
                     collapseEl.addEventListener('show.bs.collapse', function() {
                         trigger.setAttribute('aria-expanded', 'true');
                     });
-                    
+
                     collapseEl.addEventListener('hide.bs.collapse', function() {
                         trigger.setAttribute('aria-expanded', 'false');
                     });
-                    
+
                     // Handle click on menu items with submenu
                     trigger.addEventListener('click', function(e) {
                         // Don't process if clicking on submenu items
                         if (e.target.closest('.submenu')) {
                             return;
                         }
-                        
+
                         e.preventDefault();
-                        
+
                         // Toggle the collapse
                         bsCollapse.toggle();
                     });
                 }
             });
-            
+
             // Close sidebar when clicking on a nav link on mobile
             const navLinks = document.querySelectorAll('.sidebar .nav-link:not(.has-submenu)');
             navLinks.forEach(function(link) {
@@ -969,7 +984,7 @@
                     }
                 });
             });
-            
+
             // Adjust on window resize
             window.addEventListener('resize', function() {
                 if (window.innerWidth >= 992) {
@@ -977,13 +992,13 @@
                     sidebarOverlay.classList.remove('show');
                 }
             });
-            
+
             // Initialize tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
-            
+
             // Navbar scroll effect
             window.addEventListener('scroll', function() {
                 const navbar = document.querySelector('.admin-navbar');
@@ -995,7 +1010,8 @@
             });
         });
     </script>
-    
+
     @stack('scripts')
 </body>
-</html> 
+
+</html>
