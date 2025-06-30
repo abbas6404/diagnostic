@@ -20,54 +20,70 @@
         
         <!-- Registration -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#registrationSubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.patients.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#registrationSubmenu" aria-expanded="{{ request()->routeIs('admin.patients.*') ? 'true' : 'false' }}">
                 <i class="fas fa-user-plus"></i>
                 <span>Registration</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="registrationSubmenu">
+            <div class="collapse {{ request()->routeIs('admin.patients.*') ? 'show' : '' }}" id="registrationSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.patients.new') ? 'active' : '' }}" href="{{ route('admin.patients.new') }}">
                             <span>New Patient</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.patients.list') ? 'active' : '' }}" href="{{ route('admin.patients.list') }}">
                             <span>Patient List</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Appointments</span>
-                        </a>
-                    </li>
+       
                 </ul>
             </div>
         </li>
         
         <!-- Hospital -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#hospitalSubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.hospital.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#hospitalSubmenu" aria-expanded="{{ request()->routeIs('admin.hospital.*') ? 'true' : 'false' }}">
                 <i class="fas fa-hospital"></i>
                 <span>Hospital</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="hospitalSubmenu">
+            <div class="collapse {{ request()->routeIs('admin.hospital.*') ? 'show' : '' }}" id="hospitalSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Departments</span>
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.admission') ? 'active' : '' }}" href="{{ route('admin.hospital.admission') }}">
+                            <span>Admission</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.bed-management') ? 'active' : '' }}" href="{{ route('admin.hospital.bed-management') }}">
                             <span>Bed Management</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Ward Management</span>
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.bed-change') ? 'active' : '' }}" href="{{ route('admin.hospital.bed-change') }}">
+                            <span>Bed Change</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.discharge') ? 'active' : '' }}" href="{{ route('admin.hospital.discharge') }}">
+                            <span>Discharge</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.advance-collection') ? 'active' : '' }}" href="{{ route('admin.hospital.advance-collection') }}">
+                            <span>Advance Collection</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.procedure-entry') ? 'active' : '' }}" href="{{ route('admin.hospital.procedure-entry') }}">
+                            <span>Procedure Entry</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.hospital.due-collection') ? 'active' : '' }}" href="{{ route('admin.hospital.due-collection') }}">
+                            <span>Due Collection</span>
                         </a>
                     </li>
                 </ul>
@@ -76,66 +92,64 @@
         
         <!-- Diagnostics -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#diagnosticsSubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.diagnostics.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#diagnosticsSubmenu" aria-expanded="{{ request()->routeIs('admin.diagnostics.*') ? 'true' : 'false' }}">
                 <i class="fas fa-stethoscope"></i>
                 <span>Diagnostics</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="diagnosticsSubmenu">
+            <div class="collapse {{ request()->routeIs('admin.diagnostics.*') ? 'show' : '' }}" id="diagnosticsSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.invoice') ? 'active' : '' }}" href="{{ route('admin.diagnostics.invoice') }}">
                             <span>Invoice</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.invoice-return') ? 'active' : '' }}" href="{{ route('admin.diagnostics.invoice-return') }}">
                             <span>Invoice Return</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.due-collection') ? 'active' : '' }}" href="{{ route('admin.diagnostics.due-collection') }}">
                             <span>Due Collection</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Re_print</span>
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.re-print') ? 'active' : '' }}" href="{{ route('admin.diagnostics.re-print') }}">
+                            <span>Re-print</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.report') ? 'active' : '' }}" href="{{ route('admin.diagnostics.report') }}">
                             <span>Report</span>
                         </a>
                     </li>
-                    
-                    
                 </ul>
             </div>
         </li>
         
         <!-- OPD -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#opdSubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.opd.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#opdSubmenu" aria-expanded="{{ request()->routeIs('admin.opd.*') ? 'true' : 'false' }}">
                 <i class="fas fa-procedures"></i>
                 <span>OPD</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="opdSubmenu">
+            <div class="collapse {{ request()->routeIs('admin.opd.*') ? 'show' : '' }}" id="opdSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>OPD Registration</span>
+                        <a class="nav-link {{ request()->routeIs('admin.opd.invoice') ? 'active' : '' }}" href="{{ route('admin.opd.invoice') }}">
+                            <span>Invoice</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>OPD Queue</span>
+                        <a class="nav-link {{ request()->routeIs('admin.opd.due-collection') ? 'active' : '' }}" href="{{ route('admin.opd.due-collection') }}">
+                            <span>Due Collection</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>OPD Billing</span>
+                        <a class="nav-link {{ request()->routeIs('admin.opd.re-print') ? 'active' : '' }}" href="{{ route('admin.opd.re-print') }}">
+                            <span>Re-print</span>
                         </a>
                     </li>
                 </ul>
@@ -200,25 +214,25 @@
         
         <!-- Laboratory -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#laboratorySubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.laboratory.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#laboratorySubmenu" aria-expanded="{{ request()->routeIs('admin.laboratory.*') ? 'true' : 'false' }}">
                 <i class="fas fa-flask"></i>
                 <span>Laboratory</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="laboratorySubmenu">
+            <div class="collapse {{ request()->routeIs('admin.laboratory.*') ? 'show' : '' }}" id="laboratorySubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.laboratory.test-results') ? 'active' : '' }}" href="{{ route('admin.laboratory.test-results') }}">
                             <span>Test Results</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Sample Status</span>
+                        <a class="nav-link {{ request()->routeIs('admin.laboratory.sample-collection') ? 'active' : '' }}" href="{{ route('admin.laboratory.sample-collection') }}">
+                            <span>Sample Collection</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.laboratory.lab-equipment') ? 'active' : '' }}" href="{{ route('admin.laboratory.lab-equipment') }}">
                             <span>Lab Equipment</span>
                         </a>
                     </li>
@@ -312,25 +326,25 @@
         
         <!-- Doctor/Consultant Ticket -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#doctorSubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.doctor.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#doctorSubmenu" aria-expanded="{{ request()->routeIs('admin.doctor.*') ? 'true' : 'false' }}">
                 <i class="fas fa-user-md"></i>
                 <span>Doctor/Consultant</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="doctorSubmenu">
+            <div class="collapse {{ request()->routeIs('admin.doctor.*') ? 'show' : '' }}" id="doctorSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.invoice') ? 'active' : '' }}" href="{{ route('admin.doctor.invoice') }}">
                             <span>Invoice</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.due-collection') ? 'active' : '' }}" href="{{ route('admin.doctor.due-collection') }}">
                             <span>Due Collection</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.report') ? 'active' : '' }}" href="{{ route('admin.doctor.report') }}">
                             <span>Report</span>
                         </a>
                     </li>
