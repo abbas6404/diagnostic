@@ -203,7 +203,7 @@
 
         .sidebar .nav-link {
             color: #555;
-            padding: 0.6rem 1.2rem;
+            padding: 0.3rem 1.2rem;
             font-weight: 400;
             display: flex;
             align-items: center;
@@ -216,18 +216,22 @@
 
         .sidebar .nav-link:hover {
             color: var(--primary-color);
-            background-color: rgba(67, 97, 238, 0.05);
+            background-color: rgba(67, 97, 238, 0.06);
             transform: translateX(3px);
         }
 
         .sidebar .nav-link.active {
-            color: var(--primary-color);
-            background: linear-gradient(90deg, rgba(67, 97, 238, 0.15), rgba(67, 97, 238, 0.05));
+            color: #fff;
+            background: linear-gradient(90deg, #e52d27, #b31217); /* red gradient */
             font-weight: 600;
-            padding: 0.6rem 1.2rem;
+            padding: 0.4rem 1.2rem;
             border-radius: 8px;
             transform: translateX(5px);
+            box-shadow: 0 2px 6px rgba(179, 18, 23, 0.4); /* soft red glow */
+            transition: all 0.3s ease;
         }
+
+
 
         .sidebar .nav-link.active::before {
             content: '';
@@ -236,7 +240,7 @@
             top: 0;
             height: 100%;
             width: 4px;
-            background: var(--primary-color);
+            background: #760000;
             border-radius: 0 4px 4px 0;
         }
 
@@ -276,7 +280,7 @@
 
         .sidebar .nav-link.active i {
             opacity: 1;
-            color: var(--primary-color);
+            color: #fff;
             transform: scale(1.2);
             filter: drop-shadow(0 0 2px rgba(67, 97, 238, 0.3));
             animation: iconPulse 2s infinite;
@@ -832,17 +836,18 @@
             margin-left: 20px;
             background-color: rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-<<<<<<< HEAD
-=======
-
-
->>>>>>> a8a39b6aa34105f36593ac0fff3d02f29ca8563f
         }
 
         .submenu .nav-link {
             padding: 6px 10px 6px 10px;
             font-size: 0.95rem;
 
+        }
+      
+        .form-control:focus{
+            background-color: var(--info-color);
+            font-weight: 500;
+            
         }
 
         </style>

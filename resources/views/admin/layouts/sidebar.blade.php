@@ -356,14 +356,14 @@
         <li class="nav-item">
             <a class="nav-link {{ (request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') || request()->routeIs('admin.permissions.*')) ? 'active' : '' }} has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#usersSubmenu" aria-expanded="{{ (request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') || request()->routeIs('admin.permissions.*')) ? 'true' : 'false' }}">
                 <i class="fas fa-users"></i>
-                <span>Users</span>
+                <span>User & Staff</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
             <div class="collapse {{ (request()->routeIs('admin.users.*') || request()->routeIs('admin.roles.*') || request()->routeIs('admin.permissions.*')) ? 'show' : '' }}" id="usersSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}" href="{{ route('admin.users.index') }}">
-                            <span>Users</span>
+                            <span>Staff</span>
                         </a>
                     </li>
                     @can('view roles')

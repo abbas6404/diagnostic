@@ -27,6 +27,13 @@
                     </form>
                 </li>
                 
+                <!-- Fullscreen Button -->
+                <li class="nav-item me-2">
+                    <button id="fullscreen-btn" class="btn btn-sm btn-primary" title="Enter fullscreen mode">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                </li>
+                
                 <!-- Notifications -->
                 <li class="nav-item dropdown me-2">
                     <a id="notificationsDropdown" class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
