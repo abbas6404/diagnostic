@@ -24,7 +24,7 @@ use App\Http\Controllers\Admin\LaboratoryController;
 */
 
 // Admin Dashboard - accessible to anyone with admin dashboard access
-Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 
 // Patient Registration routes
 Route::prefix('registration')->group(function () {

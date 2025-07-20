@@ -14,7 +14,8 @@ class LabTestSeeder extends Seeder
     public function run(): void
     {
         DB::table('lab_tests')->insert([
-            'id' => 1,
+            'id' => 1,  
+            'code' => 'BT',
             'department_id' => 1,
             'name' => 'Blood Test', // 1
             'description' => 'Blood Test',
@@ -22,6 +23,7 @@ class LabTestSeeder extends Seeder
         ]);
         DB::table('lab_tests')->insert([
             'id' => 2,
+            'code' => 'UT',
             'department_id' => 2,
             'name' => 'Urine Test', // 2
             'description' => 'Urine Test',
@@ -29,6 +31,7 @@ class LabTestSeeder extends Seeder
         ]);
         DB::table('lab_tests')->insert([
             'id' => 3,
+            'code' => 'XR',
             'department_id' => 3,
             'name' => 'X-Ray', // 3
             'description' => 'X-Ray',

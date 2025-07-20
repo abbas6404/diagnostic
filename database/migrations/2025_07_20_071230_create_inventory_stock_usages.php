@@ -18,7 +18,8 @@ return new class extends Migration
             $table->integer('quantity');
             $table->string('used_for')->nullable()->index();
             $table->date('used_date')->nullable();
-            $table->string('used_by')->nullable()->index();
+            $table->unsignedBigInteger('used_by')->nullable()->index();
+            $table->foreign('used_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

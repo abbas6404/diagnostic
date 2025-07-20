@@ -15,16 +15,18 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('patient_id')->index();
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
-            
+            $table->date('request_date')->nullable()->index();
             $table->string('status')->default('pending')->index();
-            $table->string('request_date')->nullable()->index();
+            
             $table->decimal('total_amount', 10, 2)->default(0);
             $table->decimal('paid_amount', 10, 2)->default(0);
             $table->decimal('due_amount', 10, 2)->default(0);
             $table->string('payment_method')->nullable();
            
-            $table->string('created_by')->nullable()->index();
-            $table->string('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable()->index();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });

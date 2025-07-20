@@ -19,7 +19,7 @@ class InventoryStockUsagesSeeder extends Seeder
             'quantity' => 1,
             'used_for' => 'lab_request',
             'used_date' => '2025-01-01',
-            'used_by' => '1',
+            'used_by' => '1', 
         ]);
         DB::table('inventory_stock_usages')->insert([
             'id' => 2,

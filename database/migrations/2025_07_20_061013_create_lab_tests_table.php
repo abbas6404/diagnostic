@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('lab_tests', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->index()->unique();  
             $table->unsignedBigInteger('department_id')->index();
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
             $table->string('name')->index();
