@@ -15,20 +15,21 @@ class LabRequestItemSeeder extends Seeder
     {
         DB::table('lab_request_items')->insert([
             'id' => 1,
-            'lab_request_id' => 1,
+            'invoice_id' => 1,  
             'lab_test_id' => 1,
             'price' => 100,
+            
            
         ]); 
         DB::table('lab_request_items')->insert([
             'id' => 2,
-            'lab_request_id' => 2,
+            'invoice_id' => 2,
             'lab_test_id' => 2,
             'price' => 100,
         ]);
         DB::table('lab_request_items')->insert([
             'id' => 3,
-            'lab_request_id' => 3,
+            'invoice_id' => 3,
             'lab_test_id' => 3,
             'price' => 100,
         ]);

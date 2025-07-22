@@ -20,7 +20,8 @@ class PatientSeeder extends Seeder
             'name_bn' => 'আরিয়ান আব্দুল্লাহ',
             'father_husband_name_en' => 'Ariyan Abdullah',
             'address' => 'Dhaka',
-            'phone' => '01717171717',
+            'location_id' => '1',
+            'phone' => '01717171717',   
             'email' => 'ariyan@gmail.com',
             'dob' => '1990-01-01',
             'gender' => 'Male',
@@ -38,6 +39,7 @@ class PatientSeeder extends Seeder
             'reg_date' => '2025-01-01',
             'name_en' => 'Rakibul Islam',
             'name_bn' => 'রাকিবুল ইসলাম',
+            'location_id' => '1',
             'father_husband_name_en' => 'Rakibul Islam',
         ]);
         DB::table('patients')->insert([
@@ -45,6 +47,7 @@ class PatientSeeder extends Seeder
             'reg_date' => '2025-01-01',
             'name_en' => 'Rabiul Islam',
             'name_bn' => 'রবিউল ইসলাম',
+            'location_id' => '1',
             'father_husband_name_en' => 'Rabiul Islam',
         ]);
     }

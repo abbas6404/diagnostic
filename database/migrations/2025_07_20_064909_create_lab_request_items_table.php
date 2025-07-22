@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('lab_request_items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('lab_request_id')->index();
-            $table->foreign('lab_request_id')->references('id')->on('lab_request')->onDelete('cascade');
+            $table->unsignedBigInteger('invoice_id')->index();
+            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
             $table->unsignedBigInteger('lab_test_id')->index();
             $table->foreign('lab_test_id')->references('id')->on('lab_tests')->onDelete('cascade');
             $table->decimal('price', 10, 2)->default(0);
+            $table->string('status')->default('pending')->index();
             $table->timestamps();
             $table->softDeletes();
         });

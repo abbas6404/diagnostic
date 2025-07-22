@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name_bn')->nullable()->index();
             $table->string('father_husband_name_en')->nullable()->index();
             $table->string('address')->nullable();
-            // $table->string('upazila_id');
+            $table->unsignedBigInteger('location_id')->nullable()->index();
             $table->string('phone')->nullable()->index();
             $table->string('email')->nullable()->index();
             $table->date('dob')->nullable();

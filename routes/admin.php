@@ -29,10 +29,15 @@ Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
 // Patient Registration routes
 Route::prefix('registration')->group(function () {
     // New Patient
-    Route::get('/new-patient', [PatientController::class, 'newPatient'])->name('patients.new');
+    Route::get('/', [PatientController::class, 'index'])->name('patients.index');  
+    Route::get('/create', [PatientController::class, 'create'])->name('patients.create');
+    Route::post('/store', [PatientController::class, 'store'])->name('patients.store');
+    Route::get('/show/{id}', [PatientController::class, 'show'])->name('patients.show');
+    Route::get('/edit/{id}', [PatientController::class, 'edit'])->name('patients.edit');
+    Route::put('/update/{id}', [PatientController::class, 'update'])->name('patients.update');
+    Route::delete('/delete/{id}', [PatientController::class, 'destroy'])->name('patients.destroy');
+    Route::post('/restore/{id}', [PatientController::class, 'restore'])->name('patients.restore');
     
-    // Patient List
-    Route::get('/patients', [PatientController::class, 'patientList'])->name('patients.list');
 });
 
 // Hospital routes

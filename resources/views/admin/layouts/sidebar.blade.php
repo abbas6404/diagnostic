@@ -28,12 +28,12 @@
             <div class="collapse {{ request()->routeIs('admin.patients.*') ? 'show' : '' }}" id="registrationSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.patients.new') ? 'active' : '' }}" href="{{ route('admin.patients.new') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.patients.create') ? 'active' : '' }}" href="{{ route('admin.patients.create') }}">
                             <span>New Patient</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.patients.list') ? 'active' : '' }}" href="{{ route('admin.patients.list') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.patients.index') ? 'active' : '' }}" href="{{ route('admin.patients.index') }}">
                             <span>Patient List</span>
                         </a>
                     </li>

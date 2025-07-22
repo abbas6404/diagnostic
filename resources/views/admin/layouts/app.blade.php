@@ -842,14 +842,25 @@
         .submenu .nav-link {
             padding: 6px 10px 6px 10px;
             font-size: 0.95rem;
-
+        
+        }
+        .sidebar .nav-item{
+            margin-left: 0px !important;
         }
       
-        .form-control:focus{
-            background-color: var(--info-color);
-            font-weight: 500;
-            
+        .form-control:focus {
+            color: #000000 !important;
+            background: linear-gradient(90deg, #ffe0e0, #d3b2b2) !important;
+            font-weight: 600 !important;
+            border-radius: 8px !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
         }
+
+
+        
+
 
         </style>
         @stack('styles')

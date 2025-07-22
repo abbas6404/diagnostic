@@ -18,19 +18,13 @@ class DatabaseSeeder extends Seeder
         $this->call(CreateUsersSeeder::class);
         $this->call(PatientSeeder::class);
         $this->call(DepartmentSeeder::class);
+        $this->call(InvoiceSeeder::class);
         $this->call(LabTestSeeder::class);
-        $this->call(LabRequestSeeder::class);
         $this->call(LabRequestItemSeeder::class);
         $this->call(InventoryItemSeeder::class);
         $this->call(InventoryStockEntriesSeeder::class);
         $this->call(InventoryStockUsagesSeeder::class);
+        $this->call(ConsultantTicketsSeeder::class);
         
-        // User::factory(10)->create();
-
-        // Comment out or remove this as we're creating users in our RolesAndPermissionsSeeder
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
     }
 }
