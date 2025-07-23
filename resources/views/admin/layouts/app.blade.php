@@ -863,7 +863,10 @@
 
 
         </style>
-        @stack('styles')
+        
+        @livewireStyles
+        
+        @yield('styles')
 </head>
 
 <body>
@@ -1031,7 +1034,10 @@
         });
     </script>
 
-    @stack('scripts')
+    <!-- Custom Scripts -->
+    @livewireScripts
+    
+    @yield('scripts')
 </body>
 
 </html>

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
             $table->string('name')->index();
             $table->string('description')->nullable();
-            $table->decimal('price', 10, 2)->default(0);
+            $table->decimal('charge', 10, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

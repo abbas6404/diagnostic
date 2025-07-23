@@ -2,6 +2,36 @@
 
 @section('title', 'Diagnostics Invoice')
 
+@section('styles')
+<style>
+    .search-results {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        position: absolute;
+        z-index: 1000;
+        background-color: white;
+        width: 100%;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .search-item {
+        cursor: pointer;
+    }
+    .search-item:hover {
+        background-color: rgba(0,123,255,0.1);
+    }
+    .search-item.selected {
+        background-color: rgba(0,123,255,0.2);
+    }
+    
+    /* Position the search results properly */
+    .col-sm-8 {
+        position: relative;
+    }
+</style>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="card shadow">
@@ -14,9 +44,7 @@
                     <a href="{{ route('admin.patients.index') }}" class="btn btn-sm btn-outline-secondary me-2">
                         <i class="fas fa-list me-1"></i> Patient List
                     </a>
-                    <button class="btn btn-sm btn-outline-primary me-2" onclick="window.print()">
-                        <i class="fas fa-print me-1"></i> Print
-                    </button>
+                    
                     <button class="btn btn-sm btn-primary" id="newInvoiceBtn">
                         <i class="fas fa-plus-circle me-1"></i> New Invoice
                     </button>
@@ -35,105 +63,99 @@
                         <div class="card-body">
                             <div class="row mb-3">
                                 <div class="col-md-6">
-                                    <div class="row mb-2">
-                                        <label class="col-sm-4 col-form-label">Date:</label>
-                                        <div class="col-sm-8">
-                                            <div class="input-group">
-                                                <input type="date" class="form-control form-control-sm" value="{{ date('Y-m-d') }}">
-                                                <button class="btn btn-sm btn-outline-secondary" type="button"><i class="fas fa-calendar"></i></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <label class="col-sm-4 col-form-label">Invoice No:</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" value="INV-{{ date('Ymd') }}-001">
-                                        </div>
-                                    </div>
+                                  
+                                   
+                                    
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Patient ID:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" placeholder="P-00000">
+                                            @livewire('patient-search')
+                                            <input type="hidden" name="patient_id_hidden" id="patient_id_hidden">
                                         </div>
                                     </div>
-                                    
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Name:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                    <div class="row mb-2">
-                                        <label class="col-sm-4 col-form-label">Ref. By:</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="row mb-2">
-                                        <label class="col-sm-4 col-form-label">Dr. Ticket:</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" placeholder="DT-00000">
+                                            <input type="text" class="form-control form-control-sm" name="name_en" id="patient_name" tabindex="2">
                                         </div>
                                     </div>
                                     
-                                    <div class="row mb-2">
-                                        <label class="col-sm-4 col-form-label">Cons. Dr:</label>
-                                        <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm">
-                                        </div>
-                                    </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Age:</label>
                                         <div class="col-sm-8">
                                             <div class="input-group">
-                                                <input type="text" class="form-control form-control-sm" placeholder="Y" style="width: 30%;">
-                                                <input type="text" class="form-control form-control-sm" placeholder="M" style="width: 30%;">
-                                                <input type="text" class="form-control form-control-sm" placeholder="D" style="width: 30%;">
-                                                <button class="btn btn-sm btn-outline-secondary" type="button">Update</button>
+                                                <input type="text" class="form-control form-control-sm" placeholder="Y" style="width: 30%;" name="age_years" id="age_years" tabindex="3">
+                                                <input type="text" class="form-control form-control-sm" placeholder="M" style="width: 30%;" name="age_months" id="age_months" tabindex="4">
+                                                <input type="text" class="form-control form-control-sm" placeholder="D" style="width: 30%;" name="age_days" id="age_days" tabindex="5">
+                                                
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Sex:</label>
                                         <div class="col-sm-8">
-                                            <select class="form-select form-select-sm">
+                                            <select class="form-select form-select-sm" name="gender" id="gender" tabindex="6">
                                                 <option value="Male">Male</option>
                                                 <option value="Female">Female</option>
                                                 <option value="Other">Other</option>
                                             </select>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <label class="col-sm-2 col-form-label">Address:</label>
-                                <div class="col-sm-10">
-                                    <input type="text" class="form-control form-control-sm">
-                                </div>
-                            </div>
-                            <div class="row mb-2">
-                                <label class="col-sm-2 col-form-label">Contact:</label>
-                                <div class="col-sm-4">
-                                    <input type="text" class="form-control form-control-sm">
-                                </div>
-                                <label class="col-sm-2 col-form-label">ICD Code:</label>
-                                <div class="col-sm-4">
-                                    <div class="input-group">
-                                        <input type="text" class="form-control form-control-sm">
-                                        <button class="btn btn-sm btn-outline-secondary" type="button"><i class="fas fa-search"></i></button>
+                                    <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Contact:</label>
+                                        <div class="col-sm-8">
+                                            <input type="text" class="form-control form-control-sm" name="phone" id="patient_phone" tabindex="7">
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Address:</label>
+                                        <div class="col-sm-8">
+                                            <textarea class="form-control form-control-sm" rows="2" name="address" id="patient_address" tabindex="8"></textarea>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="row mb-2">
-                                <div class="col-sm-12">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="excludePackage">
-                                        <label class="form-check-label" for="excludePackage">Exclude Package Bill</label>
+                                <div class="col-md-6">
+
+                                    <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Date:</label>
+                                        <div class="col-sm-8">
+                                            <div class="input-group">
+                                                <input type="date" class="form-control form-control-sm" value="{{ date('Y-m-d') }}" name="invoice_date" tabindex="9">
+                                                <button class="btn btn-sm btn-outline-secondary" type="button" tabindex="-1"><i class="fas fa-calendar"></i></button>
+                                            </div>
+                                        </div>
                                     </div>
+                                    
+                                    <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Dr. Ticket:</label>
+                                        <div class="col-sm-8">
+                                            @livewire('ticket-search')
+                                            <input type="hidden" name="ticket_id_hidden" id="ticket_id_hidden">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Cons. Dr:</label>
+                                        <div class="col-sm-8">
+                                            @livewire('doctor-search')
+                                            <input type="hidden" name="doctor_id_hidden" id="doctor_id_hidden">
                                 </div>
                             </div>
+
+                            <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Ref. By:</label>
+                                        <div class="col-sm-8">
+                                            @livewire('pcp-search')
+                                            <input type="hidden" name="referred_by_hidden" id="referred_by_hidden">
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                </div>
+                            </div>
+                        
+                       
+                        
                         </div>
                     </div>
 
@@ -142,12 +164,7 @@
                         <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                             <h6 class="mb-0"><i class="fas fa-vial me-1"></i> Test Items</h6>
                             <div>
-                                <button class="btn btn-sm btn-outline-success" id="addTestBtn">
-                                    <i class="fas fa-plus me-1"></i> Add Test
-                                </button>
-                                <button class="btn btn-sm btn-outline-primary ms-1" data-bs-toggle="modal" data-bs-target="#testCatalogModal">
-                                    <i class="fas fa-list me-1"></i> Test Catalog
-                                </button>
+                                <input type="text" class="form-control form-control-sm main-test-search" placeholder="Search Test (Code or Name)" tabindex="13" id="testSearchInput">
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -202,179 +219,18 @@
                         </div>
                     </div>
 
-                    <!-- Return Section -->
-                    <div class="card border mt-3">
-                        <div class="card-header bg-light py-2">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0">Return</h6>
-                                <button class="btn btn-sm btn-outline-secondary">Re-Print</button>
-                            </div>
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="table-responsive">
-                                <table class="table table-sm table-bordered mb-0">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="width: 80px;">Code</th>
-                                            <th>Description</th>
-                                            <th style="width: 60px;">Qty</th>
-                                            <th style="width: 100px;">Charge</th>
-                                            <th style="width: 100px;">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm border-0">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm border-0">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm border-0" value="1">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm border-0">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm border-0" readonly>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="row g-2 p-2">
-                                <div class="col-md-4">
-                                    <select class="form-select form-select-sm">
-                                        <option>Less</option>
-                                        <option>Discount</option>
-                                        <option>Return</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select form-select-sm">
-                                        <option>From</option>
-                                        <option>Cash</option>
-                                        <option>Card</option>
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <select class="form-select form-select-sm">
-                                        <option>All</option>
-                                        <option>Selected</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="row g-2 p-2">
-                                <div class="col-md-4">
-                                    <label class="form-label small">Delivery Dt</label>
-                                    <input type="date" class="form-control form-control-sm" value="{{ date('Y-m-d') }}">
-                                </div>
-                                <div class="col-md-8">
-                                    <label class="form-label small">Remarks</label>
-                                    <input type="text" class="form-control form-control-sm">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
                 </div>
 
                 <!-- Right Column -->
                 <div class="col-md-5">
-                    <!-- Patient Information -->
-                    <div class="card border mb-3">
-                        <div class="card-header bg-primary text-white py-2 d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0"><i class="fas fa-users me-1"></i> Recent Patients</h6>
-                            <div class="input-group input-group-sm" style="width: 180px;">
-                                <input type="text" class="form-control" placeholder="Search patients..." id="patientSearch">
-                                <button class="btn btn-light" type="button"><i class="fas fa-search"></i></button>
-                            </div>
+                    <!-- Search Results Area -->
+                    <div class="card border mb-3" id="search-results-container">
+                        <div class="card-header bg-primary text-white py-2">
+                            <h6 class="mb-0"><i class="fas fa-search me-1"></i> <span id="search-title">Search Results</span></h6>
                         </div>
-                        <div class="card-body p-0" style="height: 400px; overflow-y: auto;">
-                            <table class="table table-sm table-hover mb-0">
-                                <thead class="table-light sticky-top">
-                                    <tr>
-                                        <th>Patient ID</th>
-                                        <th>Patient Name</th>
-                                        <th>Contact</th>
-                                        <th class="text-center" style="width: 40px;"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="patientList">
-                                    <tr class="patient-row" data-id="R5060859" data-name="KEYA MONI" data-phone="01762775151" data-address="Dhaka, Bangladesh">
-                                        <td>R5060859</td>
-                                        <td>KEYA MONI</td>
-                                        <td>01762775151</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060858" data-name="CHINA" data-phone="01734827390" data-address="Chittagong, Bangladesh">
-                                        <td>R5060858</td>
-                                        <td>CHINA</td>
-                                        <td>01734827390</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060857" data-name="RINA" data-phone="01409116041" data-address="Sylhet, Bangladesh">
-                                        <td>R5060857</td>
-                                        <td>RINA</td>
-                                        <td>01409116041</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060856" data-name="ASMA UL HUSNA" data-phone="01407823067" data-address="Rajshahi, Bangladesh">
-                                        <td>R5060856</td>
-                                        <td>ASMA UL HUSNA</td>
-                                        <td>01407823067</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060855" data-name="HOSMON" data-phone="01347558472" data-address="Khulna, Bangladesh">
-                                        <td>R5060855</td>
-                                        <td>HOSMON</td>
-                                        <td>01347558472</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060854" data-name="RUMI ISLAM" data-phone="01749345271" data-address="Barisal, Bangladesh">
-                                        <td>R5060854</td>
-                                        <td>RUMI ISLAM</td>
-                                        <td>01749345271</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060853" data-name="KUMAR AKTER" data-phone="01601623045" data-address="Comilla, Bangladesh">
-                                        <td>R5060853</td>
-                                        <td>KUMAR AKTER</td>
-                                        <td>01601623045</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060852" data-name="PULASH TALUKDAR" data-phone="01785839127" data-address="Rangpur, Bangladesh">
-                                        <td>R5060852</td>
-                                        <td>PULASH TALUKDAR</td>
-                                        <td>01785839127</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060851" data-name="ABDULLAH AL ADIL" data-phone="01366847193" data-address="Dhaka, Bangladesh">
-                                        <td>R5060851</td>
-                                        <td>ABDULLAH AL ADIL</td>
-                                        <td>01366847193</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060850" data-name="AKLIMA" data-phone="01623761793" data-address="Mymensingh, Bangladesh">
-                                        <td>R5060850</td>
-                                        <td>AKLIMA</td>
-                                        <td>01623761793</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                    <tr class="patient-row" data-id="R5060849" data-name="MOSHINA" data-phone="01760102338" data-address="Noakhali, Bangladesh">
-                                        <td>R5060849</td>
-                                        <td>MOSHINA</td>
-                                        <td>01760102338</td>
-                                        <td class="text-center"><button class="btn btn-sm btn-link p-0 select-patient"><i class="fas fa-check-circle text-success"></i></button></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="card-footer bg-light py-2 d-flex justify-content-between align-items-center">
-                            <span class="small text-muted">Showing 11 patients</span>
-                            <button class="btn btn-sm btn-outline-primary" id="loadMorePatients">
-                                <i class="fas fa-sync-alt me-1"></i> Load More
-                            </button>
+                        <div class="card-body p-0" style="height: 250px; overflow-y: auto;" id="search-results-body">
+                            @livewire('search-results')
                         </div>
                     </div>
 
@@ -424,44 +280,8 @@
                                 </div>
                             </div>
                             
-                            <div class="row mt-3">
-                                <div class="col-sm-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="withoutVaccination">
-                                        <label class="form-check-label" for="withoutVaccination">
-                                            Without Vaccatainer
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" id="printReceipt" checked>
-                                        <label class="form-check-label" for="printReceipt">
-                                            Print Receipt
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="row mt-3">
-                                <div class="col-12">
-                                    <label class="form-label small">Payment Method</label>
-                                    <div class="d-flex gap-2">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCash" value="cash" checked>
-                                            <label class="form-check-label" for="paymentCash">Cash</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentCard" value="card">
-                                            <label class="form-check-label" for="paymentCard">Card</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="paymentMethod" id="paymentMobile" value="mobile">
-                                            <label class="form-check-label" for="paymentMobile">Mobile Banking</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                 
+                     
                             
                             <div class="d-flex justify-content-center gap-2 mt-4">
                                 <button class="btn btn-success" id="saveInvoiceBtn">
@@ -479,215 +299,295 @@
                 </div>
             </div>
         </div>
-        <div class="card-footer bg-white">
-            <div class="row small text-muted">
-                <div class="col-md-4">SQL Based - HospMDB</div>
-                <div class="col-md-4">User Name - A AHMED</div>
-                <div class="col-md-4 text-end">{{ date('d/m/Y') }} {{ date('h:i A') }}</div>
-            </div>
-        </div>
+    
     </div>
 </div>
 @endsection
 
 @section('scripts')
 <script>
-    $(document).ready(function() {
-        // Initialize tooltips
-        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'))
-        var tooltipTriggerList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl)
-        });
-        
-        // Patient search functionality
-        $("#patientSearch").on("keyup", function() {
-            var value = $(this).val().toLowerCase();
-            $("#patientList tr").filter(function() {
-                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle Enter key to move to next field
+        document.querySelectorAll('input, select, textarea').forEach(function(element) {
+            element.addEventListener('keydown', function(e) {
+                // If Enter key is pressed
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent form submission
+                    
+                    // Get the tabindex of the current element
+                    const currentTabIndex = parseInt(this.getAttribute('tabindex')) || 0;
+                    
+                    // Find the next element with a higher tabindex
+                    const nextElement = document.querySelector(`[tabindex="${currentTabIndex + 1}"]`);
+                    
+                    // Focus the next element if found
+                    if (nextElement) {
+                        nextElement.focus();
+                        
+                        // If it's an input, select all text for easy replacement
+                        if (nextElement.tagName === 'INPUT' && nextElement.type !== 'date') {
+                            nextElement.select();
+                        }
+                    }
+                }
             });
         });
         
-        // Select patient functionality
-        $(".select-patient").on("click", function() {
-            var row = $(this).closest("tr");
-            var patientId = row.data("id");
-            var patientName = row.data("name");
-            var patientPhone = row.data("phone");
-            var patientAddress = row.data("address");
-            
-            // Fill patient details in the form
-            $("#patient_id").val(patientId);
-            $("input[name='name_en']").val(patientName);
-            $("input[name='phone']").val(patientPhone);
-            $("input[name='address']").val(patientAddress);
-            
-            // Highlight the selected patient
-            $(".patient-row").removeClass("table-primary");
-            row.addClass("table-primary");
-        });
-        
-        // Add new test item row
-        $("#addTestBtn").on("click", function() {
-            var newRow = $(".test-item-row:first").clone();
-            newRow.find("input").val("");
-            newRow.find(".test-qty").val(1);
-            newRow.find(".test-charge").val(0);
-            newRow.find(".test-total").val(0);
-            newRow.find(".test-delivery").val(new Date().toISOString().split('T')[0]);
-            $("#testItemsTable tbody").append(newRow);
-            updateTotals();
-        });
-        
-        // Remove test item row
-        $(document).on("click", ".remove-test", function() {
-            if ($("#testItemsTable tbody tr").length > 1) {
-                $(this).closest("tr").remove();
-                updateTotals();
-            } else {
-                alert("Cannot remove the last test item row.");
+        // Handle arrow key navigation in search results
+        document.addEventListener('keydown', function(e) {
+            // Only handle arrow keys if we have search results
+            if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && document.querySelector('.search-item')) {
+                e.preventDefault();
+                
+                const selectedItem = document.querySelector('.search-item.selected');
+                let nextItem;
+                
+                if (e.key === 'ArrowDown') {
+                    if (selectedItem) {
+                        // Get the next sibling that is a search item
+                        nextItem = selectedItem.nextElementSibling;
+                        while (nextItem && !nextItem.classList.contains('search-item')) {
+                            nextItem = nextItem.nextElementSibling;
+                        }
+                        
+                        // If no next item, select the first one
+                        if (!nextItem) {
+                            nextItem = document.querySelector('.search-item');
+                        }
+                    } else {
+                        // No selected item, select the first one
+                        nextItem = document.querySelector('.search-item');
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    if (selectedItem) {
+                        // Get the previous sibling that is a search item
+                        nextItem = selectedItem.previousElementSibling;
+                        while (nextItem && !nextItem.classList.contains('search-item')) {
+                            nextItem = nextItem.previousElementSibling;
+                        }
+                        
+                        // If no previous item, select the last one
+                        if (!nextItem) {
+                            const allItems = document.querySelectorAll('.search-item');
+                            nextItem = allItems[allItems.length - 1];
+                        }
+                    } else {
+                        // No selected item, select the last one
+                        const allItems = document.querySelectorAll('.search-item');
+                        nextItem = allItems[allItems.length - 1];
+                    }
+                }
+                
+                if (nextItem) {
+                    // Remove selected class from all items
+                    document.querySelectorAll('.search-item').forEach(item => {
+                        item.classList.remove('selected');
+                        // Hide all triangle indicators
+                        const triangle = item.querySelector('.triangle-indicator');
+                        if (triangle) {
+                            triangle.style.visibility = 'hidden';
+                        }
+                    });
+                    
+                    // Add selected class to next item
+                    nextItem.classList.add('selected');
+                    
+                    // Show triangle indicator for selected item
+                    const triangle = nextItem.querySelector('.triangle-indicator');
+                    if (triangle) {
+                        triangle.style.visibility = 'visible';
+                    }
+                    
+                    // Scroll the item into view
+                    nextItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+            // Handle Enter key to select the highlighted item
+            else if (e.key === 'Enter' && document.querySelector('.search-item.selected')) {
+                e.preventDefault();
+                document.querySelector('.search-item.selected').click();
             }
         });
         
-        // Calculate row total when charge or quantity changes
-        $(document).on("change", ".test-charge, .test-qty", function() {
-            var row = $(this).closest("tr");
-            var charge = parseFloat(row.find(".test-charge").val()) || 0;
-            var qty = parseInt(row.find(".test-qty").val()) || 0;
-            var total = charge * qty;
-            row.find(".test-total").val(total.toFixed(2));
-            updateTotals();
-        });
+        // Test item calculation
+        const testItemsTable = document.getElementById('testItemsTable');
         
-        // Update discount amount when percentage changes
-        $("#discountPercent").on("change", function() {
-            var percent = parseFloat($(this).val()) || 0;
-            var totalAmount = parseFloat($("#totalAmount").val()) || 0;
-            var discountAmount = totalAmount * (percent / 100);
-            $("#discountAmount").val(discountAmount.toFixed(2));
-            updateNetPayable();
-        });
-        
-        // Update discount percentage when amount changes
-        $("#discountAmount").on("change", function() {
-            var amount = parseFloat($(this).val()) || 0;
-            var totalAmount = parseFloat($("#totalAmount").val()) || 0;
-            var percent = totalAmount > 0 ? (amount / totalAmount) * 100 : 0;
-            $("#discountPercent").val(percent.toFixed(1));
-            updateNetPayable();
-        });
-        
-        // Update due amount when paid amount changes
-        $("#paidAmount").on("change", function() {
-            updateDueAmount();
-        });
-        
-        // Calculate all totals
-        function updateTotals() {
-            var subtotal = 0;
+        function calculateTestItemTotal() {
+            const rows = testItemsTable.querySelectorAll('tbody tr');
+            let subtotal = 0;
             
-            // Calculate subtotal from all test items
-            $(".test-total").each(function() {
-                subtotal += parseFloat($(this).val()) || 0;
+            rows.forEach(row => {
+                const charge = parseFloat(row.querySelector('.test-charge').value) || 0;
+                const qty = parseInt(row.querySelector('.test-qty').value) || 1;
+                const total = charge * qty;
+                
+                row.querySelector('.test-total').value = total.toFixed(2);
+                subtotal += total;
             });
             
-            // Update subtotal field
-            $("#subtotalAmount").val(subtotal.toFixed(2));
-            $("#totalAmount").val(subtotal.toFixed(2));
+            document.getElementById('subtotalAmount').value = subtotal.toFixed(2);
+            document.getElementById('totalAmount').value = subtotal.toFixed(2);
             
-            // Recalculate discount
-            var percent = parseFloat($("#discountPercent").val()) || 0;
-            var discountAmount = subtotal * (percent / 100);
-            $("#discountAmount").val(discountAmount.toFixed(2));
-            
-            // Update net payable and due
-            updateNetPayable();
+            calculateNetPayable();
         }
         
-        // Calculate net payable amount
-        function updateNetPayable() {
-            var totalAmount = parseFloat($("#totalAmount").val()) || 0;
-            var discountAmount = parseFloat($("#discountAmount").val()) || 0;
-            var netPayable = totalAmount - discountAmount;
+        function calculateNetPayable() {
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const discountAmount = parseFloat(document.getElementById('discountAmount').value) || 0;
+            const netPayable = Math.max(0, totalAmount - discountAmount);
+            const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+            const dueAmount = Math.max(0, netPayable - paidAmount);
             
-            // Ensure net payable is not negative
-            netPayable = Math.max(0, netPayable);
-            $("#netPayable").val(netPayable.toFixed(2));
-            
-            // Update due amount
-            updateDueAmount();
+            document.getElementById('netPayable').value = netPayable.toFixed(2);
+            document.getElementById('dueAmount').value = dueAmount.toFixed(2);
         }
         
-        // Calculate due amount
-        function updateDueAmount() {
-            var netPayable = parseFloat($("#netPayable").val()) || 0;
-            var paidAmount = parseFloat($("#paidAmount").val()) || 0;
-            var dueAmount = netPayable - paidAmount;
-            
-            // Ensure due amount is not negative
-            dueAmount = Math.max(0, dueAmount);
-            $("#dueAmount").val(dueAmount.toFixed(2));
-            
-            // Highlight due amount if positive
-            if (dueAmount > 0) {
-                $("#dueAmount").addClass("text-danger");
-            } else {
-                $("#dueAmount").removeClass("text-danger");
+        // Add event listeners for test item calculations
+        testItemsTable.addEventListener('input', function(e) {
+            if (e.target.classList.contains('test-charge') || e.target.classList.contains('test-qty')) {
+                calculateTestItemTotal();
             }
-        }
+        });
+        
+        // Discount percentage change
+        document.getElementById('discountPercent').addEventListener('input', function() {
+            const percent = parseFloat(this.value) || 0;
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            const discountAmount = (totalAmount * percent / 100).toFixed(2);
+            
+            document.getElementById('discountAmount').value = discountAmount;
+            calculateNetPayable();
+        });
+        
+        // Discount amount change
+        document.getElementById('discountAmount').addEventListener('input', function() {
+            const discountAmount = parseFloat(this.value) || 0;
+            const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+            
+            if (totalAmount > 0) {
+                const percent = (discountAmount * 100 / totalAmount).toFixed(2);
+                document.getElementById('discountPercent').value = percent;
+            } else {
+                document.getElementById('discountPercent').value = 0;
+            }
+            
+            calculateNetPayable();
+        });
+        
+        // Paid amount change
+        document.getElementById('paidAmount').addEventListener('input', function() {
+            calculateNetPayable();
+        });
         
         // Reset form button
-        $("#resetFormBtn").on("click", function() {
-            if (confirm("Are you sure you want to reset the form? All entered data will be cleared.")) {
-                // Clear patient information
-                $("input[name='patient_id']").val("");
-                $("input[name='name_en']").val("");
-                $("input[name='phone']").val("");
-                $("input[name='address']").val("");
-                
-                // Reset test items table to a single empty row
-                $("#testItemsTable tbody tr:not(:first)").remove();
-                $("#testItemsTable tbody tr:first input").val("");
-                $("#testItemsTable tbody tr:first .test-qty").val(1);
-                $("#testItemsTable tbody tr:first .test-delivery").val(new Date().toISOString().split('T')[0]);
-                
-                // Reset totals
-                $("#subtotalAmount").val("0.00");
-                $("#totalAmount").val("0.00");
-                $("#discountPercent").val(0);
-                $("#discountAmount").val("0.00");
-                $("#netPayable").val("0.00");
-                $("#paidAmount").val("0.00");
-                $("#dueAmount").val("0.00");
-                
-                // Reset patient selection highlight
-                $(".patient-row").removeClass("table-primary");
-            }
-        });
-        
-        // Save invoice button
-        $("#saveInvoiceBtn").on("click", function() {
-            // Validate form
-            if (!$("input[name='name_en']").val()) {
-                alert("Please select a patient or enter patient name.");
-                return;
-            }
-            
-            if (!$(".test-name").filter(function() { return $(this).val() !== ""; }).length) {
-                alert("Please add at least one test item.");
-                return;
-            }
-            
-            // Show success message
-            alert("Invoice saved successfully!");
-            
-            // Here you would normally submit the form to the server
-            // For demonstration purposes, we're just showing an alert
+        document.getElementById('resetFormBtn').addEventListener('click', function() {
+            // Reset form here
+            // For now, just reload the page
+            window.location.reload();
         });
         
         // Cancel button
-        $("#cancelBtn").on("click", function() {
-            if (confirm("Are you sure you want to cancel? All entered data will be lost.")) {
-                window.location.href = "{{ route('admin.patients.index') }}";
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            window.location.href = "{{ route('admin.dashboard') }}";
+        });
+    });
+    
+    // Direct DOM manipulation for patient fields
+    document.addEventListener('livewire:init', () => {
+        // Patient selected event
+        Livewire.on('fill-patient-fields', (patientData) => {
+            console.log('Raw patient data:', patientData);
+            
+            // Check if we have an array with one element (which contains our object)
+            let data = patientData;
+            if (Array.isArray(patientData) && patientData.length > 0) {
+                data = patientData[0];
+            }
+            
+            console.log('Processed patient data:', data);
+            
+            // Fill hidden patient ID field
+            document.getElementById('patient_id_hidden').value = data.id;
+            
+            // Fill patient name field
+            const nameField = document.getElementById('patient_name');
+            if (nameField) {
+                nameField.value = data.name || '';
+            }
+            
+            // Fill age fields
+            const ageYearsField = document.getElementById('age_years');
+            if (ageYearsField) {
+                ageYearsField.value = parseInt(data.age_years || 0);
+            }
+            
+            const ageMonthsField = document.getElementById('age_months');
+            if (ageMonthsField) {
+                ageMonthsField.value = parseInt(data.age_months || 0);
+            }
+            
+            const ageDaysField = document.getElementById('age_days');
+            if (ageDaysField) {
+                ageDaysField.value = parseInt(data.age_days || 0);
+            }
+            
+            // Fill patient phone field
+            const contactField = document.getElementById('patient_phone');
+            if (contactField) {
+                contactField.value = data.phone || '';
+            }
+            
+            // Fill patient address field
+            const addressField = document.getElementById('patient_address');
+            if (addressField) {
+                addressField.value = data.address || '';
+            }
+        });
+        
+        // Doctor selected event
+        Livewire.on('doctor-selected', (doctorData) => {
+            console.log('Doctor selected:', doctorData);
+            document.getElementById('doctor_id_hidden').value = doctorData.id;
+        });
+        
+        // PCP selected event
+        Livewire.on('pcp-selected', (pcpData) => {
+            console.log('PCP selected:', pcpData);
+            document.getElementById('referred_by_hidden').value = pcpData.id;
+        });
+        
+        // Ticket selected event
+        Livewire.on('fill-ticket-fields', (ticketData) => {
+            console.log('Ticket selected:', ticketData);
+            
+            // Fill hidden ticket ID field
+            document.getElementById('ticket_id_hidden').value = ticketData.id;
+            
+            // If there's a doctor name, try to find the doctor search field and fill it
+            if (ticketData.doctorName) {
+                const doctorSearchInput = document.querySelector('input[wire\\:model\\.live\\.debounce\\.300ms="search"][placeholder*="Doctor"]');
+                if (doctorSearchInput) {
+                    // This will trigger the Livewire property update
+                    doctorSearchInput.value = ticketData.doctorName;
+                    doctorSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+            
+            // If there's a doctor fee, fill the consultation fee field
+            if (ticketData.doctorFee) {
+                const consultationFeeInput = document.getElementById('consultationFee');
+                if (consultationFeeInput) {
+                    consultationFeeInput.value = ticketData.doctorFee;
+                    consultationFeeInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            }
+        });
+        
+        // Update search title when search type changes
+        Livewire.on('searchTypeChanged', (type) => {
+            const titleElement = document.getElementById('search-title');
+            if (titleElement) {
+                titleElement.textContent = type + ' Search Results';
             }
         });
     });

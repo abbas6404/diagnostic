@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\OpdController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\LaboratoryController;
+use App\Http\Controllers\Admin\SearchController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +113,7 @@ Route::prefix('opd')->group(function () {
 Route::prefix('doctor')->group(function () {
     // Invoice
     Route::get('/invoice', [DoctorController::class, 'invoice'])->name('doctor.invoice');
+    Route::post('/invoice/store', [DoctorController::class, 'storeInvoice'])->name('doctor.invoice.store');
     
     // Due Collection
     Route::get('/due-collection', [DoctorController::class, 'dueCollection'])->name('doctor.due-collection');
@@ -117,6 +121,13 @@ Route::prefix('doctor')->group(function () {
     // Report
     Route::get('/report', [DoctorController::class, 'report'])->name('doctor.report');
 });
+
+// AJAX Search endpoints are no longer needed as we're using Livewire components
+// Route::prefix('search')->group(function () {
+//     Route::get('/doctor', [SearchController::class, 'doctors'])->name('search.doctor');
+//     Route::get('/pcp', [SearchController::class, 'pcps'])->name('search.pcp');
+//     Route::get('/patient', [SearchController::class, 'patients'])->name('search.patient');
+// });
 
 // Role routes - protected by permissions
 Route::get('/roles', [RolePermissionController::class, 'roles'])

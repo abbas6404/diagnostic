@@ -44,7 +44,13 @@ class RolesAndPermissionsSeeder extends Seeder
             // Other permissions
             'manage plans',
             'view reports',
-            'manage settings'
+            'manage settings',
+            
+            // Doctor permissions
+            'access doctor dashboard',
+            'view patients',
+            'create prescriptions',
+            'view medical records'
         ];
 
         foreach ($permissions as $permission) {
@@ -77,6 +83,25 @@ class RolesAndPermissionsSeeder extends Seeder
             'view reports'
         ]);
         
+        // Doctor role
+        $doctorRole = Role::create(['name' => 'Doctor']);
+        $doctorRole->givePermissionTo([
+            'access admin dashboard',
+            'view patients',
+            'create prescriptions',
+            'view medical records',
+            'view reports'
+        ]);
+        $pcpRole = Role::create(['name' => 'PCP']);
+        $pcpRole->givePermissionTo([
+            'access admin dashboard',
+            'view patients',
+            'create prescriptions',
+            'view medical records',
+            'view reports'
+        ]);
+
+        
         // User role
         $userRole = Role::create(['name' => 'User']);
         // Regular users don't have admin permissions
@@ -84,18 +109,62 @@ class RolesAndPermissionsSeeder extends Seeder
         // Create a super admin user
         $superAdmin = User::create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@example.com',
+            'email' => 'superadmin@gmail.com',
             'phone' => '01742184298',
-            'password' => Hash::make('password')
+            'password' => Hash::make('12345678')
         ]);
         $superAdmin->assignRole('Super Admin');
         
         // Create an admin user
         $admin = User::create([
             'name' => 'Admin User',
-            'email' => 'admin@example.com',
-            'password' => Hash::make('password')
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('12345678')
         ]);
         $admin->assignRole('Admin');
+
+        // Create a Doctor user
+        $doctor = User::create([
+            'name' => 'Dr. Ahmed Hossain',
+            'code' => 'DT-001',
+            'email' => 'doctor@gmail.com',
+            'phone' => '01712345678',
+            'description' => 'Consultant',
+            'password' => Hash::make('12345678')
+        ]);
+        $doctor->assignRole('Doctor');
+        
+        // Create another Doctor user
+        $doctor2 = User::create([
+            'name' => 'Dr. Fatima Begum',
+            'code' => 'DT-002',
+            'email' => 'doctor2@gmail.com',
+            'phone' => '01812345678',
+            'description' => 'Consultant',
+            'password' => Hash::make('12345678')
+        ]);
+        $doctor2->assignRole('Doctor');
+
+        // Create a PCP user
+        $pcp = User::create([
+            'name' => 'PCP User',
+            'code' => 'PCP-001',
+            'email' => 'pcp@gmail.com',
+            'phone' => '01912345678',   
+            'description' => 'PCP',
+            'password' => Hash::make('12345678')
+        ]);
+        $pcp->assignRole('PCP');
+        $pcp2 = User::create([
+            'name' => 'PCP User 2',
+            'code' => 'PCP-002',
+            'email' => 'pcp2@gmail.com',
+            'phone' => '01912345675',   
+            'description' => 'PCP',
+            'password' => Hash::make('12345678')
+        ]);
+        $pcp2->assignRole('PCP');
+
+        
     }
 }

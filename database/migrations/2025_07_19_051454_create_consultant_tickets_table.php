@@ -13,19 +13,20 @@ return new class extends Migration
     {
         Schema::create('consultant_tickets', function (Blueprint $table) {
             $table->id();
-            $table->string('ticket_no')->unique()->index();
-            $table->string('ticket_status')->nullable()->index();
-            $table->string('ticket_date')->nullable()->index();
-            $table->string('ticket_time')->nullable()->index();
-            $table->string('doctor_fee')->nullable()->index();
+            $table->string('ticket_no')->unique()->index(); //Ticket No (DT-yymmdd-001)
+            $table->string('ticket_status')->nullable()->index(); //Pending,Completed,Cancelled
+            $table->string('ticket_date')->nullable()->index(); //Ticket Date
+            $table->string('ticket_time')->nullable()->index(); //Ticket Time
+            $table->string('doctor_fee')->nullable()->index(); //Doctor Fee
+            $table->string('remarks')->nullable();
+            $table->unsignedBigInteger('referred_by')->nullable()->index(); //PCP
+            $table->foreign('referred_by')->references('id')->on('users')->onDelete('cascade')->where('roles.name', 'PCP');
             $table->unsignedBigInteger('patient_id')->index();
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->string('patient_type')->nullable()->index(); //new,old
-            $table->unsignedBigInteger('doctor_id')->index();
+            $table->unsignedBigInteger('doctor_id')->index(); //Doctor
             $table->foreign('doctor_id')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('invoice_id')->index();
-            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
-            
+          
             $table->timestamps();
         });
     }

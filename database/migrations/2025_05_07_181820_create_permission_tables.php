@@ -60,7 +60,7 @@ return new class extends Migration
 
             $table->foreign($pivotPermission)
                 ->references('id') // permission id
-                ->on($tableNames['permissions'])
+                ->on($tableNames['permissions']) 
                 ->onDelete('cascade');
             if ($teams) {
                 $table->unsignedBigInteger($columnNames['team_foreign_key']);

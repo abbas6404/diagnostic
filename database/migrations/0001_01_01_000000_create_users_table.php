@@ -13,28 +13,28 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique()->nullable()->index();
-            $table->string('name');
-            $table->string('designation')->nullable();
-            $table->string('email')->unique()->index();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->string('doctor_fee')->nullable();
+            $table->string('code')->unique()->nullable()->index(); //Code (DT-001)
+            $table->string('name'); //Name
+            $table->string('description')->nullable(); //Description
+            $table->string('email')->unique()->index(); //Email
+            $table->timestamp('email_verified_at')->nullable(); //Email Verified At
+            $table->string('password'); //Password
+          
             
 
-            $table->string('phone')->unique()->index()->nullable();
-            $table->string('address')->nullable();
-            $table->string('city')->nullable();
-            $table->string('state')->nullable();
-            $table->string('zip')->nullable();
-            $table->string('country')->nullable();
-            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
+            $table->string('phone')->unique()->index()->nullable(); //Phone
+            $table->string('address')->nullable(); //Address
+            $table->string('city')->nullable(); //City
+            $table->string('state')->nullable(); //State
+            $table->string('zip')->nullable(); //Zip
+            $table->string('country')->nullable(); //Country
+            $table->enum('status', ['active', 'inactive', 'suspended'])->default('active'); //Status
 
-            $table->string('profile_photo_path')->nullable();
+            $table->string('profile_photo_path')->nullable(); //Profile Photo Path
             
-            $table->rememberToken();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->rememberToken(); //Remember Token
+            $table->timestamps(); //Created At, Updated At
+            $table->softDeletes(); //Deleted At
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

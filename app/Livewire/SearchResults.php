@@ -1,0 +1,237 @@
+<?php
+
+namespace App\Livewire;
+
+use Livewire\Component;
+use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use Carbon\Carbon;
+
+class SearchResults extends Component
+{
+    public $searchType = 'none'; // none, patient, doctor, pcp
+    public $results = [];
+    public $query = '';
+    
+    protected $listeners = [
+        'showPatientResults' => 'searchPatients',
+        'showDoctorResults' => 'searchDoctors',
+        'showPcpResults' => 'searchPcps',
+        'showTicketResults' => 'searchTickets',
+        'clearResults' => 'clearResults'
+    ];
+    
+    public function searchPatients($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'patient';
+        $this->dispatch('searchTypeChanged', 'Patient');
+        
+        $patients = DB::table('patients')
+            ->where(function($q) {
+                $q->where('patient_id', 'like', "%{$this->query}%")
+                  ->orWhere('name_en', 'like', "%{$this->query}%")
+                  ->orWhere('phone', 'like', "%{$this->query}%")
+                  ->orWhere('address', 'like', "%{$this->query}%");
+            })
+            ->whereNull('deleted_at')
+            ->select('id', 'patient_id', 'name_en', 'phone', 'address', 'dob')
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get();
+        
+        // Calculate age for each patient
+        $this->results = $patients->map(function($patient) {
+            $patient = (array) $patient;
+            
+            // Calculate age if DOB is available
+            if (!empty($patient['dob'])) {
+                $dob = Carbon::parse($patient['dob']);
+                $now = Carbon::now();
+                
+                $years = (int) $dob->diffInYears($now);
+                $months = (int) $dob->copy()->addYears($years)->diffInMonths($now);
+                $days = (int) $dob->copy()->addYears($years)->addMonths($months)->diffInDays($now);
+                
+                $patient['age_years'] = $years;
+                $patient['age_months'] = $months;
+                $patient['age_days'] = $days;
+            } else {
+                $patient['age_years'] = 0;
+                $patient['age_months'] = 0;
+                $patient['age_days'] = 0;
+            }
+            
+            return $patient;
+        });
+        
+        if (count($this->results) > 0) {
+            $this->dispatch('focusFirstResult', 'patient');
+        }
+    }
+    
+    public function searchDoctors($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'doctor';
+        $this->dispatch('searchTypeChanged', 'Doctor');
+        
+        $this->results = User::whereHas('roles', function($q) {
+                $q->where('name', 'Doctor');
+            })
+            ->where(function($q) {
+                $q->where('name', 'like', "%{$this->query}%")
+                  ->orWhere('code', 'like', "%{$this->query}%")
+                  ->orWhere('description', 'like', "%{$this->query}%");
+            })
+            ->where('status', 'active')
+            ->select('id', 'name', 'description', 'code')
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get()
+            ->toArray();
+            
+        if (count($this->results) > 0) {
+            $this->dispatch('focusFirstResult', 'doctor');
+        }
+    }
+    
+    public function searchPcps($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'pcp';
+        $this->dispatch('searchTypeChanged', 'PCP');
+        
+        $this->results = User::whereHas('roles', function($q) {
+                $q->where('name', 'PCP');
+            })
+            ->where(function($q) {
+                $q->where('name', 'like', "%{$this->query}%")
+                  ->orWhere('code', 'like', "%{$this->query}%")
+                  ->orWhere('description', 'like', "%{$this->query}%");
+            })
+            ->where('status', 'active')
+            ->select('id', 'name', 'description', 'code')
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get()
+            ->toArray();
+            
+        if (count($this->results) > 0) {
+            $this->dispatch('focusFirstResult', 'pcp');
+        }
+    }
+    
+    public function searchTickets($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'ticket';
+        $this->dispatch('searchTypeChanged', 'Ticket');
+        
+        $tickets = DB::table('consultant_tickets')
+            ->where('ticket_no', 'like', "%{$this->query}%")
+            ->leftJoin('patients', 'consultant_tickets.patient_id', '=', 'patients.id')
+            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
+            ->select(
+                'consultant_tickets.id', 
+                'consultant_tickets.ticket_no', 
+                'consultant_tickets.ticket_date', 
+                'consultant_tickets.ticket_status',
+                'consultant_tickets.doctor_fee',
+                'patients.name_en as patient_name',
+                'doctors.name as doctor_name'
+            )
+            ->orderBy('consultant_tickets.id', 'desc')
+            ->limit(10)
+            ->get();
+        
+        $this->results = $tickets->toArray();
+    }
+    
+    public function selectPatient($id, $patientId, $name, $phone, $address)
+    {
+        // Find the selected patient from results to get age data
+        $selectedPatient = collect($this->results)->first(function($patient) use ($id) {
+            return is_array($patient) ? $patient['id'] == $id : $patient->id == $id;
+        });
+        
+        // Create patient data object with age information
+        $patientData = [
+            'id' => $id,
+            'patientId' => $patientId,
+            'name' => $name,
+            'phone' => $phone,
+            'address' => $address,
+            'age_years' => $selectedPatient['age_years'] ?? 0,
+            'age_months' => $selectedPatient['age_months'] ?? 0,
+            'age_days' => $selectedPatient['age_days'] ?? 0
+        ];
+        
+        // Dispatch events with patient data
+        $this->dispatch('patient-selected', $patientData);
+        $this->dispatch('fill-patient-fields', $patientData);
+        
+        $this->clearResults();
+    }
+    
+    public function selectDoctor($id, $code, $name)
+    {
+        $this->dispatch('doctor-selected', [
+            'id' => $id,
+            'code' => $code,
+            'name' => $name
+        ]);
+        $this->clearResults();
+    }
+    
+    public function selectPcp($id, $code, $name)
+    {
+        $this->dispatch('pcp-selected', [
+            'id' => $id,
+            'code' => $code,
+            'name' => $name
+        ]);
+        $this->clearResults();
+    }
+
+    public function selectTicket($id, $ticketNo, $patientName, $doctorName, $doctorFee)
+    {
+        $this->dispatch('ticket-selected', [
+            'id' => $id,
+            'ticketNo' => $ticketNo,
+            'patientName' => $patientName,
+            'doctorName' => $doctorName,
+            'doctorFee' => $doctorFee
+        ]);
+        
+        $this->dispatch('fill-ticket-fields', [
+            'id' => $id,
+            'ticketNo' => $ticketNo,
+            'patientName' => $patientName,
+            'doctorName' => $doctorName,
+            'doctorFee' => $doctorFee
+        ]);
+        
+        $this->clearResults();
+    }
+    
+    public function clearResults()
+    {
+        $this->searchType = 'none';
+        $this->results = [];
+        $this->query = '';
+    }
+    
+    public function render()
+    {
+        return view('livewire.search-results');
+    }
+    
+    // This hook runs after the component has been rendered
+    public function dehydrate()
+    {
+        if (count($this->results) > 0 && $this->searchType !== 'none') {
+            $this->dispatch('focusFirstResult', $this->searchType);
+        }
+    }
+}

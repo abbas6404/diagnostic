@@ -13,21 +13,25 @@ return new class extends Migration
     {
         Schema::create('invoice', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_no')->unique()->index();
-            $table->unsignedBigInteger('patient_id')->index();
+            $table->string('invoice_no')->unique()->index(); //Invoice No (INV-yymmdd-001)
+            $table->unsignedBigInteger('patient_id')->index(); //Patient
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
-            $table->decimal('total_amount', 10, 2)->default(0);
-            $table->decimal('paid_amount', 10, 2)->default(0);
-            $table->decimal('due_amount', 10, 2)->default(0);
-            $table->date('invoice_date')->nullable()->index();
+            $table->decimal('total_amount', 10, 2)->default(0); //Total Amount
+            $table->decimal('paid_amount', 10, 2)->default(0); //Paid Amount
+            $table->decimal('due_amount', 10, 2)->default(0); //Due Amount
+            $table->decimal('discount_amount', 10, 2)->default(0); //Discount Amount
+            $table->decimal('discount_percentage', 10, 2)->default(0); //Discount Percentage
+            $table->date('invoice_date')->nullable()->index(); //Invoice Date
             $table->string('invoice_type')->nullable()->index(); //consultant,lab,pharmacy,opd,ipd
-            $table->string('payment_method')->nullable();
-            $table->unsignedBigInteger('created_by')->nullable()->index();
+            $table->unsignedBigInteger('consultant_ticket_id')->nullable()->index(); //Consultant Ticket ID
+            $table->foreign('consultant_ticket_id')->references('id')->on('consultant_tickets')->onDelete('cascade');
+            $table->string('payment_method')->nullable(); //Payment Method
+            $table->unsignedBigInteger('created_by')->nullable()->index(); //Created By
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable(); //Updated By
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps(); //Created At, Updated At  
+            $table->softDeletes(); //Deleted At
         });
     }
 

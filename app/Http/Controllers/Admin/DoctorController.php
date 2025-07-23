@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 
 class DoctorController extends Controller
 {
@@ -18,9 +21,7 @@ class DoctorController extends Controller
     }
 
     /**
-     * Show the invoice page.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * Show the doctor invoice form
      */
     public function invoice()
     {
@@ -46,4 +47,17 @@ class DoctorController extends Controller
     {
         return view('admin.doctor.report.index');
     }
+    
+    /**
+     * Store a doctor invoice
+     */
+    public function storeInvoice(Request $request)
+    {
+        // Process and store the invoice
+        // This will be implemented later
+        
+        return redirect()->route('admin.doctor.invoice')->with('success', 'Invoice created successfully');
+    }
+
+    // searchDoctors and searchPcps methods removed - now using Livewire components
 } 
