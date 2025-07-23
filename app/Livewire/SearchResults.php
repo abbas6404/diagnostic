@@ -6,6 +6,7 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SearchResults extends Component
 {
@@ -18,6 +19,7 @@ class SearchResults extends Component
         'showDoctorResults' => 'searchDoctors',
         'showPcpResults' => 'searchPcps',
         'showTicketResults' => 'searchTickets',
+        'showLabTestResults' => 'searchLabTests',
         'clearResults' => 'clearResults'
     ];
     
@@ -212,6 +214,60 @@ class SearchResults extends Component
             'doctorFee' => $doctorFee
         ]);
         
+        $this->clearResults();
+    }
+    
+    public function searchLabTests($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'labtest';
+        $this->dispatch('searchTypeChanged', 'Lab Test');
+        
+        $labTests = DB::table('lab_tests')
+            ->where(function($q) {
+                $q->where('lab_tests.code', 'like', "%{$this->query}%")
+                  ->orWhere('lab_tests.name', 'like', "%{$this->query}%");
+            })
+            ->whereNull('lab_tests.deleted_at')
+            ->leftJoin('departments', 'lab_tests.department_id', '=', 'departments.id')
+            ->select(
+                'lab_tests.id', 
+                'lab_tests.code', 
+                'lab_tests.name as test_name', 
+                'lab_tests.description',
+                'lab_tests.charge',
+                'departments.name as department_name'
+            )
+            ->orderBy('lab_tests.id', 'desc')
+            ->limit(10)
+            ->get();
+        
+        // Convert to array and debug first result
+        $this->results = $labTests->toArray();
+        
+        if (count($this->results) > 0) {
+            // Debug the first result
+            \Illuminate\Support\Facades\Log::info('First lab test result:', ['result' => $this->results[0]]);
+            $this->dispatch('focusFirstResult', 'labtest');
+        }
+    }
+    
+    public function selectLabTest($id, $code, $test_name, $charge, $departmentName)
+    {
+        $data = [
+            'id' => $id,
+            'code' => $code,
+            'test_name' => $test_name,
+            'charge' => $charge,
+            'department' => [
+                'name' => $departmentName
+            ]
+        ];
+        
+        // Log the data being dispatched
+        \Illuminate\Support\Facades\Log::info('Lab test selected data:', $data);
+        
+        $this->dispatch('lab-test-selected', $data);
         $this->clearResults();
     }
     

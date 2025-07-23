@@ -162,9 +162,9 @@
                     <!-- Test Items Table -->
                     <div class="card border mt-3">
                         <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0"><i class="fas fa-vial me-1"></i> Test Items</h6>
+                            <h6 class="mb-0"><i class="fas fa-vial me-1"></i>Lab Test Items</h6>
                             <div>
-                                <input type="text" class="form-control form-control-sm main-test-search" placeholder="Search Test (Code or Name)" tabindex="13" id="testSearchInput">
+                                @livewire('lab-test-search')
                             </div>
                         </div>
                         <div class="card-body p-0">
@@ -182,29 +182,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr class="test-item-row">
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm test-code" placeholder="Code">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm test-name" placeholder="Test name">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm test-charge" value="0.00" step="0.01" min="0">
-                                            </td>
-                                            <td>
-                                                <input type="date" class="form-control form-control-sm test-delivery" value="{{ date('Y-m-d') }}">
-                                            </td>
-                                            <td>
-                                                <input type="number" class="form-control form-control-sm test-qty" value="1" min="1">
-                                            </td>
-                                            <td>
-                                                <input type="text" class="form-control form-control-sm test-total" value="0.00" readonly>
-                                            </td>
-                                            <td class="text-center">
-                                                <button class="btn btn-sm btn-link text-danger p-0 remove-test"><i class="fas fa-times"></i></button>
-                                            </td>
-                                        </tr>
+                                    
+                                        {{-- in there will be the test items all items will be added here --}}
                                     </tbody>
                                     <tfoot class="table-light">
                                         <tr>
@@ -250,7 +229,7 @@
                                 <label class="col-sm-5 col-form-label">Discount (%)</label>
                                 <div class="col-sm-7">
                                     <div class="input-group input-group-sm">
-                                        <input type="number" class="form-control text-end" id="discountPercent" min="0" max="100" value="0">
+                                        <input type="number" class="form-control text-end" id="discountPercent" min="0" max="100" value="0" tabindex="20">
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
@@ -258,7 +237,7 @@
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Discount Amount</label>
                                 <div class="col-sm-7">
-                                    <input type="number" class="form-control form-control-sm text-end" id="discountAmount" value="0.00" step="0.01" min="0">
+                                    <input type="number" class="form-control form-control-sm text-end" id="discountAmount" value="0.00" step="0.01" min="0" tabindex="21">
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -270,7 +249,7 @@
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Paid Amount</label>
                                 <div class="col-sm-7">
-                                    <input type="number" class="form-control form-control-sm text-end" id="paidAmount" value="0.00" step="0.01" min="0">
+                                    <input type="number" class="form-control form-control-sm text-end" id="paidAmount" value="0.00" step="0.01" min="0" tabindex="22">
                                 </div>
                             </div>
                             <div class="row mb-2">
@@ -284,13 +263,13 @@
                      
                             
                             <div class="d-flex justify-content-center gap-2 mt-4">
-                                <button class="btn btn-success" id="saveInvoiceBtn">
+                                <button class="btn btn-success" id="saveInvoiceBtn" tabindex="23">
                                     <i class="fas fa-save me-1"></i> Save & Print
                                 </button>
-                                <button class="btn btn-primary" id="resetFormBtn">
+                                <button class="btn btn-primary" id="resetFormBtn" tabindex="24">
                                     <i class="fas fa-sync-alt me-1"></i> Reset
                                 </button>
-                                <button class="btn btn-danger" id="cancelBtn">
+                                <button class="btn btn-danger" id="cancelBtn" tabindex="25">
                                     <i class="fas fa-times me-1"></i> Cancel
                                 </button>
                             </div>
@@ -442,6 +421,26 @@
             document.getElementById('dueAmount').value = dueAmount.toFixed(2);
         }
         
+        // Define the calculateTestItemTotal function globally so it can be accessed anywhere
+        window.calculateTestItemTotal = function() {
+            const rows = testItemsTable.querySelectorAll('tbody tr');
+            let subtotal = 0;
+            
+            rows.forEach(row => {
+                const charge = parseFloat(row.querySelector('.test-charge').value) || 0;
+                const qty = parseInt(row.querySelector('.test-qty').value) || 1;
+                const total = charge * qty;
+                
+                row.querySelector('.test-total').value = total.toFixed(2);
+                subtotal += total;
+            });
+            
+            document.getElementById('subtotalAmount').value = subtotal.toFixed(2);
+            document.getElementById('totalAmount').value = subtotal.toFixed(2);
+            
+            calculateNetPayable();
+        }
+        
         // Add event listeners for test item calculations
         testItemsTable.addEventListener('input', function(e) {
             if (e.target.classList.contains('test-charge') || e.target.classList.contains('test-qty')) {
@@ -583,6 +582,85 @@
             }
         });
         
+        // Lab Test selected event
+        Livewire.on('lab-test-selected', (testData) => {
+            console.log('Lab test selected:', testData);
+            
+            // Get the testData from the first element if it's an array
+            let data = testData;
+            if (Array.isArray(testData) && testData.length > 0) {
+                data = testData[0];
+            }
+            
+            // Access properties directly with fallbacks
+            console.log('Data object:', data);
+            
+            // Generate a unique ID for this row
+            const rowId = 'test-row-' + Date.now();
+            
+            // Get tomorrow's date in YYYY-MM-DD format
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const deliveryDate = tomorrow.toISOString().split('T')[0];
+            
+            // Extract values from the object
+            const id = data.id || '';
+            const code = data.code || '';
+            const testName = data.test_name || '';
+            const charge = parseFloat(data.charge || 0).toFixed(2);
+            
+            // Log the extracted values for debugging
+            console.log('Extracted id:', id);
+            console.log('Extracted code:', code);
+            console.log('Extracted name:', testName);
+            console.log('Extracted charge:', charge);
+            
+            // Create the row HTML with form fields
+            const rowHtml = `
+                <tr id="${rowId}">
+                    <td>
+                        <input type="text" class="form-control form-control-sm test-code" value="${code}" readonly>
+                        <input type="hidden" name="test_ids[]" value="${id}">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm test-name" value="${testName}" readonly>
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm test-charge" value="${charge}" step="0.01" min="0">
+                    </td>
+                    <td>
+                        <input type="date" class="form-control form-control-sm test-delivery-date" value="${deliveryDate}">
+                    </td>
+                    <td>
+                        <input type="number" class="form-control form-control-sm test-qty" value="1" min="1">
+                    </td>
+                    <td>
+                        <input type="text" class="form-control form-control-sm test-total" value="${charge}" readonly>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-danger remove-test-btn" onclick="removeTestRow('${rowId}')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+            
+            // Append the row to the table
+            const tbody = document.querySelector('#testItemsTable tbody');
+            tbody.insertAdjacentHTML('beforeend', rowHtml);
+            
+            // Calculate totals using the global function
+            window.calculateTestItemTotal();
+            
+            // Clear the search input to make it ready for the next search
+            const labTestSearchInput = document.querySelector('input[wire\\:model\\.live\\.debounce\\.300ms="search"][placeholder*="Test"]');
+            if (labTestSearchInput) {
+                labTestSearchInput.value = '';
+                labTestSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                labTestSearchInput.focus();
+            }
+        });
+        
         // Update search title when search type changes
         Livewire.on('searchTypeChanged', (type) => {
             const titleElement = document.getElementById('search-title');
@@ -591,5 +669,14 @@
             }
         });
     });
+    
+    // Function to remove a test row
+    function removeTestRow(rowId) {
+        const row = document.getElementById(rowId);
+        if (row) {
+            row.remove();
+            window.calculateTestItemTotal();
+        }
+    }
 </script>
 @endsection 

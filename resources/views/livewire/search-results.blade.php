@@ -173,6 +173,43 @@
                 <div class="alert alert-info py-2 mb-0">No tickets found matching "{{ $query }}"</div>
             </div>
         @endif
+    @elseif($searchType == 'labtest')
+        @if(count($results) > 0)
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20px;"></th>
+                        <th>Code</th>
+                        <th>Test Name</th>
+                        <th>Department</th>
+                        <th>Charge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($results as $index => $test)
+                        <tr class="search-item {{ $index === 0 ? 'first-result' : '' }}" 
+                            id="{{ $index === 0 ? 'first-labtest-result' : '' }}"
+                            wire:click="selectLabTest(
+                                {{ is_object($test) ? $test->id : $test['id'] }}, 
+                                '{{ addslashes(is_object($test) ? $test->code : $test['code']) }}', 
+                                '{{ addslashes(is_object($test) ? $test->test_name : $test['test_name']) }}', 
+                                {{ is_object($test) ? $test->charge : $test['charge'] }},
+                                '{{ addslashes(is_object($test) ? $test->department_name : $test['department_name']) }}'
+                            )">
+                            <td><div class="triangle-indicator"></div></td>
+                            <td>{{ is_object($test) ? $test->code : $test['code'] }}</td>
+                            <td>{{ is_object($test) ? $test->test_name : $test['test_name'] }}</td>
+                            <td>{{ is_object($test) ? $test->department_name : $test['department_name'] }}</td>
+                            <td>{{ is_object($test) ? $test->charge : $test['charge'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="p-3 text-center">
+                <div class="alert alert-info py-2 mb-0">No lab tests found matching "{{ $query }}"</div>
+            </div>
+        @endif
     @endif
 
     <script>
@@ -188,6 +225,8 @@
                         firstRow = document.getElementById('first-doctor-result');
                     } else if (type === 'pcp') {
                         firstRow = document.getElementById('first-pcp-result');
+                    } else if (type === 'labtest') {
+                        firstRow = document.getElementById('first-labtest-result');
                     }
                     
                     if (firstRow) {
