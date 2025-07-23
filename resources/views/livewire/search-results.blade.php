@@ -210,6 +210,43 @@
                 <div class="alert alert-info py-2 mb-0">No lab tests found matching "{{ $query }}"</div>
             </div>
         @endif
+    @elseif($searchType == 'opdservice')
+        @if(count($results) > 0)
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20px;"></th>
+                        <th>Code</th>
+                        <th>Service Name</th>
+                        <th>Department</th>
+                        <th>Charge</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($results as $index => $service)
+                        <tr class="search-item {{ $index === 0 ? 'first-result' : '' }}" 
+                            id="{{ $index === 0 ? 'first-opdservice-result' : '' }}"
+                            wire:click="selectOpdService(
+                                {{ is_object($service) ? $service->id : $service['id'] }}, 
+                                '{{ addslashes(is_object($service) ? $service->code : $service['code']) }}', 
+                                '{{ addslashes(is_object($service) ? $service->service_name : $service['service_name']) }}', 
+                                {{ is_object($service) ? $service->charge : $service['charge'] }},
+                                '{{ addslashes(is_object($service) ? $service->department_name : $service['department_name']) }}'
+                            )">
+                            <td><div class="triangle-indicator"></div></td>
+                            <td>{{ is_object($service) ? $service->code : $service['code'] }}</td>
+                            <td>{{ is_object($service) ? $service->service_name : $service['service_name'] }}</td>
+                            <td>{{ is_object($service) ? $service->department_name : $service['department_name'] }}</td>
+                            <td>{{ is_object($service) ? $service->charge : $service['charge'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="p-3 text-center">
+                <div class="alert alert-info py-2 mb-0">No OPD services found matching "{{ $query }}"</div>
+            </div>
+        @endif
     @endif
 
     <script>
@@ -227,6 +264,8 @@
                         firstRow = document.getElementById('first-pcp-result');
                     } else if (type === 'labtest') {
                         firstRow = document.getElementById('first-labtest-result');
+                    } else if (type === 'opdservice') {
+                        firstRow = document.getElementById('first-opdservice-result');
                     }
                     
                     if (firstRow) {

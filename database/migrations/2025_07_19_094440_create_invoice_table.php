@@ -20,7 +20,8 @@ return new class extends Migration
             $table->decimal('paid_amount', 10, 2)->default(0); //Paid Amount
             $table->decimal('due_amount', 10, 2)->default(0); //Due Amount
             $table->decimal('discount_amount', 10, 2)->default(0); //Discount Amount
-            $table->decimal('discount_percentage', 10, 2)->default(0); //Discount Percentage
+            $table->decimal('discount_percentage', 10, 2)->default(0); //Discount Percentage    
+            $table->decimal('payable_amount', 10, 2)->default(0); //Payable Amount
             $table->date('invoice_date')->nullable()->index(); //Invoice Date
             $table->string('invoice_type')->nullable()->index(); //consultant,lab,pharmacy,opd,ipd
             $table->unsignedBigInteger('consultant_ticket_id')->nullable()->index(); //Consultant Ticket ID

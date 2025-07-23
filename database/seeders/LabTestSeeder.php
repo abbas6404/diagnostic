@@ -53,6 +53,22 @@ class LabTestSeeder extends Seeder
             'description' => 'ECG',
             'charge' => '200',
         ]);
+        DB::table('lab_tests')->insert([
+            'id' => 6,
+            'code' => 'OPD-001',
+            'department_id' => 3,
+            'name' => 'OPD', // 6
+            'description' => 'OPD',
+            'charge' => '100',
+        ]);
+        DB::table('lab_tests')->insert([
+            'id' => 7,
+            'code' => 'OPD-002',
+            'department_id' => 3,
+            'name' => 'Dental', // 7
+            'description' => 'Dental',
+            'charge' => '100',
+        ]);
 
         
         

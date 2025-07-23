@@ -101,7 +101,6 @@ Route::prefix('diagnostics')->group(function () {
 Route::prefix('opd')->group(function () {
     // Invoice
     Route::get('/invoice', [OpdController::class, 'invoice'])->name('opd.invoice');
-    Route::post('/invoice/store', [OpdController::class, 'storeInvoice'])->name('opd.invoice.store');
     
     // Due Collection
     Route::get('/due-collection', [OpdController::class, 'dueCollection'])->name('opd.due-collection');

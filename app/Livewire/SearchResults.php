@@ -20,6 +20,7 @@ class SearchResults extends Component
         'showPcpResults' => 'searchPcps',
         'showTicketResults' => 'searchTickets',
         'showLabTestResults' => 'searchLabTests',
+        'showOpdServiceResults' => 'searchOpdServices',
         'clearResults' => 'clearResults'
     ];
     
@@ -268,6 +269,58 @@ class SearchResults extends Component
         \Illuminate\Support\Facades\Log::info('Lab test selected data:', $data);
         
         $this->dispatch('lab-test-selected', $data);
+        $this->clearResults();
+    }
+    
+    public function searchOpdServices($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'opdservice';
+        $this->dispatch('searchTypeChanged', 'OPD Service');
+        
+        $opdServices = DB::table('opd_services')
+            ->where(function($q) {
+                $q->where('opd_services.code', 'like', "%{$this->query}%")
+                  ->orWhere('opd_services.name', 'like', "%{$this->query}%");
+            })
+            ->whereNull('opd_services.deleted_at')
+            ->leftJoin('departments', 'opd_services.department_id', '=', 'departments.id')
+            ->select(
+                'opd_services.id', 
+                'opd_services.code', 
+                'opd_services.name as service_name', 
+                'opd_services.description',
+                'opd_services.charge',
+                'departments.name as department_name'
+            )
+            ->orderBy('opd_services.id', 'desc')
+            ->limit(10)
+            ->get();
+        
+        $this->results = $opdServices->toArray();
+        
+        if (count($this->results) > 0) {
+            \Illuminate\Support\Facades\Log::info('First OPD service result:', ['result' => $this->results[0]]);
+            $this->dispatch('focusFirstResult', 'opdservice');
+        }
+    }
+    
+    public function selectOpdService($id, $code, $service_name, $charge, $departmentName)
+    {
+        $data = [
+            'id' => $id,
+            'code' => $code,
+            'service_name' => $service_name,
+            'charge' => $charge,
+            'department' => [
+                'name' => $departmentName
+            ]
+        ];
+        
+        // Log the data being dispatched
+        \Illuminate\Support\Facades\Log::info('OPD service selected data:', $data);
+        
+        $this->dispatch('opd-service-selected', $data);
         $this->clearResults();
     }
     
