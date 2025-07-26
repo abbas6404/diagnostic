@@ -100,9 +100,6 @@ class DueCollectionSearch extends Component
             // Update search input with patient ID
             $this->search = $invoice['patient_code'];
             
-            // Debug: Log the invoice data structure
-            \Log::info('Invoice selected - full data', ['invoice' => $invoice]);
-            
             // Dispatch browser event to fill patient information
             $this->dispatch('invoice-selected', (array) $invoice);
             
@@ -111,9 +108,6 @@ class DueCollectionSearch extends Component
             
             // Load invoice details
             $this->loadInvoiceDetails($invoice['invoice_id']);
-            
-            // Debug: Log the selection
-            \Log::info('Invoice selected', ['invoice' => $invoice]);
         }
     }
     
@@ -158,8 +152,6 @@ class DueCollectionSearch extends Component
     #[On('select-invoice-from-results')]
     public function handleResultSelection($data)
     {
-        \Log::info('DueCollectionSearch: handleResultSelection called', $data);
-        
         // Get the invoice data from the results component
         $invoiceId = $data['invoiceId'];
         $patientCode = $data['patientCode'] ?? '';
@@ -213,10 +205,6 @@ class DueCollectionSearch extends Component
             
             // Load invoice details
             $this->loadInvoiceDetails($invoiceArray['invoice_id']);
-            
-            \Log::info('Invoice selected from results', ['invoice' => $invoiceArray]);
-        } else {
-            \Log::error('Invoice not found in database', ['invoiceId' => $invoiceId]);
         }
     }
     

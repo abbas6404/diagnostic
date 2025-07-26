@@ -8,8 +8,8 @@
                 class="form-control form-control-sm" 
                 placeholder="Patient/Invoice No/ Name/ Phone/ Address"
                 wire:model.live.debounce.300ms="search"
-                autofocus
-            >
+                autofocus   
+            >   
         </div>
     </div>
 </div> 

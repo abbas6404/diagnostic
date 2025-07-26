@@ -29,7 +29,7 @@
     </style>
     
     @if(count($results) > 0)
-        <div id="search-results-container">
+        <div id="search-results-container" tabindex="0" style="outline: none;" onclick="this.focus()">
             <table class="table table-sm table-hover mb-0">
             <thead class="table-light">
                 <tr>
@@ -71,85 +71,29 @@
     @endif
 
     <script>
-        let currentSelectedIndex = 0;
-        let searchItems = [];
-
-        function updateSelection(newIndex) {
-            console.log('updateSelection called with index:', newIndex);
-            
-            // Remove selected class from all items
-            searchItems.forEach(item => {
-                item.classList.remove('selected');
-                const triangle = item.querySelector('.triangle-indicator');
-                if (triangle) {
-                    triangle.style.opacity = '0';
-                }
-            });
-            
-            // Add selected class to new item
-            if (searchItems[newIndex]) {
-                searchItems[newIndex].classList.add('selected');
-                const triangle = searchItems[newIndex].querySelector('.triangle-indicator');
-                if (triangle) {
-                    triangle.style.opacity = '1';
-                }
-                
-                // Scroll to the selected item if needed
-                searchItems[newIndex].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-            
-            currentSelectedIndex = newIndex;
-            console.log('Selection updated to index:', currentSelectedIndex);
-        }
-
         document.addEventListener('livewire:init', function() {
-            // Removed keyboard navigation events
+            // Don't auto-focus - let user control focus
+        });
+        
+        // Don't auto-focus search results container - let user control focus
+        document.addEventListener('search-results-updated', function() {
+            // Only add visual feedback, don't change focus
+            const container = document.getElementById('search-results-container');
+            if (container) {
+                // Add visual feedback without changing focus
+                document.querySelectorAll('.keyboard-focus').forEach(el => el.classList.remove('keyboard-focus'));
+                container.classList.add('keyboard-focus');
+            }
         });
         
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOMContentLoaded - Initializing search results');
-            
-            // Initialize search items
-            searchItems = document.querySelectorAll('.search-item');
-            console.log('Found search items:', searchItems.length);
-            
-            // Add click event to all search items
-            searchItems.forEach((item, index) => {
-                item.addEventListener('click', function() {
-                    console.log('Item clicked at index:', index);
-                    currentSelectedIndex = index;
-                    updateSelection(index);
-                });
-            });
-            
-            // Auto-select first result if available
-            if (searchItems.length > 0) {
-                currentSelectedIndex = 0;
-                updateSelection(0);
-            }
+            // Don't auto-focus - let user control focus
             
             // Update search items when Livewire updates the DOM
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
                     if (mutation.type === 'childList') {
-                        const newSearchItems = document.querySelectorAll('.search-item');
-                        if (newSearchItems.length !== searchItems.length) {
-                            searchItems = newSearchItems;
-                            
-                            // Re-add click events
-                            searchItems.forEach((item, index) => {
-                                item.addEventListener('click', function() {
-                                    currentSelectedIndex = index;
-                                    updateSelection(index);
-                                });
-                            });
-                            
-                            // Auto-select first result
-                            if (searchItems.length > 0) {
-                                currentSelectedIndex = 0;
-                                updateSelection(0);
-                            }
-                        }
+                        // Don't auto-focus - let user control focus
                     }
                 });
             });

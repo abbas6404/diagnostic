@@ -73,25 +73,26 @@ class DueCollectionSearchResults extends Component
     }
     
     #[On('search-results-updated')]
-    public function updateResults($data)
+    public function updateResults($data = null)
     {
-        $this->results = $data['results'];
-        $this->search = $data['search'];
+        if ($data) {
+            $this->results = $data['results'];
+            $this->search = $data['search'];
+        }
         
         // Removed keyboard navigation dispatch
     }
     
     #[On('invoice-selected')]
-    public function markSelected($invoice)
+    public function markSelected($invoice = null)
     {
-        $this->selectedInvoice = $invoice['invoice_id'] ?? null;
+        if ($invoice) {
+            $this->selectedInvoice = $invoice['invoice_id'] ?? null;
+        }
     }
     
     public function selectInvoice($invoiceId)
     {
-        \Log::info('DueCollectionSearchResults: selectInvoice called', ['invoiceId' => $invoiceId]);
-        \Log::info('Available results:', $this->results);
-        
         $invoice = collect($this->results)->first(function($item) use ($invoiceId) {
             return $item['invoice_id'] == $invoiceId;
         });
@@ -104,10 +105,6 @@ class DueCollectionSearchResults extends Component
                 'invoiceId' => $invoiceId,
                 'patientCode' => $invoice['patient_code']
             ]);
-            
-            \Log::info('DueCollectionSearchResults: Invoice found and dispatched', ['invoice' => $invoice]);
-        } else {
-            \Log::warning('DueCollectionSearchResults: Invoice not found', ['invoiceId' => $invoiceId, 'availableResults' => $this->results]);
         }
     }
     

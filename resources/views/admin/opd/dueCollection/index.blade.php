@@ -42,19 +42,27 @@
     .triangle-indicator {
         width: 0;
         height: 0;
-        border-top: 5px solid transparent;
-        border-left: 8px solid #000;
-        border-bottom: 5px solid transparent;
+        border-top: 8px solid transparent;
+        border-left: 12px solid #2196F3;
+        border-bottom: 8px solid transparent;
         display: inline-block;
         margin-right: 5px;
-        opacity: 0;
-        transition: opacity 0.2s ease;
+        visibility: hidden;
+        transition: visibility 0.2s ease;
+        position: relative;
+        top: 2px;
+        z-index: 10;
     }
     .due-invoice-item:hover .triangle-indicator {
-        opacity: 1;
+        visibility: visible;
     }
     .due-invoice-item.selected .triangle-indicator {
-        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    .keyboard-focus {
+        border: 2px solid #2196F3 !important;
+        box-shadow: 0 0 5px rgba(33, 150, 243, 0.3) !important;
     }
 </style>
 @endsection
@@ -138,7 +146,7 @@
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                <table class="table table-sm table-hover mb-0" id="dueInvoicesTable">
+                                <table class="table table-sm table-hover mb-0" id="dueInvoicesTable" tabindex="0" style="outline: none;">
                                     <thead class="table-light">
                                         <tr>
                                             <th style="width: 20px;"></th>
@@ -196,7 +204,7 @@
                 <!-- Right Column -->
                 <div class="col-md-5">
                     <!-- Search Results Section -->
-                    <div class="card border mb-3" id="search-results-container">
+                    <div class="card border mb-3" id="search-results-container" tabindex="0" style="outline: none;">
                         <div class="card-header bg-primary text-white py-2">
                             <h6 class="mb-0"><i class="fas fa-search me-1"></i> <span id="search-title">Search Results</span></h6>
                         </div>
@@ -273,12 +281,308 @@
 
 @section('scripts')
 <script>
-    // Removed keyboard navigation variables
-    
-    document.addEventListener('DOMContentLoaded', function() {
-    // Listen for Livewire events
+            document.addEventListener('DOMContentLoaded', function() {
+            
+            // Flag to track if we're in due invoices mode
+            let isInDueInvoicesMode = false;
+            
+            // Auto-select first search result when results are updated
+            document.addEventListener('search-results-updated', function() {
+                // Reset due invoices mode when new search results are loaded
+                isInDueInvoicesMode = false;
+                
+                setTimeout(() => {
+                    const firstSearchItem = document.querySelector('.search-item');
+                    if (firstSearchItem) {
+                        // Remove selected class from all items
+                        document.querySelectorAll('.search-item').forEach(item => {
+                            item.classList.remove('selected');
+                            const triangle = item.querySelector('.triangle-indicator');
+                            if (triangle) {
+                                triangle.style.visibility = 'hidden';
+                            }
+                        });
+                        
+                        // Add selected class to first item
+                        firstSearchItem.classList.add('selected');
+                        
+                        // Show triangle indicator for first item
+                        const triangle = firstSearchItem.querySelector('.triangle-indicator');
+                        if (triangle) {
+                            triangle.style.visibility = 'visible';
+                        }
+                    }
+                }, 100);
+            });
+        
+        // Handle arrow key navigation in search results (like invoice page)
+        document.addEventListener('keydown', function(e) {
+            // Handle arrow keys if we have search results AND not in due invoices mode
+            if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && document.querySelector('.search-item') && !isInDueInvoicesMode) {
+                // Focus the search results container if it's not already focused
+                const searchResultsContainer = document.getElementById('search-results-container');
+                if (searchResultsContainer && !searchResultsContainer.contains(document.activeElement)) {
+                    searchResultsContainer.focus();
+                }
+                e.preventDefault();
+                
+                const selectedItem = document.querySelector('.search-item.selected');
+                let nextItem;
+                
+                if (e.key === 'ArrowDown') {
+                    if (selectedItem) {
+                        // Get the next sibling that is a search item
+                        nextItem = selectedItem.nextElementSibling;
+                        while (nextItem && !nextItem.classList.contains('search-item')) {
+                            nextItem = nextItem.nextElementSibling;
+                        }
+                        
+                        // If no next item, select the first one
+                        if (!nextItem) {
+                            nextItem = document.querySelector('.search-item');
+                        }
+                    } else {
+                        // No selected item, select the first one
+                        nextItem = document.querySelector('.search-item');
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    if (selectedItem) {
+                        // Get the previous sibling that is a search item
+                        nextItem = selectedItem.previousElementSibling;
+                        while (nextItem && !nextItem.classList.contains('search-item')) {
+                            nextItem = nextItem.previousElementSibling;
+                        }
+                        
+                        // If no previous item, select the last one
+                        if (!nextItem) {
+                            const allItems = document.querySelectorAll('.search-item');
+                            nextItem = allItems[allItems.length - 1];
+                        }
+                    } else {
+                        // No selected item, select the last one
+                        const allItems = document.querySelectorAll('.search-item');
+                        nextItem = allItems[allItems.length - 1];
+                    }
+                }
+                
+                if (nextItem) {
+                    // Remove selected class from all items
+                    document.querySelectorAll('.search-item').forEach(item => {
+                        item.classList.remove('selected');
+                        // Hide all triangle indicators
+                        const triangle = item.querySelector('.triangle-indicator');
+                        if (triangle) {
+                            triangle.style.visibility = 'hidden';
+                        }
+                    });
+                    
+                    // Add selected class to next item
+                    nextItem.classList.add('selected');
+                    
+                    // Show triangle indicator for selected item
+                    const triangle = nextItem.querySelector('.triangle-indicator');
+                    if (triangle) {
+                        triangle.style.visibility = 'visible';
+                    }
+                    
+                    // Scroll the item into view
+                    nextItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+            // Handle Enter key to select the highlighted item
+            else if (e.key === 'Enter' && document.querySelector('.search-item.selected')) {
+                e.preventDefault();
+                document.querySelector('.search-item.selected').click();
+                
+                // Set flag to disable search results arrow navigation
+                isInDueInvoicesMode = true;
+                
+                // Focus due invoices table after selection and disable search results arrow navigation
+                setTimeout(() => {
+                    const dueInvoicesTable = document.getElementById('dueInvoicesTable');
+                    const searchResultsContainer = document.getElementById('search-results-container');
+                    
+                    if (dueInvoicesTable) {
+                        dueInvoicesTable.focus();
+                        // Add visual feedback
+                        document.querySelectorAll('.keyboard-focus').forEach(el => el.classList.remove('keyboard-focus'));
+                        dueInvoicesTable.classList.add('keyboard-focus');
+                        
+                        // Remove focus from search results container to disable arrow navigation
+                        if (searchResultsContainer) {
+                            searchResultsContainer.blur();
+                        }
+                        
+                        // Auto-select first due invoice if none is selected
+                        const selectedItem = document.querySelector('.due-invoice-item.selected');
+                        if (!selectedItem) {
+                            const firstItem = document.querySelector('.due-invoice-item');
+                            if (firstItem) {
+                                // Remove selected class from all items
+                                document.querySelectorAll('.due-invoice-item').forEach(item => {
+                                    item.classList.remove('selected');
+                                    const triangle = item.querySelector('.triangle-indicator');
+                                    if (triangle) {
+                                        triangle.style.visibility = 'hidden';
+                                    }
+                                });
+                                
+                                // Add selected class to first item
+                                firstItem.classList.add('selected');
+                                const triangle = firstItem.querySelector('.triangle-indicator');
+                                console.log('Auto-selecting first due invoice, triangle found:', !!triangle);
+                                if (triangle) {
+                                    triangle.style.visibility = 'visible';
+                                    console.log('Triangle visibility set to visible');
+                                } else {
+                                    console.log('Triangle indicator not found in first item');
+                                }
+                            }
+                        }
+                    }
+                }, 100);
+                
+                // Remove the dispatch event that was re-focusing search results
+                // window.dispatchEvent(new CustomEvent('search-results-updated'));
+            }
+            
+            // Arrow key navigation for due invoices table
+            else if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && document.querySelector('.due-invoice-item') && 
+                     (document.activeElement.id === 'dueInvoicesTable' || document.activeElement.closest('#dueInvoicesTable'))) {
+                e.preventDefault();
+                
+                const allDueInvoiceItems = document.querySelectorAll('.due-invoice-item');
+                const selectedItem = document.querySelector('.due-invoice-item.selected');
+                let nextItem;
+                
+                if (e.key === 'ArrowDown') {
+                    if (selectedItem) {
+                        // Find the index of the currently selected item
+                        const currentIndex = Array.from(allDueInvoiceItems).indexOf(selectedItem);
+                        
+                        // Get the next item
+                        const nextIndex = (currentIndex + 1) % allDueInvoiceItems.length;
+                        nextItem = allDueInvoiceItems[nextIndex];
+                    } else {
+                        // No selected item, select the first one
+                        nextItem = allDueInvoiceItems[0];
+                    }
+                } else if (e.key === 'ArrowUp') {
+                    if (selectedItem) {
+                        // Find the index of the currently selected item
+                        const currentIndex = Array.from(allDueInvoiceItems).indexOf(selectedItem);
+                        
+                        // Get the previous item
+                        const prevIndex = currentIndex === 0 ? allDueInvoiceItems.length - 1 : currentIndex - 1;
+                        nextItem = allDueInvoiceItems[prevIndex];
+                } else {
+                        // No selected item, select the last one
+                        nextItem = allDueInvoiceItems[allDueInvoiceItems.length - 1];
+                    }
+                }
+                
+                if (nextItem) {
+                    // Remove selected class from all items and clear triangles
+                    document.querySelectorAll('.due-invoice-item').forEach(item => {
+                        item.classList.remove('selected');
+                        // Clear triangle from first cell
+                        const firstCell = item.querySelector('td:first-child');
+                        if (firstCell) {
+                            firstCell.innerHTML = '';
+                        }
+                    });
+                    
+                    // Add selected class to next item
+                    nextItem.classList.add('selected');
+                    
+                    // Show triangle indicator for selected item
+                    const firstCell = nextItem.querySelector('td:first-child');
+                    if (firstCell) {
+                        // Clear existing content and create new triangle
+                        firstCell.innerHTML = '';
+                        const triangle = document.createElement('div');
+                        triangle.innerHTML = '▶'; // Unicode triangle
+                        triangle.style.cssText = `
+                            color: #00ff00;
+                            font-size: 16px;
+                            font-weight: bold;
+                            display: inline-block;
+                            margin-right: 5px;
+                            visibility: visible;
+                            text-align: center;
+                        `;
+                        firstCell.appendChild(triangle);
+                    }
+                    
+                    // Load invoice details for the selected item
+                    const invoiceId = nextItem.getAttribute('data-invoice-id');
+                    if (invoiceId) {
+                        loadInvoiceDetails(invoiceId);
+                    }
+                    
+                    // Scroll the item into view
+                    nextItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+            // Handle Enter key to select due invoice
+            else if (e.key === 'Enter' && document.querySelector('.due-invoice-item.selected') && 
+                     (document.activeElement.id === 'dueInvoicesTable' || document.activeElement.closest('#dueInvoicesTable'))) {
+                e.preventDefault();
+                const selectedItem = document.querySelector('.due-invoice-item.selected');
+                selectedItem.click();
+                
+                // Focus collection amount after selection
+                setTimeout(() => {
+                    const collectionAmountInput = document.getElementById('collectionAmount');
+                    if (collectionAmountInput) {
+                        collectionAmountInput.focus();
+                        collectionAmountInput.select();
+                    }
+                }, 100);
+            }
+            
+            // Handle Enter key on collection amount to focus save button
+            else if (e.key === 'Enter' && document.activeElement.id === 'collectionAmount') {
+                e.preventDefault();
+                const saveButton = document.getElementById('savePaymentBtn');
+                if (saveButton && !saveButton.disabled) {
+                    saveButton.focus();
+                }
+            }
+            
+            // Handle Enter key on save button to submit
+            else if (e.key === 'Enter' && document.activeElement.id === 'savePaymentBtn') {
+                e.preventDefault();
+                if (window.savePayment) {
+                    window.savePayment();
+                }
+            }
+        });
+        
+        // Add click handler to due invoices table for keyboard navigation
+        const dueInvoicesTable = document.getElementById('dueInvoicesTable');
+        if (dueInvoicesTable) {
+            dueInvoicesTable.addEventListener('click', function() {
+                this.focus();
+                // Add visual feedback
+                document.querySelectorAll('.keyboard-focus').forEach(el => el.classList.remove('keyboard-focus'));
+                this.classList.add('keyboard-focus');
+            });
+        }
+        
+        // Add click handler to search results container for keyboard navigation
+        const searchResultsContainer = document.getElementById('search-results-container');
+        if (searchResultsContainer) {
+            searchResultsContainer.addEventListener('click', function() {
+                this.focus();
+                // Add visual feedback
+                document.querySelectorAll('.keyboard-focus').forEach(el => el.classList.remove('keyboard-focus'));
+                this.classList.add('keyboard-focus');
+            });
+        }
+        
+        // Listen for Livewire events
     window.addEventListener('invoice-selected', event => {
-        console.log('Invoice selected event received:', event.detail);
         let invoice = event.detail;
         
         // Handle case where invoice might be an array
@@ -287,19 +591,8 @@
         }
         
         if (!invoice) {
-            console.error('Invoice data is undefined or null');
             return;
         }
-        
-        console.log('Processing invoice:', invoice);
-        console.log('All invoice keys:', Object.keys(invoice));
-        console.log('Patient name:', invoice.patient_name);
-        console.log('Age years:', invoice.age_years, typeof invoice.age_years);
-        console.log('Age months:', invoice.age_months, typeof invoice.age_months);
-        console.log('Age days:', invoice.age_days, typeof invoice.age_days);
-        console.log('Gender:', invoice.gender);
-        console.log('Phone:', invoice.phone);
-        console.log('Address:', invoice.address);
         
         // Update search input with patient code
         const searchInput = document.querySelector('input[wire\\:model\\.live\\.debounce\\.300ms="search"]');
@@ -344,16 +637,13 @@
         // Enable save button
         document.getElementById('savePaymentBtn').disabled = false;
         
-        console.log('Patient info filled successfully');
-        
         // Select the corresponding invoice in Due Invoices table
         setTimeout(() => {
             selectInvoiceInDueInvoicesTable(invoice.invoice_id);
-        }, 500); // Small delay to ensure Due Invoices table is loaded
+        }, 1000); // Increased delay to ensure Due Invoices table is fully loaded
     });
     
     window.addEventListener('patient-due-invoices-loaded', event => {
-        console.log('Patient due invoices loaded event received:', event.detail);
         let invoices = event.detail;
         
         // Handle case where invoices might be wrapped in an array
@@ -362,11 +652,12 @@
         }
         
         if (!invoices || !Array.isArray(invoices)) {
-            console.error('Invoices data is invalid:', invoices);
             return;
         }
         
         updateDueInvoicesTable(invoices);
+        
+        // Auto-selection handled in the triangle visibility setup below
         
         // After updating the table, try to select the invoice that was selected in Search Results
         setTimeout(() => {
@@ -379,10 +670,43 @@
                 }
             }
         }, 200);
+        
+        // Fix triangle visibility after a delay - only show green on selected item
+        setTimeout(() => {
+            const dueInvoiceItems = document.querySelectorAll('.due-invoice-item');
+            
+            // Clear all triangles first
+            dueInvoiceItems.forEach((item, index) => {
+                const firstCell = item.querySelector('td:first-child');
+                if (firstCell) {
+                    firstCell.innerHTML = '';
+                }
+            });
+            
+            // Only show green triangle on first (selected) item
+            if (dueInvoiceItems.length > 0) {
+                const firstItem = dueInvoiceItems[0];
+                const firstCell = firstItem.querySelector('td:first-child');
+                if (firstCell) {
+                    const triangle = document.createElement('div');
+                    triangle.innerHTML = '▶'; // Unicode triangle
+                    triangle.style.cssText = `
+                        color: #00ff00;
+                        font-size: 16px;
+                        font-weight: bold;
+                        display: inline-block;
+                        margin-right: 5px;
+                        visibility: visible;
+                        text-align: center;
+                    `;
+                    firstCell.appendChild(triangle);
+                    firstItem.classList.add('selected');
+                }
+            }
+        }, 300);
     });
     
     window.addEventListener('invoice-details-loaded', event => {
-        console.log('Invoice details loaded event received:', event.detail);
         let details = event.detail;
         
         // Handle case where details might be wrapped in an array
@@ -391,7 +715,6 @@
         }
         
         if (!details || !Array.isArray(details)) {
-            console.error('Invoice details data is invalid:', details);
             return;
         }
         
@@ -399,28 +722,38 @@
     });
     
     function selectInvoiceInDueInvoicesTable(invoiceId) {
-        console.log('Selecting invoice in Due Invoices table:', invoiceId);
-        
         const dueInvoiceItems = document.querySelectorAll('.due-invoice-item');
+        
         let found = false;
         
         dueInvoiceItems.forEach((item, index) => {
             const itemInvoiceId = item.getAttribute('data-invoice-id');
             if (itemInvoiceId == invoiceId) {
-                // Remove selected class from all items
+                // Remove selected class from all items and clear triangles
                 dueInvoiceItems.forEach(row => {
-                    row.classList.remove('selected');
-                    const triangle = row.querySelector('.triangle-indicator');
-                    if (triangle) {
-                        triangle.style.opacity = '0';
+                        row.classList.remove('selected');
+                    const firstCell = row.querySelector('td:first-child');
+                    if (firstCell) {
+                        firstCell.innerHTML = '';
                     }
                 });
                 
-                // Add selected class to matching item
+                // Add selected class to matching item and create green triangle
                 item.classList.add('selected');
-                const triangle = item.querySelector('.triangle-indicator');
-                if (triangle) {
-                    triangle.style.opacity = '1';
+                const firstCell = item.querySelector('td:first-child');
+                if (firstCell) {
+                    const triangle = document.createElement('div');
+                    triangle.innerHTML = '▶'; // Unicode triangle
+                    triangle.style.cssText = `
+                        color: #00ff00;
+                        font-size: 16px;
+                        font-weight: bold;
+                        display: inline-block;
+                        margin-right: 5px;
+                        visibility: visible;
+                        text-align: center;
+                    `;
+                    firstCell.appendChild(triangle);
                 }
                 
                 // Scroll to the selected item
@@ -430,20 +763,13 @@
                 loadInvoiceDetails(invoiceId);
                 
                 found = true;
-                console.log('Invoice selected in Due Invoices table at index:', index);
             }
         });
-        
-        if (!found) {
-            console.log('Invoice not found in Due Invoices table:', invoiceId);
-        }
     }
     
     // Removed keyboard navigation focus functions
     
     function selectInvoiceInSearchResults(invoiceId) {
-        console.log('Selecting invoice in Search Results:', invoiceId);
-        
         const searchItems = document.querySelectorAll('.search-item');
         let found = false;
         
@@ -455,7 +781,7 @@
                     row.classList.remove('selected');
                     const triangle = row.querySelector('.triangle-indicator');
                     if (triangle) {
-                        triangle.style.opacity = '0';
+                        triangle.style.visibility = 'hidden';
                     }
                 });
                 
@@ -463,25 +789,19 @@
                 item.classList.add('selected');
                 const triangle = item.querySelector('.triangle-indicator');
                 if (triangle) {
-                    triangle.style.opacity = '1';
+                    triangle.style.visibility = 'visible';
                 }
                 
                 // Scroll to the selected item
                 item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 
                 found = true;
-                console.log('Invoice selected in Search Results at index:', index);
             }
         });
-        
-        if (!found) {
-            console.log('Invoice not found in Search Results:', invoiceId);
-        }
     }
     
     function preserveSearchResultsSelection() {
         // This function ensures Search Results selection is never changed from external actions
-        console.log('Preserving Search Results selection');
         // Do nothing - this prevents any external changes to Search Results
     }
     
@@ -511,14 +831,12 @@
             tr.setAttribute('data-index', index);
             
                             tr.onclick = () => {
-                    // Removed keyboard navigation focus
-                    
                     // Remove selected class from all rows
                     document.querySelectorAll('.due-invoice-item').forEach(row => {
                         row.classList.remove('selected');
                         const triangle = row.querySelector('.triangle-indicator');
                         if (triangle) {
-                            triangle.style.opacity = '0';
+                            triangle.style.visibility = 'hidden';
                         }
                     });
                     
@@ -526,62 +844,49 @@
                     tr.classList.add('selected');
                     const triangle = tr.querySelector('.triangle-indicator');
                     if (triangle) {
-                        triangle.style.opacity = '1';
+                        triangle.style.visibility = 'visible';
                     }
                     
                     loadInvoiceDetails(invoice.id);
                     
-                    // NEVER change Search Results selection from Due Invoices clicks
-                    // This prevents the triangle from moving in Search Results
+                    // Focus the due invoices table for keyboard navigation
+                    const dueInvoicesTable = document.getElementById('dueInvoicesTable');
+                    if (dueInvoicesTable) {
+                        dueInvoicesTable.focus();
+                    }
                 };
             
             // Determine due amount color
             const dueAmount = parseFloat(invoice.due_amount);
             const dueClass = dueAmount > 0 ? 'text-danger fw-bold' : 'text-success';
             const dueText = dueAmount > 0 ? dueAmount.toFixed(0) : 'Paid';
-            
-            tr.innerHTML = `
-                <td><div class="triangle-indicator"></div></td>
+                
+                tr.innerHTML = `
+                <td style="width: 20px; text-align: center;"><div class="triangle-indicator" style="visibility: hidden; display: inline-block;"></div></td>
                 <td>${invoice.invoice_no}</td>
                 <td>${invoice.invoice_date}</td>
                 <td class="text-end">${parseFloat(invoice.total_amount).toFixed(0)}</td>
                 <td class="text-end">${parseFloat(invoice.paid_amount).toFixed(0)}</td>
                 <td class="text-end ${dueClass}">${dueText}</td>
             `;
-                tbody.appendChild(tr);
+            
+            tbody.appendChild(tr);
             });
         
-        // Auto-select first item if available
-        if (invoices.length > 0) {
-            const firstRow = tbody.querySelector('.due-invoice-item');
-            if (firstRow) {
-                firstRow.classList.add('selected');
-                const triangle = firstRow.querySelector('.triangle-indicator');
-                if (triangle) {
-                    triangle.style.opacity = '1';
-                }
-                // Load details for first invoice
-                loadInvoiceDetails(invoices[0].id);
-            }
+        // Focus the due invoices table for keyboard navigation
+        const dueInvoicesTable = document.getElementById('dueInvoicesTable');
+        if (dueInvoicesTable) {
+            dueInvoicesTable.focus();
         }
-        
-        // Removed keyboard navigation
-        
-        console.log(`Loaded ${invoices.length} invoices for patient`);
     }
     
     function loadInvoiceDetails(invoiceId) {
-        console.log('Loading invoice details for invoice ID:', invoiceId);
-        
         // Make AJAX call to load invoice details
         fetch(`/admin/opd/duecollection/invoice/${invoiceId}/details`)
             .then(response => response.json())
             .then(data => {
-                console.log('Invoice details loaded:', data);
                 if (data.success && data.details) {
                     updateInvoiceDetailsTable(data.details);
-                } else {
-                    console.error('Error in response:', data.message);
                 }
             })
             .catch(error => {
@@ -592,11 +897,8 @@
         fetch(`/admin/opd/duecollection/invoice/${invoiceId}/full-data`)
             .then(response => response.json())
             .then(data => {
-                console.log('Full invoice data loaded:', data);
                 if (data.success && data.invoice) {
                     updatePaymentSummary(data.invoice);
-                } else {
-                    console.error('Error loading full invoice data:', data.message);
                 }
             })
             .catch(error => {
@@ -605,8 +907,6 @@
     }
     
     function updatePaymentSummary(invoice) {
-        console.log('Updating payment summary with invoice:', invoice);
-        
         // Update invoice summary display
         document.getElementById('invoiceTotalDisplay').textContent = '৳ ' + parseFloat(invoice.total_amount).toFixed(0);
         document.getElementById('paidAmountDisplay').textContent = '৳ ' + parseFloat(invoice.paid_amount).toFixed(0);
@@ -624,19 +924,13 @@
         
         // Trigger initial calculation
         setTimeout(() => {
-            console.log('Triggering initial calculation...');
             window.calculateRemainingDue();
         }, 200);
-        
-        console.log('Payment summary updated successfully');
     }
     
     // Function to set up collection amount listeners
     function setupCollectionAmountListeners() {
-        console.log('Setting up collection amount listeners...');
-        
         const collectionAmountInput = document.getElementById('collectionAmount');
-        console.log('Collection Amount Input found:', collectionAmountInput);
         
         if (collectionAmountInput) {
             // Remove any existing listeners first
@@ -648,21 +942,16 @@
             collectionAmountInput.addEventListener('input', handleCollectionAmountChange);
             collectionAmountInput.addEventListener('blur', handleCollectionAmountChange);
             collectionAmountInput.addEventListener('keyup', handleCollectionAmountChange);
-            
-            console.log('Collection amount listeners set up successfully');
         }
     }
     
     // Handler function for collection amount changes
     function handleCollectionAmountChange(e) {
-        console.log('Collection amount event triggered:', e.type, 'Value:', this.value);
         window.calculateRemainingDue();
     }
     
     // Add event listeners
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Setting up initial event listeners...');
-        
         const savePaymentBtn = document.getElementById('savePaymentBtn');
         
         if (savePaymentBtn) {
@@ -671,48 +960,33 @@
         
         // Set up collection amount listeners
         setupCollectionAmountListeners();
-        
-        console.log('Initial event listeners set up successfully');
     });
     
     // Make function globally accessible
     window.calculateRemainingDue = function() {
-        console.log('=== Starting calculation ===');
-        
         const dueAmountElement = document.getElementById('dueAmount');
         const collectionAmountElement = document.getElementById('collectionAmount');
         const remainingDueElement = document.getElementById('remainingDue');
         
         if (!dueAmountElement || !collectionAmountElement || !remainingDueElement) {
-            console.error('Required elements not found');
-                return;
-            }
-            
+            return;
+        }
+        
         // Get the raw values from the input fields
         const dueAmountRaw = dueAmountElement.value;
         const collectionAmountRaw = collectionAmountElement.value;
         
-        console.log('Raw Due Amount:', dueAmountRaw);
-        console.log('Raw Collection Amount:', collectionAmountRaw);
-        
         const dueAmount = parseFloat(dueAmountRaw) || 0;
         const collectionAmount = parseFloat(collectionAmountRaw) || 0;
         
-        console.log('Parsed Due Amount:', dueAmount);
-        console.log('Parsed Collection Amount:', collectionAmount);
-        
         if (collectionAmount > dueAmount) {
-            console.log('Collection amount exceeds due amount, adjusting...');
             alert('Collection amount cannot exceed due amount');
             collectionAmountElement.value = dueAmount.toFixed(2);
             remainingDueElement.value = '0.00';
         } else {
             const remainingDue = dueAmount - collectionAmount;
             remainingDueElement.value = remainingDue.toFixed(2);
-            console.log('Calculated Remaining Due:', remainingDue);
         }
-        
-        console.log('=== Calculation completed ===');
     };
     
     // Make function globally accessible
@@ -773,7 +1047,6 @@
     function updateInvoiceDetailsTable(details) {
         const tbody = document.querySelector('#invoiceDetailsTable tbody');
         if (!tbody) {
-            console.error('Invoice details table body not found');
             return;
         }
         
@@ -802,50 +1075,8 @@
             `;
             tbody.appendChild(tr);
         });
-        
-        console.log(`Loaded ${details.length} invoice details`);
     }
     
-    function testEvent() {
-        console.log('Testing event system...');
-        // Simulate invoice selected event
-        const testInvoice = {
-            patient_name: 'Test Patient',
-            age_years: 25,
-            age_months: 6,
-            age_days: 15,
-            gender: 'Male',
-            phone: '1234567890',
-            address: 'Test Address',
-            total_amount: 1000.00,
-            discount_percentage: 10.00,
-            discount_amount: 100.00,
-            payable_amount: 900.00,
-            paid_amount: 400.00,
-            due_amount: 500.00
-        };
-        
-        window.dispatchEvent(new CustomEvent('invoice-selected', {
-            detail: { invoice: testInvoice }
-        }));
-        
-        // Simulate due invoices loaded
-        const testInvoices = [
-            {
-                invoice_no: 'INV-001',
-                invoice_date: '2025-01-15',
-                total_amount: 1000.00,
-                paid_amount: 400.00,
-                due_amount: 600.00
-            }
-        ];
-        
-        window.dispatchEvent(new CustomEvent('patient-due-invoices-loaded', {
-            detail: { invoices: testInvoices }
-        }));
-    }
-    
-
     });
 </script>
 @endsection
