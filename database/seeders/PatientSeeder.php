@@ -14,6 +14,7 @@ class PatientSeeder extends Seeder
     public function run(): void
     {
         DB::table('patients')->insert([
+            'id' => 1,
             'patient_id' => '250722001',
             'reg_date' => '2025-01-01',
             'name_en' => 'Ariyan Abdullah',
@@ -34,6 +35,7 @@ class PatientSeeder extends Seeder
             'updated_by' => '1',
         ]);
         DB::table('patients')->insert([
+            'id' => 2,
             'patient_id' => '250722002',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rakibul Islam',
@@ -50,6 +52,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Rakibul Islam',
         ]);
         DB::table('patients')->insert([
+            'id' => 3,
             'patient_id' => '250722003',
             'reg_date' => '2025-01-01',
             'name_en' => 'Arafat Hossain',
@@ -66,6 +69,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Arafat Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 4,
             'patient_id' => '250722004',
             'reg_date' => '2025-01-01', 
             'name_en' => 'Abdur Rahim',
@@ -76,6 +80,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Abdur Rahim',
         ]);
         DB::table('patients')->insert([ 
+            'id' => 5,
             'patient_id' => '250722005',
             'reg_date' => '2025-01-01',
             'name_en' => 'Abbas Hossain',
@@ -86,6 +91,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Abbas Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 6,
             'patient_id' => '250722006',
             'reg_date' => '2025-01-01',
             'name_en' => 'Sojol Hossain',
@@ -96,16 +102,19 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Sojol Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 7,
             'patient_id' => '240522001',
             'reg_date' => '2025-01-01',
             'name_en' => 'Raju Hossain',
             'name_bn' => 'রাজু হোসেন',
+            'gender' => 'Male',
             'dob' => '1998-01-01',
             'phone' => '01717171723',
             'address' => 'Mymensingh', 
             'father_husband_name_en' => 'Raju Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 8,
             'patient_id' => '230722001',
             'reg_date' => '2025-01-01',
             'dob' => '1999-01-01',
@@ -116,6 +125,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Raju Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 9,
             'patient_id' => '220722001',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rajaul Hossain',
@@ -126,6 +136,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Raju Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 10,
             'patient_id' => '210722089',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rajaul Hossain',
@@ -136,6 +147,7 @@ class PatientSeeder extends Seeder
             'father_husband_name_en' => 'Raju Hossain',
         ]);
         DB::table('patients')->insert([
+            'id' => 11,
             'patient_id' => '230722005',
             'dob' => '2002-01-01',
             'reg_date' => '2025-01-01',

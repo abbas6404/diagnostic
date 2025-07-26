@@ -35,7 +35,7 @@ class DoctorController extends Controller
      */
     public function dueCollection()
     {
-        return view('admin.doctor.due_Collection.index');
+        return view('admin.doctor.dueCollection.index');
     }
 
     /**

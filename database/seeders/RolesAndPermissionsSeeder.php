@@ -127,7 +127,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Create a Doctor user
         $doctor = User::create([
             'name' => 'Dr. Ahmed Hossain',
-            'code' => 'DT-001',
+            'code' => 'DR-001',
             'email' => 'doctor@gmail.com',
             'phone' => '01712345678',
             'description' => 'Consultant',
@@ -138,7 +138,7 @@ class RolesAndPermissionsSeeder extends Seeder
         // Create another Doctor user
         $doctor2 = User::create([
             'name' => 'Dr. Fatima Begum',
-            'code' => 'DT-002',
+            'code' => 'DR-002',
             'email' => 'doctor2@gmail.com',
             'phone' => '01812345678',
             'description' => 'Consultant',
@@ -148,7 +148,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Create a PCP user
         $pcp = User::create([
-            'name' => 'PCP User',
+            'name' => 'Ahmed Hasan',
             'code' => 'PCP-001',
             'email' => 'pcp@gmail.com',
             'phone' => '01912345678',   
@@ -157,7 +157,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
         $pcp->assignRole('PCP');
         $pcp2 = User::create([
-            'name' => 'PCP User 2',
+            'name' => 'Makbul Hasan',
             'code' => 'PCP-002',
             'email' => 'pcp2@gmail.com',
             'phone' => '01912345675',   

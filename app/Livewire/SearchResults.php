@@ -21,6 +21,7 @@ class SearchResults extends Component
         'showTicketResults' => 'searchTickets',
         'showLabTestResults' => 'searchLabTests',
         'showOpdServiceResults' => 'searchOpdServices',
+        'showInvoiceResults' => 'searchInvoices', // NEW
         'clearResults' => 'clearResults'
     ];
     
@@ -321,6 +322,50 @@ class SearchResults extends Component
         \Illuminate\Support\Facades\Log::info('OPD service selected data:', $data);
         
         $this->dispatch('opd-service-selected', $data);
+        $this->clearResults();
+    }
+    
+    public function searchInvoices($query)
+    {
+        $this->query = $query;
+        $this->searchType = 'invoice';
+        $this->dispatch('searchTypeChanged', 'Invoice');
+
+        $invoices = \DB::table('invoice')
+            ->leftJoin('patients', 'invoice.patient_id', '=', 'patients.id')
+            ->where(function($q) {
+                $q->where('invoice.invoice_no', 'like', "%{$this->query}%")
+                  ->orWhere('patients.name_en', 'like', "%{$this->query}%")
+                  ->orWhere('invoice.invoice_date', 'like', "%{$this->query}%");
+            })
+            ->select(
+                'invoice.id',
+                'invoice.invoice_no',
+                'invoice.invoice_date',
+                'patients.name_en as patient_name',
+                'invoice.total_amount',
+                'invoice.due_amount'
+            )
+            ->orderBy('invoice.id', 'desc')
+            ->limit(10)
+            ->get();
+
+        $this->results = $invoices->toArray();
+        if (count($this->results) > 0) {
+            $this->dispatch('focusFirstResult', 'invoice');
+        }
+    }
+    
+    public function selectInvoice($id, $invoiceNo, $patientName, $date, $total, $due)
+    {
+        $this->dispatch('invoice-selected', [
+            'id' => $id,
+            'invoiceNo' => $invoiceNo,
+            'patientName' => $patientName,
+            'date' => $date,
+            'total' => $total,
+            'due' => $due
+        ]);
         $this->clearResults();
     }
     

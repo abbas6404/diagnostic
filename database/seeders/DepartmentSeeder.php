@@ -35,6 +35,11 @@ class DepartmentSeeder extends Seeder
             'name' => 'ECHO', 
             'description' => 'ECHO is the study of the heart and blood vessels.',
         ]);
+        DB::table('departments')->insert([
+            'id' => 5,
+            'name' => 'OPD Service', 
+            'description' => 'OPD Service is the study of the heart and blood vessels.',
+        ]);
         
         
     }

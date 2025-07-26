@@ -247,6 +247,46 @@
                 <div class="alert alert-info py-2 mb-0">No OPD services found matching "{{ $query }}"</div>
             </div>
         @endif
+    @elseif($searchType == 'invoice')
+        @if(count($results) > 0)
+            <table class="table table-sm table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th style="width: 20px;"></th>
+                        <th>Invoice No</th>
+                        <th>Patient Name</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Due</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($results as $index => $invoice)
+                        <tr class="search-item {{ $index === 0 ? 'first-result' : '' }}"
+                            id="{{ $index === 0 ? 'first-invoice-result' : '' }}"
+                            wire:click="selectInvoice(
+                                '{{ is_object($invoice) ? $invoice->id : $invoice['id'] }}',
+                                '{{ is_object($invoice) ? $invoice->invoice_no : $invoice['invoice_no'] }}',
+                                '{{ is_object($invoice) ? $invoice->patient_name : $invoice['patient_name'] }}',
+                                '{{ is_object($invoice) ? $invoice->invoice_date : $invoice['invoice_date'] }}',
+                                '{{ is_object($invoice) ? $invoice->total_amount : $invoice['total_amount'] }}',
+                                '{{ is_object($invoice) ? $invoice->due_amount : $invoice['due_amount'] }}'
+                            )">
+                            <td><div class="triangle-indicator"></div></td>
+                            <td>{{ is_object($invoice) ? $invoice->invoice_no : $invoice['invoice_no'] }}</td>
+                            <td>{{ is_object($invoice) ? $invoice->patient_name : $invoice['patient_name'] }}</td>
+                            <td>{{ is_object($invoice) ? $invoice->invoice_date : $invoice['invoice_date'] }}</td>
+                            <td>{{ is_object($invoice) ? $invoice->total_amount : $invoice['total_amount'] }}</td>
+                            <td>{{ is_object($invoice) ? $invoice->due_amount : $invoice['due_amount'] }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @else
+            <div class="p-3 text-center">
+                <div class="alert alert-info py-2 mb-0">No invoices found matching "{{ $query }}"</div>
+            </div>
+        @endif
     @endif
 
     <script>

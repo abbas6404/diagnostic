@@ -17,11 +17,11 @@ return new class extends Migration
             $table->unsignedBigInteger('patient_id')->index(); //Patient
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->decimal('total_amount', 10, 2)->default(0); //Total Amount
+            $table->decimal('payable_amount', 10, 2)->default(0); //Payable Amount
             $table->decimal('paid_amount', 10, 2)->default(0); //Paid Amount
             $table->decimal('due_amount', 10, 2)->default(0); //Due Amount
             $table->decimal('discount_amount', 10, 2)->default(0); //Discount Amount
             $table->decimal('discount_percentage', 10, 2)->default(0); //Discount Percentage    
-            $table->decimal('payable_amount', 10, 2)->default(0); //Payable Amount
             $table->date('invoice_date')->nullable()->index(); //Invoice Date
             $table->string('invoice_type')->nullable()->index(); //consultant,lab,pharmacy,opd,ipd
             $table->unsignedBigInteger('consultant_ticket_id')->nullable()->index(); //Consultant Ticket ID
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable(); //Updated By
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->string('remarks')->nullable(); //Remarks
             $table->timestamps(); //Created At, Updated At  
             $table->softDeletes(); //Deleted At
         });

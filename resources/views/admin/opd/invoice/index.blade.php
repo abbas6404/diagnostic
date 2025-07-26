@@ -39,7 +39,7 @@
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0 text-primary">
                     <i class="fas fa-file-invoice me-2"></i> OPD Invoice
-                </h5>
+            </h5>
                 <div>
                     <a href="{{ route('admin.patients.index') }}" class="btn btn-sm btn-outline-secondary me-2">
                         <i class="fas fa-list me-1"></i> OPD Patient List
@@ -62,7 +62,7 @@
                         </div>
                         <div class="card-body">
                             <div class="row mb-3">
-                                <div class="col-md-6">
+                        <div class="col-md-6">
                                   
                                    
                                     
@@ -71,14 +71,14 @@
                                         <div class="col-sm-8">
                                             @livewire('patient-search')
                                             <input type="hidden" name="patient_id_hidden" id="patient_id_hidden">
-                                        </div>
-                                    </div>
+                                </div>
+                            </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Name:</label>
                                         <div class="col-sm-8">
                                             <input type="text" class="form-control form-control-sm" name="name_en" id="patient_name" tabindex="2">
-                                        </div>
-                                    </div>
+                                </div>
+                            </div>
                                     
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Age:</label>
@@ -88,9 +88,9 @@
                                                 <input type="text" class="form-control form-control-sm" placeholder="M" style="width: 30%;" name="age_months" id="age_months" tabindex="4">
                                                 <input type="text" class="form-control form-control-sm" placeholder="D" style="width: 30%;" name="age_days" id="age_days" tabindex="5">
                                                 
-                                            </div>
-                                        </div>
-                                    </div>
+                            </div>
+                            </div>
+                        </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Sex:</label>
                                         <div class="col-sm-8">
@@ -151,14 +151,14 @@
                                     </div>
                                     
                                     
-                                </div>
+                            </div>
                             </div>
                         
                        
                         
                         </div>
                     </div>
-
+                    
                     <!-- Test Items Table -->
                     <div class="card border mt-3">
                         <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
@@ -168,19 +168,19 @@
                             </div>
                         </div>
                         <div class="card-body p-0">
-                            <div class="table-responsive">
+                    <div class="table-responsive">
                                 <table class="table table-sm table-bordered mb-0" id="testItemsTable">
-                                    <thead class="table-light">
-                                        <tr>
-                                            <th style="width: 80px;">Code</th>
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 80px;">Code</th>
                                             <th>Service Name</th>
                                             <th style="width: 100px;">Charge</th>
                                             <th style="width: 120px;">Service Date</th>
                                             <th style="width: 80px;">Quantity</th>
                                             <th style="width: 100px;">Total</th>
                                             <th style="width: 40px;"></th>
-                                        </tr>
-                                    </thead>
+                                </tr>
+                            </thead>
                                     <tbody>
                                     
                                         {{-- in there will be the test items all items will be added here --}}
@@ -190,10 +190,10 @@
                                             <td colspan="5" class="text-end fw-bold">Subtotal:</td>
                                             <td colspan="2">
                                                 <input type="text" class="form-control form-control-sm" id="subtotalAmount" value="0.00" readonly>
-                                            </td>
-                                        </tr>
+                                    </td>
+                                </tr>
                                     </tfoot>
-                                </table>
+                        </table>
                             </div>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
                             @livewire('search-results')
                         </div>
                     </div>
-
+                    
                     <!-- Invoice Summary -->
                     <div class="card border">
                         <div class="card-header bg-primary text-white py-2">
@@ -231,8 +231,8 @@
                                     <div class="input-group input-group-sm">
                                         <input type="number" class="form-control text-end" id="discountPercent" min="0" max="100" value="0" tabindex="20">
                                         <span class="input-group-text">%</span>
-                                    </div>
-                                </div>
+                            </div>
+                        </div>
                             </div>
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Discount Amount</label>
@@ -256,7 +256,7 @@
                                 <label class="col-sm-5 col-form-label text-danger fw-bold">Due Amount</label>
                                 <div class="col-sm-7">
                                     <input type="text" class="form-control form-control-sm text-end fw-bold text-danger" id="dueAmount" readonly value="0.00">
-                                </div>
+                            </div>
                             </div>
                             
                  
@@ -265,14 +265,14 @@
                             <div class="d-flex justify-content-center gap-2 mt-4">
                                 <button class="btn btn-success" id="saveInvoiceBtn" tabindex="23">
                                     <i class="fas fa-save me-1"></i> Save & Print
-                                </button>
+                        </button>
                                 <button class="btn btn-primary" id="resetFormBtn" tabindex="24">
                                     <i class="fas fa-sync-alt me-1"></i> Reset
-                                </button>
+                        </button>
                                 <button class="btn btn-danger" id="cancelBtn" tabindex="25">
                                     <i class="fas fa-times me-1"></i> Cancel
-                                </button>
-                            </div>
+                        </button>
+                    </div>
                         </div>
                     </div>
                 </div>

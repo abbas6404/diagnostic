@@ -33,7 +33,7 @@ class LabTestSeeder extends Seeder
             'id' => 3,
             'code' => 'XR-003',
             'department_id' => 3,
-            'name' => 'X-Ray', // 3
+            'name' => 'X-Ray (Chest)', // 3
             'description' => 'X-Ray',
             'charge' => '300',
         ]);
@@ -41,7 +41,7 @@ class LabTestSeeder extends Seeder
             'id' => 4,
             'code' => 'CT-004',
             'department_id' => 2,
-            'name' => 'CT Scan', // 4
+            'name' => 'CT Scan (Head)', // 4
             'description' => 'CT Scan',
             'charge' => '500',
         ]);
@@ -49,26 +49,11 @@ class LabTestSeeder extends Seeder
             'id' => 5,
             'code' => 'ECG-005',
             'department_id' => 3,
-            'name' => 'ECG', // 5
+            'name' => 'ECG (12 Lead)', // 5
             'description' => 'ECG',
             'charge' => '200',
         ]);
-        DB::table('lab_tests')->insert([
-            'id' => 6,
-            'code' => 'OPD-001',
-            'department_id' => 3,
-            'name' => 'OPD', // 6
-            'description' => 'OPD',
-            'charge' => '100',
-        ]);
-        DB::table('lab_tests')->insert([
-            'id' => 7,
-            'code' => 'OPD-002',
-            'department_id' => 3,
-            'name' => 'Dental', // 7
-            'description' => 'Dental',
-            'charge' => '100',
-        ]);
+       
 
         
         

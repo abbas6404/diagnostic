@@ -21,6 +21,7 @@ class OpdServiceSeeder extends Seeder
         // Sample OPD services
         $opdServices = [
             [
+                'id' => 1,
                 'code' => 'OPD-001',
                 'department_id' => $departmentId,
                 'name' => 'General Consultation',
@@ -30,6 +31,7 @@ class OpdServiceSeeder extends Seeder
                 'updated_at' => $now,
             ],
             [
+                'id' => 2,
                 'code' => 'OPD-002',
                 'department_id' => $departmentId,
                 'name' => 'Specialist Consultation',
@@ -39,6 +41,7 @@ class OpdServiceSeeder extends Seeder
                 'updated_at' => $now,
             ],
             [
+                'id' => 3,
                 'code' => 'OPD-003',
                 'department_id' => $departmentId,
                 'name' => 'Dressing',
@@ -48,6 +51,7 @@ class OpdServiceSeeder extends Seeder
                 'updated_at' => $now,
             ],
             [
+                'id' => 4,
                 'code' => 'OPD-004',
                 'department_id' => $departmentId,
                 'name' => 'Injection',
@@ -57,6 +61,7 @@ class OpdServiceSeeder extends Seeder
                 'updated_at' => $now,
             ],
             [
+                'id' => 5,
                 'code' => 'OPD-005',
                 'department_id' => $departmentId,
                 'name' => 'Nebulization',

@@ -110,7 +110,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.due-collection') ? 'active' : '' }}" href="{{ route('admin.diagnostics.due-collection') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.duecollection') ? 'active' : '' }}" href="{{ route('admin.diagnostics.duecollection') }}">  
                             <span>Due Collection</span>
                         </a>
                     </li>
@@ -143,7 +143,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.opd.due-collection') ? 'active' : '' }}" href="{{ route('admin.opd.due-collection') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.opd.duecollection') ? 'active' : '' }}" href="{{ route('admin.opd.duecollection') }}">
                             <span>Due Collection</span>
                         </a>
                     </li>
@@ -339,7 +339,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.doctor.due-collection') ? 'active' : '' }}" href="{{ route('admin.doctor.due-collection') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.duecollection') ? 'active' : '' }}" href="{{ route('admin.doctor.duecollection') }}">
                             <span>Due Collection</span>
                         </a>
                     </li>

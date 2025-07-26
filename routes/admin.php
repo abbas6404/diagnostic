@@ -88,7 +88,7 @@ Route::prefix('diagnostics')->group(function () {
     Route::get('/invoice-return', [DiagnosticsController::class, 'invoiceReturn'])->name('diagnostics.invoice-return');
     
     // Due Collection
-    Route::get('/due-collection', [DiagnosticsController::class, 'dueCollection'])->name('diagnostics.due-collection');
+    Route::get('/duecollection', [DiagnosticsController::class, 'dueCollection'])->name('diagnostics.duecollection');
     
     // Re-Print
     Route::get('/re-print', [DiagnosticsController::class, 'rePrint'])->name('diagnostics.re-print');
@@ -103,7 +103,11 @@ Route::prefix('opd')->group(function () {
     Route::get('/invoice', [OpdController::class, 'invoice'])->name('opd.invoice');
     
     // Due Collection
-    Route::get('/due-collection', [OpdController::class, 'dueCollection'])->name('opd.due-collection');
+    Route::get('/duecollection', [OpdController::class, 'dueCollection'])->name('opd.duecollection');
+    Route::post('/duecollection/store', [OpdController::class, 'storePayment'])->name('opd.duecollection.store');
+    Route::get('/duecollection/patient/{patientId}/invoices', [OpdController::class, 'getPatientDueInvoices'])->name('opd.duecollection.patient.invoices');
+    Route::get('/duecollection/invoice/{invoiceId}/details', [OpdController::class, 'getInvoiceDetails'])->name('opd.duecollection.invoice.details');
+    Route::get('/duecollection/invoice/{invoiceId}/full-data', [OpdController::class, 'getInvoiceFullData'])->name('opd.duecollection.invoice.full-data');
     
     // Re-Print
     Route::get('/re-print', [OpdController::class, 'rePrint'])->name('opd.re-print');
@@ -116,7 +120,7 @@ Route::prefix('doctor')->group(function () {
     Route::post('/invoice/store', [DoctorController::class, 'storeInvoice'])->name('doctor.invoice.store');
     
     // Due Collection
-    Route::get('/due-collection', [DoctorController::class, 'dueCollection'])->name('doctor.due-collection');
+    Route::get('/duecollection', [DoctorController::class, 'dueCollection'])->name('doctor.duecollection');
     
     // Report
     Route::get('/report', [DoctorController::class, 'report'])->name('doctor.report');
