@@ -10,7 +10,8 @@ class PatientSearch extends Component
     public $search = '';
     
     protected $listeners = [
-        'patient-selected' => 'patientSelected'
+        'patient-selected' => 'patientSelected',
+        'load-default-patients' => 'loadDefaultPatients'
     ];
     
     public function updatedSearch()
@@ -25,6 +26,11 @@ class PatientSearch extends Component
     public function patientSelected($patient)
     {
         $this->search = $patient['patientId'];
+    }
+    
+    public function loadDefaultPatients()
+    {
+        $this->dispatch('showDefaultPatients');
     }
     
     public function render()

@@ -73,7 +73,13 @@
             </table>
         @else
             <div class="p-3 text-center">
-                <div class="alert alert-info py-2 mb-0">No patients found matching "{{ $query }}"</div>
+                <div class="alert alert-info py-2 mb-0">
+                    @if(empty($query))
+                        No recent patients found
+                    @else
+                        No patients found matching "{{ $query }}"
+                    @endif
+                </div>
             </div>
         @endif
     @elseif($searchType == 'doctor')

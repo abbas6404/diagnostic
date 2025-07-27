@@ -22,8 +22,57 @@ class SearchResults extends Component
         'showLabTestResults' => 'searchLabTests',
         'showOpdServiceResults' => 'searchOpdServices',
         'showInvoiceResults' => 'searchInvoices', // NEW
+        'showDefaultPatients' => 'loadDefaultPatients',
         'clearResults' => 'clearResults'
     ];
+    
+    public function mount()
+    {
+        // Load default recent patients when component mounts
+        $this->loadDefaultPatients();
+    }
+    
+    public function loadDefaultPatients()
+    {
+        $this->searchType = 'patient';
+        $this->query = '';
+        
+        $patients = DB::table('patients')
+            ->whereNull('deleted_at')
+            ->select('id', 'patient_id', 'name_en', 'phone', 'address', 'dob')
+            ->orderBy('id', 'desc')
+            ->limit(5)
+            ->get();
+        
+        // Calculate age for each patient
+        $this->results = $patients->map(function($patient) {
+            $patient = (array) $patient;
+            
+            // Calculate age if DOB is available
+            if (!empty($patient['dob'])) {
+                $dob = Carbon::parse($patient['dob']);
+                $now = Carbon::now();
+                
+                $years = (int) $dob->diffInYears($now);
+                $months = (int) $dob->copy()->addYears($years)->diffInMonths($now);
+                $days = (int) $dob->copy()->addYears($years)->addMonths($months)->diffInDays($now);
+                
+                $patient['age_years'] = $years;
+                $patient['age_months'] = $months;
+                $patient['age_days'] = $days;
+            } else {
+                $patient['age_years'] = 0;
+                $patient['age_months'] = 0;
+                $patient['age_days'] = 0;
+            }
+            
+            return $patient;
+        });
+        
+        if (count($this->results) > 0) {
+            $this->dispatch('focusFirstResult', 'patient');
+        }
+    }
     
     public function searchPatients($query)
     {
