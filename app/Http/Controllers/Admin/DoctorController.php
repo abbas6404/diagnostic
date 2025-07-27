@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Auth;
 
 class DoctorController extends Controller
 {
@@ -36,6 +37,164 @@ class DoctorController extends Controller
     public function dueCollection()
     {
         return view('admin.doctor.dueCollection.index');
+    }
+
+    /**
+     * Store a due collection payment.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function storePayment(Request $request)
+    {
+        $request->validate([
+            'invoice_id' => 'required|exists:invoice,id',
+            'payment_amount' => 'required|numeric|min:0.01',
+        ]);
+
+        try {
+            // Start a transaction
+            DB::beginTransaction();
+            
+            // Get the invoice
+            $invoice = DB::table('invoice')->where('id', $request->invoice_id)->first();
+            
+            if (!$invoice) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invoice not found'
+                ], 404);
+            }
+            
+            // Check if payment amount is valid
+            if ($request->payment_amount > $invoice->due_amount) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment amount cannot exceed due amount'
+                ], 400);
+            }
+            
+            // Update invoice paid and due amounts
+            $newPaidAmount = $invoice->paid_amount + $request->payment_amount;
+            $newDueAmount = $invoice->due_amount - $request->payment_amount;
+            
+            DB::table('invoice')
+                ->where('id', $request->invoice_id)
+                ->update([
+                    'paid_amount' => $newPaidAmount,
+                    'due_amount' => $newDueAmount,
+                    'updated_by' => Auth::id(),
+                    'updated_at' => now()
+                ]);
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment collected successfully'
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'success' => false,
+                'message' => 'Error saving payment: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get patient due invoices.
+     *
+     * @param  int  $patientId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPatientDueInvoices($patientId)
+    {
+        $invoices = DB::table('invoice')
+            ->leftJoin('consultant_tickets', 'invoice.id', '=', 'consultant_tickets.invoice_id')
+            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
+            ->where('invoice.patient_id', $patientId)
+            ->where('invoice.invoice_type', 'consultant')
+            ->whereNull('invoice.deleted_at')
+            ->select([
+                'invoice.id',
+                'invoice.invoice_no',
+                'invoice.invoice_date',
+                'invoice.total_amount',
+                'invoice.paid_amount',
+                'invoice.due_amount',
+                'consultant_tickets.ticket_no',
+                'consultant_tickets.ticket_date',
+                'consultant_tickets.ticket_time',
+                'consultant_tickets.doctor_fee',
+                'consultant_tickets.ticket_status',
+                'doctors.name as doctor_name'
+            ])
+            ->orderBy('invoice.invoice_date', 'desc')
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'invoices' => $invoices
+        ]);
+    }
+
+    /**
+     * Get invoice details.
+     *
+     * @param  int  $invoiceId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getInvoiceDetails($invoiceId)
+    {
+        $details = DB::table('consultant_tickets')
+            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
+            ->leftJoin('users as referred_by', 'consultant_tickets.referred_by', '=', 'referred_by.id')
+            ->where('consultant_tickets.invoice_id', $invoiceId)
+            ->select(
+                'consultant_tickets.ticket_no as code',
+                'consultant_tickets.ticket_date',
+                'consultant_tickets.ticket_time',
+                'consultant_tickets.doctor_fee as charge',
+                'consultant_tickets.ticket_status as status',
+                'consultant_tickets.patient_type',
+                'consultant_tickets.remarks',
+                'doctors.name as doctor_name',
+                'referred_by.name as referred_by_name'
+            )
+            ->get();
+            
+        return response()->json([
+            'success' => true,
+            'details' => $details
+        ]);
+    }
+
+    /**
+     * Get full invoice data for payment summary.
+     *
+     * @param  int  $invoiceId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getInvoiceFullData($invoiceId)
+    {
+        $invoice = DB::table('invoice')
+            ->where('id', $invoiceId)
+            ->whereNull('deleted_at')
+            ->first();
+            
+        if (!$invoice) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invoice not found'
+            ], 404);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'invoice' => $invoice
+        ]);
     }
 
     /**

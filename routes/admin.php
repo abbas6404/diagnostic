@@ -89,6 +89,10 @@ Route::prefix('diagnostics')->group(function () {
     
     // Due Collection
     Route::get('/duecollection', [DiagnosticsController::class, 'dueCollection'])->name('diagnostics.duecollection');
+    Route::post('/duecollection/store', [DiagnosticsController::class, 'storePayment'])->name('diagnostics.duecollection.store');
+    Route::get('/duecollection/patient/{patientId}/invoices', [DiagnosticsController::class, 'getPatientDueInvoices'])->name('diagnostics.duecollection.patient.invoices');
+    Route::get('/duecollection/invoice/{invoiceId}/details', [DiagnosticsController::class, 'getInvoiceDetails'])->name('diagnostics.duecollection.invoice.details');
+    Route::get('/duecollection/invoice/{invoiceId}/full-data', [DiagnosticsController::class, 'getInvoiceFullData'])->name('diagnostics.duecollection.invoice.full-data');
     
     // Re-Print
     Route::get('/re-print', [DiagnosticsController::class, 'rePrint'])->name('diagnostics.re-print');
@@ -121,6 +125,10 @@ Route::prefix('doctor')->group(function () {
     
     // Due Collection
     Route::get('/duecollection', [DoctorController::class, 'dueCollection'])->name('doctor.duecollection');
+    Route::post('/duecollection/store', [DoctorController::class, 'storePayment'])->name('doctor.duecollection.store');
+    Route::get('/duecollection/patient/{patientId}/invoices', [DoctorController::class, 'getPatientDueInvoices'])->name('doctor.duecollection.patient.invoices');
+    Route::get('/duecollection/invoice/{invoiceId}/details', [DoctorController::class, 'getInvoiceDetails'])->name('doctor.duecollection.invoice.details');
+    Route::get('/duecollection/invoice/{invoiceId}/full-data', [DoctorController::class, 'getInvoiceFullData'])->name('doctor.duecollection.invoice.full-data');
     
     // Report
     Route::get('/report', [DoctorController::class, 'report'])->name('doctor.report');

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('ticket_time')->nullable()->index(); //Ticket Time
             $table->string('doctor_fee')->nullable()->index(); //Doctor Fee
             $table->string('remarks')->nullable();
+            $table->unsignedBigInteger('invoice_id')->nullable()->index(); //Invoice ID
+            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
             $table->unsignedBigInteger('referred_by')->nullable()->index(); //PCP
             $table->foreign('referred_by')->references('id')->on('users')->onDelete('cascade')->where('roles.name', 'PCP');
             $table->unsignedBigInteger('patient_id')->index();
