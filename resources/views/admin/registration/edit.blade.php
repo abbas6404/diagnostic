@@ -33,7 +33,7 @@
                 @method('PUT')
                 <div class="row">
                     <!-- Left Column - Patient Registration Form -->
-                    <div class="col-lg-8">
+                    <div class="col-lg-7">
                         <div class="row gx-3 gy-2">
                             <!-- Row 1 -->
                             <div class="col-md-6">
@@ -267,7 +267,7 @@
                     </div>
 
                     <!-- Right Column - Patient Info -->
-                    <div class="col-lg-4">
+                    <div class="col-lg-5">
                         <div class="card h-100 border-0 shadow-sm">
                             <div class="card-header bg-primary py-2">
                                 <div class="d-flex justify-content-between align-items-center">

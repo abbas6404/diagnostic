@@ -97,11 +97,18 @@ Route::prefix('diagnostics')->group(function () {
     Route::get('/duecollection/invoice/{invoiceId}/details', [DiagnosticsController::class, 'getInvoiceDetails'])->name('diagnostics.duecollection.invoice.details');
     Route::get('/duecollection/invoice/{invoiceId}/full-data', [DiagnosticsController::class, 'getInvoiceFullData'])->name('diagnostics.duecollection.invoice.full-data');
     
-    // Re-Print
-    Route::get('/re-print', [DiagnosticsController::class, 'rePrint'])->name('diagnostics.re-print');
-    
     // Report
     Route::get('/report', [DiagnosticsController::class, 'report'])->name('diagnostics.report');
+    // Re-Print
+    Route::get('/reprint', [DiagnosticsController::class, 'rePrint'])->name('diagnostics.reprint');
+    
+
+    // Diagnostics Re-Print Routes
+    Route::get('/reprint/default-invoices', [DiagnosticsController::class, 'getDefaultInvoicesForReprint'])->name('diagnostics.reprint.default');
+    Route::get('/reprint/search', [DiagnosticsController::class, 'searchInvoicesForReprint'])->name('diagnostics.reprint.search');
+    Route::get('/reprint/invoice/{id}/details', [DiagnosticsController::class, 'getInvoiceDetailsForReprint'])->name('diagnostics.reprint.details');
+    Route::post('/reprint/print', [DiagnosticsController::class, 'printInvoice'])->name('diagnostics.reprint.print');
+    Route::post('/reprint/print-item', [DiagnosticsController::class, 'printSingleItem'])->name('diagnostics.reprint.print-item');
 });
 
 // OPD routes
@@ -117,7 +124,11 @@ Route::prefix('opd')->group(function () {
     Route::get('/duecollection/invoice/{invoiceId}/full-data', [OpdController::class, 'getInvoiceFullData'])->name('opd.duecollection.invoice.full-data');
     
     // Re-Print
-    Route::get('/re-print', [OpdController::class, 'rePrint'])->name('opd.re-print');
+    Route::get('/reprint', [OpdController::class, 'rePrint'])->name('opd.reprint');
+    Route::get('/reprint/default-invoices', [OpdController::class, 'getDefaultInvoicesForReprint'])->name('opd.reprint.default');
+    Route::get('/reprint/search', [OpdController::class, 'searchInvoicesForReprint'])->name('opd.reprint.search');
+    Route::get('/reprint/invoice/{id}/details', [OpdController::class, 'getInvoiceDetailsForReprint'])->name('opd.reprint.details');
+    Route::post('/reprint/print', [OpdController::class, 'printInvoice'])->name('opd.reprint.print');
 });
 
 // Doctor/Consultant routes
@@ -135,6 +146,13 @@ Route::prefix('doctor')->group(function () {
     
     // Report
     Route::get('/report', [DoctorController::class, 'report'])->name('doctor.report');
+    
+    // Re-Print
+    Route::get('/reprint', [DoctorController::class, 'rePrint'])->name('doctor.reprint');
+    Route::get('/reprint/default-invoices', [DoctorController::class, 'getDefaultInvoicesForReprint'])->name('doctor.reprint.default');
+    Route::get('/reprint/search', [DoctorController::class, 'searchInvoicesForReprint'])->name('doctor.reprint.search');
+    Route::get('/reprint/invoice/{id}/details', [DoctorController::class, 'getInvoiceDetailsForReprint'])->name('doctor.reprint.details');
+    Route::post('/reprint/print', [DoctorController::class, 'printInvoice'])->name('doctor.reprint.print');
 });
 
 // AJAX Search endpoints are no longer needed as we're using Livewire components

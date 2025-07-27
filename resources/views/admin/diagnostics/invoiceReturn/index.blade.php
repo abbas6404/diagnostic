@@ -195,8 +195,8 @@
                                     <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllBtn">
                                         <i class="fas fa-square me-1"></i> Deselect All
                                     </button>
-                                </div>
-                            </div>
+                </div>
+            </div>
                             <small class="keyboard-hint">
                                 <i class="fas fa-keyboard me-1"></i>
                                 ↑↓ to navigate items, Space/Enter to select, ←→ to navigate refund amounts
@@ -238,7 +238,7 @@
                     <div class="card border mb-3" id="search-results-container">
                         <div class="card-header bg-danger text-white py-2">
                             <h6 class="mb-0"><i class="fas fa-search me-1"></i> <span id="search-title">Search Results</span></h6>
-                        </div>
+                                </div>
                         <div class="card-body p-0" style="height: 250px; overflow-y: auto;" id="search-results-body">
                             <div class="p-3 text-center text-muted">
                                 <i class="fas fa-search fa-2x mb-2"></i><br>
@@ -270,7 +270,7 @@
                                 <div class="col-sm-6">
                                     <input type="text" class="form-control form-control-sm text-end fw-bold text-danger" id="totalRefundAmount" readonly value="0.00">
                                 </div>
-                            </div>
+                                    </div>
                             
                                 <div class="row mb-2">
                                 <label class="col-sm-6 col-form-label">Refund Reason</label>

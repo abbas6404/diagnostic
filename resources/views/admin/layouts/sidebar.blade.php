@@ -115,7 +115,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.re-print') ? 'active' : '' }}" href="{{ route('admin.diagnostics.re-print') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.diagnostics.reprint') ? 'active' : '' }}" href="{{ route('admin.diagnostics.reprint') }}">
                             <span>Re-print</span>
                         </a>
                     </li>
@@ -148,7 +148,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.opd.re-print') ? 'active' : '' }}" href="{{ route('admin.opd.re-print') }}">
+                        <a class="nav-link {{ request()->routeIs('admin.opd.reprint') ? 'active' : '' }}" href="{{ route('admin.opd.reprint') }}">
                             <span>Re-print</span>
                         </a>
                     </li>
@@ -346,6 +346,11 @@
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('admin.doctor.report') ? 'active' : '' }}" href="{{ route('admin.doctor.report') }}">
                             <span>Report</span>
+                        </a>
+                    </li>   
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.reprint') ? 'active' : '' }}" href="{{ route('admin.doctor.reprint') }}">
+                            <span>Re-print</span>
                         </a>
                     </li>
                 </ul>

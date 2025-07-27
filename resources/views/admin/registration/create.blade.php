@@ -24,7 +24,7 @@ use Illuminate\Support\Str;
                 @csrf
                 <div class="row">
                     <!-- Left Column - Patient Registration Form -->
-                    <div class="col-lg-8">
+                    <div class="col-lg-7">
                         <div class="row gx-3 gy-2">
                             <!-- Row 1 -->
                             <div class="col-md-6">
@@ -178,7 +178,7 @@ use Illuminate\Support\Str;
                     </div>
                     
                     <!-- Right Column - Patient List -->
-                    <div class="col-lg-4">
+                    <div class="col-lg-5">
                         <!-- Search Results Area -->
                         <div class="card border mb-3" id="search-results-container">
                             <div class="card-header bg-primary text-white py-2">

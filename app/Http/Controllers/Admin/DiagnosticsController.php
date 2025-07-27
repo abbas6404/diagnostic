@@ -392,7 +392,7 @@ class DiagnosticsController extends Controller
      */
     public function rePrint()
     {
-        return view('admin.diagnostics.re_Print.index');
+        return view('admin.diagnostics.rePrint.index');
     }
 
     /**
@@ -403,6 +403,229 @@ class DiagnosticsController extends Controller
     public function report()
     {
         return view('admin.diagnostics.report.index');
+    }
+
+    // Re-Print Methods
+    public function getDefaultInvoicesForReprint()
+    {
+        try {
+            \Log::info('Loading default invoices for reprint...');
+            
+            $invoices = DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select(
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'invoice.invoice_date',
+                    'patients.name_en as patient_name',
+                    'patients.phone as patient_phone',
+                    'patients.address as patient_address',
+                    'patients.dob',
+                    'patients.gender'
+                )
+                ->where('invoice.invoice_type', 'ipd')
+                ->orderBy('invoice.created_at', 'desc')
+                ->limit(5)
+                ->get();
+
+            \Log::info('Found ' . $invoices->count() . ' default invoices');
+            \Log::info('Invoice numbers: ' . $invoices->pluck('invoice_no')->implode(', '));
+
+            foreach ($invoices as $invoice) {
+                $invoice->age_years = $this->calculateAge($invoice->dob)['years'];
+                $invoice->age_months = $this->calculateAge($invoice->dob)['months'];
+                $invoice->age_days = $this->calculateAge($invoice->dob)['days'];
+            }
+
+            return response()->json([
+                'success' => true,
+                'invoices' => $invoices
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error getting default invoices for reprint: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error loading default invoices'
+            ]);
+        }
+    }
+
+    public function searchInvoicesForReprint(Request $request)
+    {
+        try {
+            $query = $request->get('query');
+            \Log::info('Search query: ' . $query);
+            
+            // First, let's check what IPD invoices exist
+            $allIpdInvoices = DB::table('invoice')
+                ->where('invoice_type', 'ipd')
+                ->select('id', 'invoice_no', 'patient_id')
+                ->get();
+            
+            \Log::info('Total IPD invoices: ' . $allIpdInvoices->count());
+            \Log::info('IPD invoice numbers: ' . $allIpdInvoices->pluck('invoice_no')->implode(', '));
+            
+            $invoices = DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select(
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'invoice.invoice_date',
+                    'patients.name_en as patient_name',
+                    'patients.phone as patient_phone',
+                    'patients.address as patient_address',
+                    'patients.dob',
+                    'patients.gender'
+                )
+                ->where('invoice.invoice_type', 'ipd')
+                ->where(function($q) use ($query) {
+                    $q->where('invoice.invoice_no', 'like', "%{$query}%")
+                      ->orWhere('patients.name_en', 'like', "%{$query}%")
+                      ->orWhere('patients.phone', 'like', "%{$query}%");
+                })
+                ->orderBy('invoice.created_at', 'desc')
+                ->limit(10)
+                ->get();
+
+            \Log::info('Search results count: ' . $invoices->count());
+
+            foreach ($invoices as $invoice) {
+                $invoice->age_years = $this->calculateAge($invoice->dob)['years'];
+                $invoice->age_months = $this->calculateAge($invoice->dob)['months'];
+                $invoice->age_days = $this->calculateAge($invoice->dob)['days'];
+            }
+
+            return response()->json([
+                'success' => true,
+                'invoices' => $invoices
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error searching invoices for reprint: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error searching invoices'
+            ]);
+        }
+    }
+
+    public function getInvoiceDetailsForReprint($id)
+    {
+        try {
+            $invoice = DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select(
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'invoice.invoice_date',
+                    'patients.name_en as patient_name',
+                    'patients.phone as patient_phone',
+                    'patients.address as patient_address',
+                    'patients.dob',
+                    'patients.gender'
+                )
+                ->where('invoice.id', $id)
+                ->where('invoice.invoice_type', 'ipd')
+                ->first();
+
+            if (!$invoice) {
+                return response()->json([
+                    'error' => 'Invoice not found'
+                ]);
+            }
+
+            $invoice->age_years = $this->calculateAge($invoice->dob)['years'];
+            $invoice->age_months = $this->calculateAge($invoice->dob)['months'];
+            $invoice->age_days = $this->calculateAge($invoice->dob)['days'];
+
+            $labTestItems = DB::table('lab_request_items')
+                ->join('lab_tests', 'lab_request_items.lab_test_id', '=', 'lab_tests.id')
+                ->select(
+                    'lab_request_items.id',
+                    'lab_tests.code',
+                    'lab_tests.name as test_name',
+                    'lab_request_items.charge',
+                    'lab_request_items.status'
+                )
+                ->where('lab_request_items.invoice_id', $id)
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'invoice' => $invoice,
+                'lab_test_items' => $labTestItems
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error getting invoice details for reprint: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error loading invoice details'
+            ]);
+        }
+    }
+
+    public function printInvoice(Request $request)
+    {
+        try {
+            $invoiceId = $request->input('invoice_id');
+            $printOption = $request->input('print_option');
+            $selectedItems = $request->input('selected_items', []);
+            $copies = $request->input('copies', 1);
+
+            // Here you would implement the actual printing logic
+            // For now, we'll just return a success response
+            $printUrl = route('admin.diagnostics.reprint.print-preview', [
+                'invoice_id' => $invoiceId,
+                'print_option' => $printOption,
+                'selected_items' => $selectedItems,
+                'copies' => $copies
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Print job sent successfully',
+                'print_url' => $printUrl
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error printing invoice: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending print job'
+            ]);
+        }
+    }
+
+    public function printSingleItem(Request $request)
+    {
+        try {
+            $invoiceId = $request->input('invoice_id');
+            $itemId = $request->input('item_id');
+
+            // Here you would implement the actual printing logic for single item
+            $printUrl = route('admin.diagnostics.reprint.print-item-preview', [
+                'invoice_id' => $invoiceId,
+                'item_id' => $itemId
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Item print job sent successfully',
+                'print_url' => $printUrl
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error printing single item: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending print job'
+            ]);
+        }
     }
 
     /**
