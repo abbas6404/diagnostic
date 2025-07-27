@@ -86,6 +86,9 @@ Route::prefix('diagnostics')->group(function () {
     
     // Invoice Return
     Route::get('/invoice-return', [DiagnosticsController::class, 'invoiceReturn'])->name('diagnostics.invoice-return');
+    Route::get('/invoice-return/search', [DiagnosticsController::class, 'searchInvoicesForReturn'])->name('diagnostics.invoice-return.search');
+    Route::get('/invoice-return/invoice/{invoiceId}/details', [DiagnosticsController::class, 'getInvoiceDetailsForReturn'])->name('diagnostics.invoice-return.invoice.details');
+    Route::get('/invoice-return/default-invoices', [DiagnosticsController::class, 'getDefaultInvoices'])->name('diagnostics.invoice-return.default');
     
     // Due Collection
     Route::get('/duecollection', [DiagnosticsController::class, 'dueCollection'])->name('diagnostics.duecollection');
@@ -127,7 +130,7 @@ Route::prefix('doctor')->group(function () {
     Route::get('/duecollection', [DoctorController::class, 'dueCollection'])->name('doctor.duecollection');
     Route::post('/duecollection/store', [DoctorController::class, 'storePayment'])->name('doctor.duecollection.store');
     Route::get('/duecollection/patient/{patientId}/invoices', [DoctorController::class, 'getPatientDueInvoices'])->name('doctor.duecollection.patient.invoices');
-    Route::get('/duecollection/invoice/{invoiceId}/details', [DoctorController::class, 'getInvoiceDetails'])->name('doctor.duecollection.invoice.details');
+    Route::get('/duecollection/invoice/{invoiceId}/tickets', [DoctorController::class, 'getConsultantTickets'])->name('doctor.duecollection.invoice.tickets');
     Route::get('/duecollection/invoice/{invoiceId}/full-data', [DoctorController::class, 'getInvoiceFullData'])->name('doctor.duecollection.invoice.full-data');
     
     // Report

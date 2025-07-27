@@ -35,7 +35,6 @@ class DoctorDueCollectionSearch extends Component
         $this->results = DB::table('invoice')
             ->leftJoin('patients', 'invoice.patient_id', '=', 'patients.id')
             ->leftJoin('consultant_tickets', 'invoice.id', '=', 'consultant_tickets.invoice_id')
-            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
             ->where('invoice.due_amount', '>', 0)
             ->where('invoice.invoice_type', 'consultant')
             ->where(function($q) use ($query) {
@@ -43,9 +42,7 @@ class DoctorDueCollectionSearch extends Component
                   ->orWhere('patients.patient_id', 'like', "%{$query}%")
                   ->orWhere('patients.name_en', 'like', "%{$query}%")
                   ->orWhere('patients.phone', 'like', "%{$query}%")
-                  ->orWhere('patients.address', 'like', "%{$query}%")
-                  ->orWhere('consultant_tickets.ticket_no', 'like', "%{$query}%")
-                  ->orWhere('doctors.name', 'like', "%{$query}%");
+                  ->orWhere('patients.address', 'like', "%{$query}%");
             })
             ->whereNull('invoice.deleted_at')
             ->select([
@@ -60,13 +57,7 @@ class DoctorDueCollectionSearch extends Component
                 'patients.patient_id as patient_code',
                 'patients.phone',
                 'patients.address',
-                'patients.dob as date_of_birth',
-                'consultant_tickets.ticket_no',
-                'consultant_tickets.ticket_date',
-                'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee',
-                'consultant_tickets.ticket_status',
-                'doctors.name as doctor_name'
+                'patients.dob as date_of_birth'
             ])
             ->groupBy('invoice.id') // Group to avoid duplicates
             ->orderBy('invoice.invoice_date', 'desc')
@@ -118,61 +109,53 @@ class DoctorDueCollectionSearch extends Component
             // Load patient's all due invoices
             $this->loadPatientDueInvoices($invoice['patient_id']);
             
-            // Load invoice details
-            $this->loadInvoiceDetails($invoice['invoice_id']);
+            // Load consultant tickets
+            $this->loadConsultantTickets($invoice['invoice_id']);
         }
     }
     
     private function loadPatientDueInvoices($patientId)
     {
         $dueInvoices = DB::table('invoice')
-            ->leftJoin('consultant_tickets', 'invoice.id', '=', 'consultant_tickets.invoice_id')
-            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
-            ->where('invoice.patient_id', $patientId)
-            ->where('invoice.invoice_type', 'consultant')
-            ->whereNull('invoice.deleted_at')
+            ->where('patient_id', $patientId)
+            ->where('invoice_type', 'consultant')
+            ->whereNull('deleted_at')
             ->select([
-                'invoice.id',
-                'invoice.invoice_no',
-                'invoice.invoice_date',
-                'invoice.total_amount',
-                'invoice.paid_amount',
-                'invoice.due_amount',
-                'consultant_tickets.ticket_no',
-                'consultant_tickets.ticket_date',
-                'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee',
-                'consultant_tickets.ticket_status',
-                'doctors.name as doctor_name'
+                'id',
+                'invoice_no',
+                'invoice_date',
+                'total_amount',
+                'paid_amount',
+                'due_amount'
             ])
-            ->orderBy('invoice.invoice_date', 'desc')
+            ->orderBy('invoice_date', 'desc')
             ->get()
             ->toArray();
             
         $this->dispatch('patient-due-invoices-loaded', $dueInvoices);
     }
     
-    private function loadInvoiceDetails($invoiceId)
+    private function loadConsultantTickets($invoiceId)
     {
-        $invoiceDetails = DB::table('consultant_tickets')
+        $tickets = DB::table('consultant_tickets')
             ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
             ->leftJoin('users as referred_by', 'consultant_tickets.referred_by', '=', 'referred_by.id')
             ->where('consultant_tickets.invoice_id', $invoiceId)
             ->select(
-                'consultant_tickets.ticket_no as code',
+                'consultant_tickets.id',
+                'consultant_tickets.ticket_no',
                 'consultant_tickets.ticket_date',
                 'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee as charge',
-                'consultant_tickets.ticket_status as status',
+                'consultant_tickets.doctor_fee',
+                'consultant_tickets.ticket_status',
                 'consultant_tickets.patient_type',
-                'consultant_tickets.remarks',
                 'doctors.name as doctor_name',
                 'referred_by.name as referred_by_name'
             )
             ->get()
             ->toArray();
             
-        $this->dispatch('invoice-details-loaded', $invoiceDetails);
+        $this->dispatch('consultant-tickets-loaded', $tickets);
     }
     
     #[On('select-invoice-from-results')]
@@ -185,8 +168,6 @@ class DoctorDueCollectionSearch extends Component
         // Find the invoice in the database
         $invoice = DB::table('invoice')
             ->join('patients', 'invoice.patient_id', '=', 'patients.id')
-            ->leftJoin('consultant_tickets', 'invoice.id', '=', 'consultant_tickets.invoice_id')
-            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
             ->select([
                 'invoice.id as invoice_id',
                 'invoice.invoice_no',
@@ -200,15 +181,10 @@ class DoctorDueCollectionSearch extends Component
                 'patients.phone',
                 'patients.address',
                 'patients.gender',
-                'patients.dob as date_of_birth',
-                'consultant_tickets.ticket_no',
-                'consultant_tickets.ticket_date',
-                'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee',
-                'consultant_tickets.ticket_status',
-                'doctors.name as doctor_name'
+                'patients.dob as date_of_birth'
             ])
             ->where('invoice.id', $invoiceId)
+            ->where('invoice.invoice_type', 'consultant')
             ->first();
             
         if ($invoice) {
@@ -237,8 +213,8 @@ class DoctorDueCollectionSearch extends Component
             // Load patient's all due invoices
             $this->loadPatientDueInvoices($invoiceArray['patient_id']);
             
-            // Load invoice details
-            $this->loadInvoiceDetails($invoiceArray['invoice_id']);
+            // Load consultant tickets
+            $this->loadConsultantTickets($invoiceArray['invoice_id']);
         }
     }
     

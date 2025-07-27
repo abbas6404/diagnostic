@@ -281,7 +281,7 @@
 
 @section('scripts')
 <script>
-            document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
             
             // Flag to track if we're in due invoices mode
             let isInDueInvoicesMode = false;
@@ -868,9 +868,9 @@
                 <td class="text-end">${parseFloat(invoice.total_amount).toFixed(0)}</td>
                 <td class="text-end">${parseFloat(invoice.paid_amount).toFixed(0)}</td>
                 <td class="text-end ${dueClass}">${dueText}</td>
-            `;
-            
-            tbody.appendChild(tr);
+                `;
+                
+                tbody.appendChild(tr);
             });
         
         // Focus the due invoices table for keyboard navigation

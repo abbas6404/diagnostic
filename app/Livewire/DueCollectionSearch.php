@@ -35,6 +35,7 @@ class DueCollectionSearch extends Component
         $this->results = DB::table('invoice')
             ->leftJoin('patients', 'invoice.patient_id', '=', 'patients.id')
             ->where('invoice.due_amount', '>', 0)
+            ->where('invoice.invoice_type', 'opd')
             ->where(function($q) use ($query) {
                 $q->where('invoice.invoice_no', 'like', "%{$query}%")
                   ->orWhere('patients.patient_id', 'like', "%{$query}%")
@@ -115,6 +116,7 @@ class DueCollectionSearch extends Component
     {
         $dueInvoices = DB::table('invoice')
             ->where('patient_id', $patientId)
+            ->where('invoice_type', 'opd')
             ->whereNull('deleted_at')
             ->select([
                 'id',

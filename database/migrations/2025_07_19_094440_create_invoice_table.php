@@ -23,7 +23,7 @@ return new class extends Migration
             $table->decimal('discount_amount', 10, 2)->default(0); //Discount Amount
             $table->decimal('discount_percentage', 10, 2)->default(0); //Discount Percentage    
             $table->date('invoice_date')->nullable()->index(); //Invoice Date
-            $table->string('invoice_type')->nullable()->index(); //consultant,lab,pharmacy,opd,ipd
+            $table->string('invoice_type')->nullable()->index(); //consultant,opd,ipd
             $table->string('payment_method')->nullable(); //Payment Method
             $table->unsignedBigInteger('created_by')->nullable()->index(); //Created By
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');

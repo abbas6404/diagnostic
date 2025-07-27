@@ -36,8 +36,6 @@
                     <th style="width: 20px;"></th>
                     <th>Invoice No</th>
                     <th>Patient Name</th>
-                    <th>Ticket No</th>
-                    <th>Doctor</th>
                     <th>Date</th>
                     <th>Total</th>
                     <th>Due</th>
@@ -54,8 +52,6 @@
                         <td><div class="triangle-indicator"></div></td>
                         <td>{{ $invoice['invoice_no'] }}</td>
                         <td>{{ $invoice['patient_name'] }}</td>
-                        <td>{{ $invoice['ticket_no'] ?? '-' }}</td>
-                        <td>{{ $invoice['doctor_name'] ?? '-' }}</td>
                         <td>{{ date('d M y', strtotime($invoice['invoice_date'])) }}</td>
                         <td>{{ number_format($invoice['total_amount'], 0) }}</td>
                         <td class="text-danger fw-bold">{{ number_format($invoice['due_amount'], 0) }}</td>
@@ -70,7 +66,12 @@
         </div>
     @else
         <div class="p-3 text-center text-muted">
-            <i class="fas fa-info-circle me-2"></i> Type to search for due consultant invoices
+            <i class="fas fa-info-circle me-2"></i> 
+            @if(count($results) == 0)
+                No consultant invoices found in database. Please create some consultant invoices first.
+            @else
+                Type to search for due consultant invoices
+            @endif
         </div>
     @endif
 

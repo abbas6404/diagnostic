@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Diagnostics Due Collection')
+@section('title', 'Doctor Due Collection')
 
 @section('styles')
 <style>
@@ -73,8 +73,8 @@
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0 text-primary">
-                    <i class="fas fa-money-bill-wave me-2"></i> Diagnostics Due Collection
-            </h5>
+                    <i class="fas fa-user-md me-2"></i> Doctor Due Collection
+                </h5>
                 <div>
                     <a href="#" class="btn btn-sm btn-outline-secondary me-2">
                         <i class="fas fa-list me-1"></i> Patient List
@@ -97,7 +97,7 @@
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6 position-relative">
-                                    @livewire('diagnostics-due-collection-search')
+                                    @livewire('doctor-due-collection-search')
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label text-end">Patient Name:</label>
                                         <div class="col-sm-8">
@@ -143,7 +143,7 @@
                     <div class="card border mb-3">
                         <div class="card-header bg-light py-2">
                             <h6 class="mb-0"><i class="fas fa-file-invoice me-1"></i> Due Invoices</h6>
-                                </div>
+                        </div>
                         <div class="card-body p-0">
                             <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
                                 <table class="table table-sm table-hover mb-0" id="dueInvoicesTable" tabindex="0" style="outline: none;">
@@ -170,28 +170,29 @@
                         </div>
                     </div>
                 
-                    <!-- Invoice Details -->
+                    <!-- Consultant Tickets -->
                     <div class="card border">
                         <div class="card-header bg-light py-2">
-                            <h6 class="mb-0"><i class="fas fa-list-alt me-1"></i> Lab Test Details</h6>
+                            <h6 class="mb-0"><i class="fas fa-ticket-alt me-1"></i> Consultant Tickets</h6>
                         </div>
                         <div class="card-body p-0">
                             <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
-                                <table class="table table-sm table-bordered mb-0" id="invoiceDetailsTable">
+                                <table class="table table-sm table-bordered mb-0" id="consultantTicketsTable">
                                     <thead class="table-light">
                                         <tr>
-                                            <th style="width: 100px;">Code</th>
-                                            <th>Test Name</th>
-                                            <th style="width: 100px;" class="text-end">Charge</th>
+                                            <th style="width: 120px;">Ticket No</th>
+                                            <th>Doctor</th>
+                                            <th style="width: 100px;">Date</th>
+                                            <th style="width: 80px;">Time</th>
+                                            <th style="width: 100px;" class="text-end">Fee</th>
                                             <th style="width: 80px;" class="text-center">Status</th>
-                                            <th style="width: 100px;" class="text-end">Total</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td colspan="5" class="text-center text-muted py-4">
+                                            <td colspan="6" class="text-center text-muted py-4">
                                                 <i class="fas fa-info-circle fa-2x mb-2"></i><br>
-                                                Select an invoice to view lab test details
+                                                Select an invoice to view consultant tickets
                                             </td>
                                         </tr>
                                     </tbody>
@@ -209,7 +210,7 @@
                             <h6 class="mb-0"><i class="fas fa-search me-1"></i> <span id="search-title">Search Results</span></h6>
                         </div>
                         <div class="card-body p-0" style="height: 250px; overflow-y: auto;" id="search-results-body">
-                            @livewire('diagnostics-due-collection-search-results')
+                            @livewire('doctor-due-collection-search-results')
                         </div>
                     </div>
                     
@@ -235,7 +236,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                                </div>
                             
                             <!-- Due Collection Section -->
                             <div class="row mb-2">
@@ -506,10 +507,10 @@
                     firstCell.appendChild(triangle);
                 }
                 
-                // Load invoice details for the selected item
+                // Load consultant tickets for the selected item
                 const invoiceId = nextItem.getAttribute('data-invoice-id');
                 if (invoiceId) {
-                    loadInvoiceDetails(invoiceId);
+                    loadConsultantTickets(invoiceId);
                 }
                 
                 // Scroll the item into view
@@ -698,19 +699,19 @@ window.addEventListener('patient-due-invoices-loaded', event => {
     }, 300);
 });
 
-window.addEventListener('invoice-details-loaded', event => {
-    let details = event.detail;
+window.addEventListener('consultant-tickets-loaded', event => {
+    let tickets = event.detail;
     
-    // Handle case where details might be wrapped in an array
-    if (Array.isArray(details) && details.length > 0 && Array.isArray(details[0])) {
-        details = details[0];
+    // Handle case where tickets might be wrapped in an array
+    if (Array.isArray(tickets) && tickets.length > 0 && Array.isArray(tickets[0])) {
+        tickets = tickets[0];
     }
     
-    if (!details || !Array.isArray(details)) {
+    if (!tickets || !Array.isArray(tickets)) {
         return;
     }
     
-    updateInvoiceDetailsTable(details);
+    updateConsultantTicketsTable(tickets);
 });
 
 function selectInvoiceInDueInvoicesTable(invoiceId) {
@@ -751,8 +752,8 @@ function selectInvoiceInDueInvoicesTable(invoiceId) {
             // Scroll to the selected item
             item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             
-            // Load invoice details
-            loadInvoiceDetails(invoiceId);
+            // Load consultant tickets
+            loadConsultantTickets(invoiceId);
             
             found = true;
         }
@@ -833,7 +834,7 @@ function updateDueInvoicesTable(invoices) {
                     triangle.style.visibility = 'visible';
                 }
                 
-                loadInvoiceDetails(invoice.id);
+                loadConsultantTickets(invoice.id);
                 
                 // Focus the due invoices table for keyboard navigation
                 const dueInvoicesTable = document.getElementById('dueInvoicesTable');
@@ -866,21 +867,21 @@ function updateDueInvoicesTable(invoices) {
     }
 }
 
-function loadInvoiceDetails(invoiceId) {
-    // Make AJAX call to load invoice details
-    fetch(`/admin/diagnostics/duecollection/invoice/${invoiceId}/details`)
+function loadConsultantTickets(invoiceId) {
+    // Make AJAX call to load consultant tickets
+    fetch(`/admin/doctor/duecollection/invoice/${invoiceId}/tickets`)
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.details) {
-                updateInvoiceDetailsTable(data.details);
+            if (data.success && data.tickets) {
+                updateConsultantTicketsTable(data.tickets);
             }
         })
         .catch(error => {
-            console.error('Error loading invoice details:', error);
+            console.error('Error loading consultant tickets:', error);
         });
     
     // Also fetch full invoice data to update payment summary
-    fetch(`/admin/diagnostics/duecollection/invoice/${invoiceId}/full-data`)
+    fetch(`/admin/doctor/duecollection/invoice/${invoiceId}/full-data`)
         .then(response => response.json())
         .then(data => {
             if (data.success && data.invoice) {
@@ -1003,7 +1004,7 @@ window.savePayment = function() {
         };
         
         // Send payment data to server
-    fetch('/admin/diagnostics/duecollection/store', {
+    fetch('/admin/doctor/duecollection/store', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1030,50 +1031,51 @@ window.savePayment = function() {
     });
 }
 
-function updateInvoiceDetailsTable(details) {
-    const tbody = document.querySelector('#invoiceDetailsTable tbody');
+function updateConsultantTicketsTable(tickets) {
+    const tbody = document.querySelector('#consultantTicketsTable tbody');
     if (!tbody) {
         return;
     }
     
     tbody.innerHTML = '';
     
-    if (details.length === 0) {
+    if (tickets.length === 0) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="5" class="text-center text-muted py-4">
-                    No lab test details found for this invoice
+                <td colspan="6" class="text-center text-muted py-4">
+                    No consultant tickets found for this invoice
                 </td>
             </tr>
         `;
         return;
     }
     
-    details.forEach(item => {
+    tickets.forEach(ticket => {
         const tr = document.createElement('tr');
-        tr.className = 'detail-row';
+        tr.className = 'ticket-row';
         
         // Determine status badge color
         let statusClass = 'badge bg-secondary';
-        if (item.status === 'completed') {
+        if (ticket.ticket_status === 'completed') {
             statusClass = 'badge bg-success';
-        } else if (item.status === 'pending') {
+        } else if (ticket.ticket_status === 'pending') {
             statusClass = 'badge bg-warning';
-        } else if (item.status === 'cancelled') {
+        } else if (ticket.ticket_status === 'cancelled') {
             statusClass = 'badge bg-danger';
         }
         
         tr.innerHTML = `
-            <td>${item.code || '-'}</td>
-            <td>${item.test_name || '-'}</td>
-            <td class="text-end">${parseFloat(item.charge || 0).toFixed(0)}</td>
-            <td class="text-center"><span class="${statusClass}">${item.status || 'pending'}</span></td>
-            <td class="text-end">${parseFloat(item.charge || 0).toFixed(0)}</td>
+            <td>${ticket.ticket_no || '-'}</td>
+            <td>${ticket.doctor_name || '-'}</td>
+            <td>${ticket.ticket_date || '-'}</td>
+            <td>${ticket.ticket_time || '-'}</td>
+            <td class="text-end">${parseFloat(ticket.doctor_fee || 0).toFixed(0)}</td>
+            <td class="text-center"><span class="${statusClass}">${ticket.ticket_status || 'pending'}</span></td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-    });
+});
 </script>
 @endsection 

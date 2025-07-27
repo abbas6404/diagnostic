@@ -62,11 +62,16 @@
         </div>
     @elseif(strlen($search) >= 2)
         <div class="p-3 text-center">
-            <div class="alert alert-info py-2 mb-0">No due invoices found matching "{{ $search }}"</div>
+            <div class="alert alert-info py-2 mb-0">No due IPD invoices found matching "{{ $search }}"</div>
         </div>
     @else
         <div class="p-3 text-center text-muted">
-            <i class="fas fa-info-circle me-2"></i> Type to search for due invoices
+            <i class="fas fa-info-circle me-2"></i> 
+            @if(count($results) == 0)
+                No IPD invoices found in database. Please create some IPD invoices first.
+            @else
+                Type to search for due IPD invoices
+            @endif
         </div>
     @endif
 

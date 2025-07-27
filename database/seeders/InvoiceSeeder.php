@@ -14,10 +14,10 @@ class InvoiceSeeder extends Seeder
     {
         DB::table('invoice')->insert([
             'id' => 1,
-            'invoice_no' => 'INV-250723-001',    
+            'invoice_no' => 'CON-250723-001',    
             'patient_id' => 1,  
             'invoice_date' => '2025-01-01',
-            'invoice_type' => 'lab',    
+            'invoice_type' => 'consultant',    
             'total_amount' => 120,
             'paid_amount' => 100,
             'due_amount' => 20,
@@ -26,10 +26,10 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 2,
-            'invoice_no' => 'INV-250723-002',
+            'invoice_no' => 'CON-250723-002',
             'patient_id' => 2,
             'invoice_date' => '2025-01-01',
-            'invoice_type' => 'opd',
+            'invoice_type' => 'consultant',
             'total_amount' => 250,
             'paid_amount' => 150,
             'due_amount' => 100,
@@ -38,10 +38,10 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 3,
-            'invoice_no' => 'INV-250723-003',
+            'invoice_no' => 'IPD-250723-003',
             'patient_id' => 3,
             'invoice_date' => '2025-01-01',
-            'invoice_type' => 'lab',
+            'invoice_type' => 'ipd',
             'total_amount' => 350,
             'paid_amount' => 200,
             'due_amount' => 150,
@@ -50,7 +50,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 4,
-            'invoice_no' => 'INV-250723-004',
+            'invoice_no' => 'OPD-250723-004',
             'patient_id' => 4,
             'total_amount' => 550,
             'paid_amount' => 300,
@@ -100,7 +100,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 9,
-            'invoice_no' => 'IPD-250723-007',
+            'invoice_no' => 'OPD-250723-009',
             'patient_id' => 7,
             'total_amount' => 1250,
             'paid_amount' => 500,
@@ -110,7 +110,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 10,
-            'invoice_no' => 'IPD-250723-009',
+            'invoice_no' => 'OPD-250723-010',
             'patient_id' => 7,
             'total_amount' => 1400,
             'paid_amount' => 600,
@@ -120,7 +120,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 11,
-            'invoice_no' => 'IPD-250723-010',
+            'invoice_no' => 'OPD-250723-011',
             'patient_id' => 7,
             'total_amount' => 1550,
             'paid_amount' => 700,
@@ -130,7 +130,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 12,
-            'invoice_no' => 'IPD-250723-011',
+            'invoice_no' => 'OPD-250723-012',
             'patient_id' => 7,
             'total_amount' => 1700,
             'paid_amount' => 800,
@@ -140,7 +140,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 13,
-            'invoice_no' => 'IPD-250723-012',
+            'invoice_no' => 'OPD-250723-013',
             'patient_id' => 7,
             'total_amount' => 1850,
             'paid_amount' => 900,
@@ -150,7 +150,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 14,
-            'invoice_no' => 'IPD-250723-013',
+            'invoice_no' => 'OPD-250723-014',
             'patient_id' => 7,
             'total_amount' => 2000,
             'paid_amount' => 1000,
@@ -160,7 +160,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 15,
-            'invoice_no' => 'IPD-250723-014',
+            'invoice_no' => 'OPD-250723-015',
             'patient_id' => 7,
             'total_amount' => 2150,
             'paid_amount' => 1100,
@@ -170,7 +170,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 16,
-            'invoice_no' => 'IPD-250723-015',
+            'invoice_no' => 'OPD-250723-016',
             'patient_id' => 7,
             'total_amount' => 2300,
             'paid_amount' => 1200,
@@ -180,7 +180,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 17,
-            'invoice_no' => 'IPD-250723-016',
+            'invoice_no' => 'OPD-250723-017',
             'patient_id' => 7,
             'total_amount' => 2450,
             'paid_amount' => 1300,
@@ -190,7 +190,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 18,
-            'invoice_no' => 'IPD-250723-017',
+            'invoice_no' => 'OPD-250723-018',
             'patient_id' => 7,
             'total_amount' => 2600,
             'paid_amount' => 1400,
@@ -200,7 +200,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 19,
-            'invoice_no' => 'IPD-250723-018',
+            'invoice_no' => 'OPD-250723-019',
             'patient_id' => 7,
             'total_amount' => 2750,
             'paid_amount' => 1500,
@@ -210,7 +210,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 20,
-            'invoice_no' => 'IPD-250723-019',
+            'invoice_no' => 'OPD-250723-020',
             'patient_id' => 7,
             'total_amount' => 2900,
             'paid_amount' => 1600,
@@ -220,7 +220,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 21,
-            'invoice_no' => 'IPD-250723-020',
+            'invoice_no' => 'OPD-250723-021',
             'patient_id' => 8,
             'total_amount' => 3050,
             'paid_amount' => 1700,
@@ -230,7 +230,7 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 22,
-            'invoice_no' => 'IPD-250723-021',
+            'invoice_no' => 'OPD-250723-022',
             'patient_id' => 9,
             'total_amount' => 3200,
             'paid_amount' => 1800,

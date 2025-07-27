@@ -112,26 +112,18 @@ class DoctorController extends Controller
     public function getPatientDueInvoices($patientId)
     {
         $invoices = DB::table('invoice')
-            ->leftJoin('consultant_tickets', 'invoice.id', '=', 'consultant_tickets.invoice_id')
-            ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
-            ->where('invoice.patient_id', $patientId)
-            ->where('invoice.invoice_type', 'consultant')
-            ->whereNull('invoice.deleted_at')
+            ->where('patient_id', $patientId)
+            ->where('invoice_type', 'consultant')
+            ->whereNull('deleted_at')
             ->select([
-                'invoice.id',
-                'invoice.invoice_no',
-                'invoice.invoice_date',
-                'invoice.total_amount',
-                'invoice.paid_amount',
-                'invoice.due_amount',
-                'consultant_tickets.ticket_no',
-                'consultant_tickets.ticket_date',
-                'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee',
-                'consultant_tickets.ticket_status',
-                'doctors.name as doctor_name'
+                'id',
+                'invoice_no',
+                'invoice_date',
+                'total_amount',
+                'paid_amount',
+                'due_amount'
             ])
-            ->orderBy('invoice.invoice_date', 'desc')
+            ->orderBy('invoice_date', 'desc')
             ->get();
             
         return response()->json([
@@ -141,25 +133,25 @@ class DoctorController extends Controller
     }
 
     /**
-     * Get invoice details.
+     * Get consultant tickets for an invoice.
      *
      * @param  int  $invoiceId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getInvoiceDetails($invoiceId)
+    public function getConsultantTickets($invoiceId)
     {
-        $details = DB::table('consultant_tickets')
+        $tickets = DB::table('consultant_tickets')
             ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
             ->leftJoin('users as referred_by', 'consultant_tickets.referred_by', '=', 'referred_by.id')
             ->where('consultant_tickets.invoice_id', $invoiceId)
             ->select(
-                'consultant_tickets.ticket_no as code',
+                'consultant_tickets.id',
+                'consultant_tickets.ticket_no',
                 'consultant_tickets.ticket_date',
                 'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee as charge',
-                'consultant_tickets.ticket_status as status',
+                'consultant_tickets.doctor_fee',
+                'consultant_tickets.ticket_status',
                 'consultant_tickets.patient_type',
-                'consultant_tickets.remarks',
                 'doctors.name as doctor_name',
                 'referred_by.name as referred_by_name'
             )
@@ -167,7 +159,7 @@ class DoctorController extends Controller
             
         return response()->json([
             'success' => true,
-            'details' => $details
+            'tickets' => $tickets
         ]);
     }
 
@@ -181,6 +173,7 @@ class DoctorController extends Controller
     {
         $invoice = DB::table('invoice')
             ->where('id', $invoiceId)
+            ->where('invoice_type', 'consultant')
             ->whereNull('deleted_at')
             ->first();
             

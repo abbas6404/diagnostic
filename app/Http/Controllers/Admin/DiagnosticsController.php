@@ -142,6 +142,197 @@ class DiagnosticsController extends Controller
     }
 
     /**
+     * Search invoices for return page.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function searchInvoicesForReturn(Request $request)
+    {
+        try {
+            $query = $request->get('query', '');
+            
+            if (strlen($query) < 2) {
+                return response()->json([]);
+            }
+            
+            $invoices = DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select([
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'invoice.invoice_date',
+                    'invoice.invoice_type',
+                    'patients.name_en as patient_name',
+                    'patients.phone as patient_phone',
+                    'patients.address as patient_address',
+                    'patients.dob',
+                    'patients.gender'
+                ])
+                ->where('invoice.invoice_type', 'ipd') // Only IPD invoices for diagnostics
+                ->where(function($q) use ($query) {
+                    $q->where('invoice.invoice_no', 'like', "%{$query}%")
+                      ->orWhere('patients.name_en', 'like', "%{$query}%")
+                      ->orWhere('patients.phone', 'like', "%{$query}%");
+                })
+                ->where('invoice.paid_amount', '>', 0) // Only invoices with payments
+                ->orderBy('invoice.invoice_date', 'desc')
+                ->limit(20)
+                ->get();
+            
+            // Calculate age for each patient
+            $invoices->each(function($invoice) {
+                if ($invoice->dob) {
+                    $age = $this->calculateAge($invoice->dob);
+                    $invoice->age_years = $age['years'];
+                    $invoice->age_months = $age['months'];
+                    $invoice->age_days = $age['days'];
+                } else {
+                    $invoice->age_years = 0;
+                    $invoice->age_months = 0;
+                    $invoice->age_days = 0;
+                }
+            });
+            
+            return response()->json($invoices);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in searchInvoicesForReturn: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Search error: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get default invoices for search results.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getDefaultInvoices()
+    {
+        try {
+            $invoices = DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select([
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'invoice.invoice_date',
+                    'invoice.invoice_type',
+                    'patients.name_en as patient_name',
+                    'patients.phone as patient_phone',
+                    'patients.address as patient_address',
+                    'patients.dob',
+                    'patients.gender'
+                ])
+                ->where('invoice.invoice_type', 'ipd') // Only IPD invoices for diagnostics
+                ->where('invoice.paid_amount', '>', 0) // Only invoices with payments
+                ->orderBy('invoice.invoice_date', 'desc')
+                ->limit(5)
+                ->get();
+            
+            // Calculate age for each patient
+            $invoices->each(function($invoice) {
+                if ($invoice->dob) {
+                    $age = $this->calculateAge($invoice->dob);
+                    $invoice->age_years = $age['years'];
+                    $invoice->age_months = $age['months'];
+                    $invoice->age_days = $age['days'];
+                } else {
+                    $invoice->age_years = 0;
+                    $invoice->age_months = 0;
+                    $invoice->age_days = 0;
+                }
+            });
+            
+            return response()->json($invoices);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in getDefaultInvoices: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error loading default invoices: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get invoice details with lab test items for return.
+     *
+     * @param  int  $invoiceId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getInvoiceDetailsForReturn($invoiceId)
+    {
+        try {
+            // Get invoice and patient details
+            $invoice = DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select([
+                    'invoice.*',
+                    'patients.name_en as patient_name',
+                    'patients.phone as patient_phone',
+                    'patients.address as patient_address',
+                    'patients.dob',
+                    'patients.gender'
+                ])
+                ->where('invoice.id', $invoiceId)
+                ->first();
+            
+            if (!$invoice) {
+                return response()->json(['error' => 'Invoice not found'], 404);
+            }
+            
+            // Calculate age
+            if ($invoice->dob) {
+                $age = $this->calculateAge($invoice->dob);
+                $invoice->age_years = $age['years'];
+                $invoice->age_months = $age['months'];
+                $invoice->age_days = $age['days'];
+            } else {
+                $invoice->age_years = 0;
+                $invoice->age_months = 0;
+                $invoice->age_days = 0;
+            }
+            
+            // Get lab test items for this invoice
+            $labTestItems = DB::table('lab_request_items')
+                ->join('lab_tests', 'lab_request_items.lab_test_id', '=', 'lab_tests.id')
+                ->select([
+                    'lab_request_items.id',
+                    'lab_tests.code',
+                    'lab_tests.name as test_name',
+                    'lab_request_items.charge',
+                    'lab_request_items.status',
+                    'lab_request_items.charge as total'
+                ])
+                ->where('lab_request_items.invoice_id', $invoiceId)
+                ->get();
+            
+            // If no lab test items found, return empty array but don't error
+            if ($labTestItems->isEmpty()) {
+                \Log::info("No lab test items found for invoice ID: {$invoiceId}");
+            }
+            
+            return response()->json([
+                'invoice' => $invoice,
+                'lab_test_items' => $labTestItems
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in getInvoiceDetailsForReturn: ' . $e->getMessage());
+            return response()->json([
+                'error' => 'Error loading invoice details: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Get invoice details.
      *
      * @param  int  $invoiceId
@@ -212,5 +403,50 @@ class DiagnosticsController extends Controller
     public function report()
     {
         return view('admin.diagnostics.report.index');
+    }
+
+    /**
+     * Calculate age from date of birth.
+     *
+     * @param  string  $dob
+     * @return array
+     */
+    private function calculateAge($dob)
+    {
+        try {
+            $dob = \Carbon\Carbon::parse($dob);
+            $now = \Carbon\Carbon::now();
+            
+            // If DOB is in the future, return 0
+            if ($dob->isFuture()) {
+                return ['years' => 0, 'months' => 0, 'days' => 0];
+            }
+            
+            // Calculate age more accurately
+            $years = $now->year - $dob->year;
+            $months = $now->month - $dob->month;
+            $days = $now->day - $dob->day;
+            
+            // Adjust for negative months/days
+            if ($days < 0) {
+                $months--;
+                $days += $now->copy()->subMonth()->endOfMonth()->day;
+            }
+            
+            if ($months < 0) {
+                $years--;
+                $months += 12;
+            }
+            
+            // Ensure positive values
+            return [
+                'years' => max(0, $years),
+                'months' => max(0, $months),
+                'days' => max(0, $days)
+            ];
+            
+        } catch (\Exception $e) {
+            return ['years' => 0, 'months' => 0, 'days' => 0];
+        }
     }
 } 

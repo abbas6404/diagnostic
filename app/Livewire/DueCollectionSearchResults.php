@@ -19,56 +19,119 @@ class DueCollectionSearchResults extends Component
     
     public function loadDefaultDueInvoices()
     {
-        $dueInvoices = \DB::table('invoice')
-            ->join('patients', 'invoice.patient_id', '=', 'patients.id')
-            ->select([
-                'invoice.id as invoice_id',
-                'invoice.invoice_no',
-                'invoice.invoice_date',
-                'invoice.total_amount',
-                'invoice.paid_amount',
-                'invoice.due_amount',
-                'patients.id as patient_id',
-                'patients.name_en as patient_name',
-                'patients.patient_id as patient_code',
-                'patients.phone',
-                'patients.address',
-                'patients.gender',
-                'patients.dob as date_of_birth'
-            ])
-            ->where('invoice.due_amount', '>', 0)
-            ->whereNull('invoice.deleted_at')
-            ->orderBy('invoice.invoice_date', 'desc')
-            ->limit(5)
-            ->get()
-            ->map(function($invoice) {
-                // Convert to array first
-                $invoiceArray = (array) $invoice;
-                
-                // Calculate age
-                if ($invoiceArray['date_of_birth']) {
-                    $dob = \Carbon\Carbon::parse($invoiceArray['date_of_birth']);
-                    $now = \Carbon\Carbon::now();
+        // First, let's check if there are any opd invoices at all
+        $allOpdInvoices = \DB::table('invoice')
+            ->where('invoice_type', 'opd')
+            ->whereNull('deleted_at')
+            ->count();
+            
+        // If no opd invoices exist, show a message
+        if ($allOpdInvoices == 0) {
+            $this->results = [];
+            return;
+        }
+        
+        // Check for opd invoices with due amounts
+        $dueOpdInvoices = \DB::table('invoice')
+            ->where('invoice_type', 'opd')
+            ->where('due_amount', '>', 0)
+            ->whereNull('deleted_at')
+            ->count();
+            
+        // If no due opd invoices, show all opd invoices instead
+        if ($dueOpdInvoices == 0) {
+            $dueInvoices = \DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select([
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.invoice_date',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'patients.id as patient_id',
+                    'patients.name_en as patient_name',
+                    'patients.patient_id as patient_code',
+                    'patients.phone',
+                    'patients.address',
+                    'patients.gender',
+                    'patients.dob as date_of_birth'
+                ])
+                ->where('invoice.invoice_type', 'opd')
+                ->whereNull('invoice.deleted_at')
+                ->orderBy('invoice.invoice_date', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function($invoice) {
+                    $invoiceArray = (array) $invoice;
                     
-                    $invoiceArray['age_years'] = (int) $dob->diffInYears($now);
-                    $invoiceArray['age_months'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->diffInMonths($now);
-                    $invoiceArray['age_days'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->addMonths($invoiceArray['age_months'])->diffInDays($now);
-                } else {
-                    $invoiceArray['age_years'] = 0;
-                    $invoiceArray['age_months'] = 0;
-                    $invoiceArray['age_days'] = 0;
-                }
-                
-                return $invoiceArray;
-            })
-            ->toArray();
+                    if ($invoiceArray['date_of_birth']) {
+                        $dob = \Carbon\Carbon::parse($invoiceArray['date_of_birth']);
+                        $now = \Carbon\Carbon::now();
+                        
+                        $invoiceArray['age_years'] = (int) $dob->diffInYears($now);
+                        $invoiceArray['age_months'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->diffInMonths($now);
+                        $invoiceArray['age_days'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->addMonths($invoiceArray['age_months'])->diffInDays($now);
+                    } else {
+                        $invoiceArray['age_years'] = 0;
+                        $invoiceArray['age_months'] = 0;
+                        $invoiceArray['age_days'] = 0;
+                    }
+                    
+                    return $invoiceArray;
+                })
+                ->toArray();
+        } else {
+            // Original query for due opd invoices
+            $dueInvoices = \DB::table('invoice')
+                ->join('patients', 'invoice.patient_id', '=', 'patients.id')
+                ->select([
+                    'invoice.id as invoice_id',
+                    'invoice.invoice_no',
+                    'invoice.invoice_date',
+                    'invoice.total_amount',
+                    'invoice.paid_amount',
+                    'invoice.due_amount',
+                    'patients.id as patient_id',
+                    'patients.name_en as patient_name',
+                    'patients.patient_id as patient_code',
+                    'patients.phone',
+                    'patients.address',
+                    'patients.gender',
+                    'patients.dob as date_of_birth'
+                ])
+                ->where('invoice.due_amount', '>', 0)
+                ->where('invoice.invoice_type', 'opd')
+                ->whereNull('invoice.deleted_at')
+                ->orderBy('invoice.invoice_date', 'desc')
+                ->limit(5)
+                ->get()
+                ->map(function($invoice) {
+                    $invoiceArray = (array) $invoice;
+                    
+                    if ($invoiceArray['date_of_birth']) {
+                        $dob = \Carbon\Carbon::parse($invoiceArray['date_of_birth']);
+                        $now = \Carbon\Carbon::now();
+                        
+                        $invoiceArray['age_years'] = (int) $dob->diffInYears($now);
+                        $invoiceArray['age_months'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->diffInMonths($now);
+                        $invoiceArray['age_days'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->addMonths($invoiceArray['age_months'])->diffInDays($now);
+                    } else {
+                        $invoiceArray['age_years'] = 0;
+                        $invoiceArray['age_months'] = 0;
+                        $invoiceArray['age_days'] = 0;
+                    }
+                    
+                    return $invoiceArray;
+                })
+                ->toArray();
+        }
             
         $this->results = $dueInvoices;
         
         // Auto-select first item if results exist
         if (count($dueInvoices) > 0) {
             $this->selectedInvoice = $dueInvoices[0]['invoice_id'];
-            // Removed keyboard navigation dispatch
         }
     }
     
