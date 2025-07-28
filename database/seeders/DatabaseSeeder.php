@@ -29,6 +29,8 @@ class DatabaseSeeder extends Seeder
         $this->call(InvoiceOpdItemSeeder::class);
         $this->call(DueCollectionDataSeeder::class);
         $this->call(InvoiceReturnDataSeeder::class);
+        $this->call(CollectionKitSeeder::class);
+        $this->call(LabTestCollectionKitSeeder::class);
         
     }
 }

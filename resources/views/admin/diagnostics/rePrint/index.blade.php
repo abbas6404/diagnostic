@@ -64,6 +64,31 @@
         box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         border-color: #80bdff;
     }
+    
+    /* Collection Kit Styling */
+    .collection-kit-row {
+        background-color: #f8f9fa;
+        border-left: 3px solid #28a745;
+    }
+    .collection-kit-row td {
+        font-size: 0.875rem;
+        color: #6c757d;
+        vertical-align: middle;
+    }
+    .collection-kit-row .text-muted {
+        font-style: italic;
+        color: #adb5bd !important;
+    }
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: normal;
+    }
+    .collection-kit-row .d-flex {
+        min-height: 31px;
+        align-items: center;
+    }
 </style>
 @endsection
 
@@ -194,12 +219,35 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td colspan="4" class="text-center text-muted py-4">
-                                                <i class="fas fa-info-circle fa-2x mb-2"></i><br>
-                                                Select an invoice to view test details
+                                        <!-- Lab Tests Section -->
+                                        <tr class="table-info">
+                                            <td colspan="4" class="fw-bold">
+                                                <i class="fas fa-vial me-1"></i> Lab Tests
                                             </td>
                                         </tr>
+                                        <tbody id="labTestsBody">
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">
+                                                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                                                    Select an invoice to view test details
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        
+                                        <!-- Collection Kits Section -->
+                                        <tr class="table-warning">
+                                            <td colspan="4" class="fw-bold">
+                                                <i class="fas fa-box me-1"></i> Collection Kits
+                                            </td>
+                                        </tr>
+                                        <tbody id="collectionKitsBody">
+                                            <tr>
+                                                <td colspan="4" class="text-center text-muted py-4">
+                                                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                                                    Collection kits will appear here
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -605,14 +653,22 @@
 
     function updateTestItemsTable(testItems) {
         this.testItems = testItems || [];
-        const tbody = document.querySelector('#testItemsTable tbody');
-        tbody.innerHTML = '';
-        
+        const labTestsBody = document.getElementById('labTestsBody');
+        const collectionKitsBody = document.getElementById('collectionKitsBody');
+
+        labTestsBody.innerHTML = '';
+        collectionKitsBody.innerHTML = '';
+
         if (testItems && testItems.length > 0) {
             testItems.forEach(item => {
                 const row = document.createElement('tr');
                 row.className = 'item-print-row';
                 row.dataset.itemId = item.id;
+                
+                // Add collection kit class if it's a collection kit
+                if (item.is_collection_kit) {
+                    row.classList.add('collection-kit-row');
+                }
                 
                 let statusBadge = '';
                 if (item.status === 'completed') {
@@ -625,24 +681,55 @@
                     statusBadge = '<span class="badge bg-secondary">' + (item.status || 'Unknown') + '</span>';
                 }
                 
+                // Handle collection kit display with color
+                let testNameDisplay = item.test_name || '';
+                if (item.is_collection_kit && item.color) {
+                    let cssColor = item.color;
+                    switch(item.color.toLowerCase()) {
+                        case 'red': cssColor = '#dc3545'; break;
+                        case 'lavender': cssColor = '#e6e6fa'; break;
+                        case 'light blue': cssColor = '#add8e6'; break;
+                        case 'gray': cssColor = '#808080'; break;
+                        case 'green': cssColor = '#28a745'; break;
+                        default: cssColor = item.color;
+                    }
+                    const textColor = (cssColor === '#e6e6fa' || cssColor === '#add8e6') ? '#000' : '#fff';
+                    testNameDisplay = `
+                        <div class="d-flex align-items-center">
+                            <span class="me-2">${item.test_name}</span>
+                            <span class="badge" style="background-color: ${cssColor}; color: ${textColor};">${item.color}</span>
+                        </div>
+                    `;
+                }
+                
                 row.innerHTML = `
                     <td class="fw-bold">${item.code || ''}</td>
-                    <td>${item.test_name || ''}</td>
+                    <td>${testNameDisplay}</td>
                     <td class="text-end">${Number(item.charge || 0).toFixed(0)}</td>
                     <td class="text-center">${statusBadge}</td>
                 `;
-                tbody.appendChild(row);
+                
+                // Determine which section to append
+                if (item.is_collection_kit) {
+                    collectionKitsBody.appendChild(row);
+                } else {
+                    labTestsBody.appendChild(row);
+                }
             });
-            
-            
-            
-
         } else {
-            tbody.innerHTML = `
+            labTestsBody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
                         <i class="fas fa-info-circle fa-2x mb-2"></i><br>
                         No lab test items found for this invoice
+                    </td>
+                </tr>
+            `;
+            collectionKitsBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                        No collection kits found for this invoice
                     </td>
                 </tr>
             `;
@@ -756,12 +843,21 @@
             document.getElementById('paidAmount').value = '0.00';
             document.getElementById('dueAmount').value = '0.00';
             
-            const tbody = document.querySelector('#testItemsTable tbody');
-            tbody.innerHTML = `
+            const labTestsBody = document.getElementById('labTestsBody');
+            const collectionKitsBody = document.getElementById('collectionKitsBody');
+            labTestsBody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center text-muted py-4">
                         <i class="fas fa-info-circle fa-2x mb-2"></i><br>
                         Select an invoice to view test details
+                    </td>
+                </tr>
+            `;
+            collectionKitsBody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                        Collection kits will appear here
                     </td>
                 </tr>
             `;
@@ -772,58 +868,4 @@
             testItems = [];
         }
     }
-
-    // Cancel button
-    document.getElementById('cancelBtn').addEventListener('click', function() {
-        if (confirm('Are you sure you want to cancel?')) {
-            window.history.back();
-        }
-    });
-
-
-
-    // New print job button
-    document.getElementById('newPrintBtn').addEventListener('click', function() {
-        resetForm();
-        document.getElementById('invoice_search').focus();
-    });
-
-
-
-
-
-
-
-
-
-    function handleKeyboardShortcuts(e) {
-        if (e.ctrlKey) {
-            switch(e.key) {
-                case 'Enter':
-                    e.preventDefault();
-                    const printBtn = document.getElementById('printInvoiceBtn');
-                    if (printBtn && !printBtn.disabled) {
-                        printBtn.click();
-                    }
-                    break;
-                    
-                case 'r':
-                    e.preventDefault();
-                    resetForm();
-                    break;
-            }
-        }
-        
-        if (e.ctrlKey && e.shiftKey) {
-            switch(e.key) {
-                case 'A':
-                    e.preventDefault();
-                    document.getElementById('selectAllCheckbox').click();
-                    break;
-            }
-        }
-    }
-
-
 </script>
-@endsection 

@@ -23,7 +23,8 @@ class SearchResults extends Component
         'showOpdServiceResults' => 'searchOpdServices',
         'showInvoiceResults' => 'searchInvoices', // NEW
         'showDefaultPatients' => 'loadDefaultPatients',
-        'clearResults' => 'clearResults'
+        'clearResults' => 'clearResults',
+        'clear-search-results' => 'clearResults'
     ];
     
     public function mount()
@@ -293,6 +294,17 @@ class SearchResults extends Component
             ->limit(10)
             ->get();
         
+        // Get collection kits for each lab test
+        foreach ($labTests as $test) {
+            $collectionKits = DB::table('lab_test_collection_kit')
+                ->join('collection_kits', 'lab_test_collection_kit.collection_kit_id', '=', 'collection_kits.id')
+                ->where('lab_test_collection_kit.lab_test_id', $test->id)
+                ->select('collection_kits.id', 'collection_kits.pcode', 'collection_kits.name', 'collection_kits.color', 'collection_kits.charge as kit_charge')
+                ->get();
+            
+            $test->collection_kits = $collectionKits;
+        }
+        
         // Convert to array and debug first result
         $this->results = $labTests->toArray();
         
@@ -305,6 +317,13 @@ class SearchResults extends Component
     
     public function selectLabTest($id, $code, $test_name, $charge, $departmentName)
     {
+        // Get collection kits for this lab test
+        $collectionKits = DB::table('lab_test_collection_kit')
+            ->join('collection_kits', 'lab_test_collection_kit.collection_kit_id', '=', 'collection_kits.id')
+            ->where('lab_test_collection_kit.lab_test_id', $id)
+            ->select('collection_kits.id', 'collection_kits.pcode', 'collection_kits.name', 'collection_kits.color', 'collection_kits.charge as kit_charge')
+            ->get();
+        
         $data = [
             'id' => $id,
             'code' => $code,
@@ -312,7 +331,8 @@ class SearchResults extends Component
             'charge' => $charge,
             'department' => [
                 'name' => $departmentName
-            ]
+            ],
+            'collection_kits' => $collectionKits->toArray()
         ];
         
         // Log the data being dispatched

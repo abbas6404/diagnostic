@@ -309,19 +309,43 @@ class DiagnosticsController extends Controller
                     'lab_tests.name as test_name',
                     'lab_request_items.charge',
                     'lab_request_items.status',
-                    'lab_request_items.charge as total'
+                    'lab_request_items.charge as total',
+                    DB::raw("'lab_test' as item_type"),
+                    DB::raw("0 as is_collection_kit")
                 ])
                 ->where('lab_request_items.invoice_id', $invoiceId)
                 ->get();
             
-            // If no lab test items found, return empty array but don't error
-            if ($labTestItems->isEmpty()) {
-                \Log::info("No lab test items found for invoice ID: {$invoiceId}");
+            // Get collection kits for this invoice
+            $collectionKitItems = DB::table('lab_request_items')
+                ->join('lab_test_collection_kit', 'lab_request_items.lab_test_id', '=', 'lab_test_collection_kit.lab_test_id')
+                ->join('collection_kits', 'lab_test_collection_kit.collection_kit_id', '=', 'collection_kits.id')
+                ->select([
+                    'collection_kits.id',
+                    'collection_kits.pcode as code',
+                    'collection_kits.name as test_name',
+                    'collection_kits.charge',
+                    'collection_kits.color',
+                    DB::raw("'active' as status"),
+                    'collection_kits.charge as total',
+                    DB::raw("'collection_kit' as item_type"),
+                    DB::raw("1 as is_collection_kit")
+                ])
+                ->where('lab_request_items.invoice_id', $invoiceId)
+                ->distinct()
+                ->get();
+            
+            // Combine lab tests and collection kits
+            $allItems = $labTestItems->merge($collectionKitItems);
+            
+            // If no items found, return empty array but don't error
+            if ($allItems->isEmpty()) {
+                \Log::info("No items found for invoice ID: {$invoiceId}");
             }
             
             return response()->json([
                 'invoice' => $invoice,
-                'lab_test_items' => $labTestItems
+                'lab_test_items' => $allItems
             ]);
             
         } catch (\Exception $e) {
@@ -340,7 +364,8 @@ class DiagnosticsController extends Controller
      */
     public function getInvoiceDetails($invoiceId)
     {
-        $details = DB::table('lab_request_items')
+        // Get lab test items
+        $labTestDetails = DB::table('lab_request_items')
             ->join('lab_tests', 'lab_request_items.lab_test_id', '=', 'lab_tests.id')
             ->where('lab_request_items.invoice_id', $invoiceId)
             ->whereNull('lab_request_items.deleted_at')
@@ -349,13 +374,36 @@ class DiagnosticsController extends Controller
                 'lab_tests.name as test_name',
                 'lab_request_items.charge',
                 'lab_request_items.id as item_id',
-                'lab_request_items.status'
+                'lab_request_items.status',
+                DB::raw("'lab_test' as item_type"),
+                DB::raw("0 as is_collection_kit")
             )
             ->get();
             
+        // Get collection kits for this invoice
+        $collectionKitDetails = DB::table('lab_request_items')
+            ->join('lab_test_collection_kit', 'lab_request_items.lab_test_id', '=', 'lab_test_collection_kit.lab_test_id')
+            ->join('collection_kits', 'lab_test_collection_kit.collection_kit_id', '=', 'collection_kits.id')
+            ->where('lab_request_items.invoice_id', $invoiceId)
+            ->select(
+                'collection_kits.pcode as code',
+                'collection_kits.name as test_name',
+                'collection_kits.charge',
+                'collection_kits.id as item_id',
+                DB::raw("'active' as status"),
+                DB::raw("'collection_kit' as item_type"),
+                DB::raw("1 as is_collection_kit"),
+                'collection_kits.color'
+            )
+            ->distinct()
+            ->get();
+            
+        // Combine lab tests and collection kits
+        $allDetails = $labTestDetails->merge($collectionKitDetails);
+            
         return response()->json([
             'success' => true,
-            'details' => $details
+            'details' => $allDetails
         ]);
     }
 
@@ -553,15 +601,38 @@ class DiagnosticsController extends Controller
                     'lab_tests.code',
                     'lab_tests.name as test_name',
                     'lab_request_items.charge',
-                    'lab_request_items.status'
+                    'lab_request_items.status',
+                    DB::raw("'lab_test' as item_type"),
+                    DB::raw("0 as is_collection_kit")
                 )
                 ->where('lab_request_items.invoice_id', $id)
                 ->get();
 
+            // Get collection kits for this invoice
+            $collectionKitItems = DB::table('lab_request_items')
+                ->join('lab_test_collection_kit', 'lab_request_items.lab_test_id', '=', 'lab_test_collection_kit.lab_test_id')
+                ->join('collection_kits', 'lab_test_collection_kit.collection_kit_id', '=', 'collection_kits.id')
+                ->select(
+                    'collection_kits.id',
+                    'collection_kits.pcode as code',
+                    'collection_kits.name as test_name',
+                    'collection_kits.charge',
+                    DB::raw("'active' as status"),
+                    DB::raw("'collection_kit' as item_type"),
+                    DB::raw("1 as is_collection_kit"),
+                    'collection_kits.color'
+                )
+                ->where('lab_request_items.invoice_id', $id)
+                ->distinct()
+                ->get();
+
+            // Combine lab tests and collection kits
+            $allItems = $labTestItems->merge($collectionKitItems);
+
             return response()->json([
                 'success' => true,
                 'invoice' => $invoice,
-                'lab_test_items' => $labTestItems
+                'lab_test_items' => $allItems
             ]);
         } catch (\Exception $e) {
             \Log::error('Error getting invoice details for reprint: ' . $e->getMessage());

@@ -29,6 +29,37 @@
     .col-sm-8 {
         position: relative;
     }
+    
+    /* Collection kit row styling */
+    .collection-kit-row {
+        background-color: #f8f9fa;
+        border-left: 3px solid #28a745;
+    }
+    
+    .collection-kit-row td {
+        font-size: 0.875rem;
+        color: #6c757d;
+        vertical-align: middle;
+    }
+    
+    .collection-kit-row .text-muted {
+        font-style: italic;
+        color: #adb5bd !important;
+    }
+    
+    /* Color badge styling */
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: normal;
+    }
+    
+    /* Improve alignment for collection kit particulars */
+    .collection-kit-row .d-flex {
+        min-height: 31px;
+        align-items: center;
+    }
 </style>
 @endsection
 
@@ -162,7 +193,7 @@
                     <!-- Test Items Table -->
                     <div class="card border mt-3">
                         <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0"><i class="fas fa-vial me-1"></i>Lab Test Items</h6>
+                            <h6 class="mb-0"><i class="fas fa-vial me-1"></i>Lab Tests & Collection Kits</h6>
                             <div>
                                 @livewire('lab-test-search')
                             </div>
@@ -182,8 +213,25 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                    
-                                        {{-- in there will be the test items all items will be added here --}}
+                                        <!-- Lab Tests Section -->
+                                        <tr class="table-info">
+                                            <td colspan="7" class="fw-bold">
+                                                <i class="fas fa-vial me-1"></i> Lab Tests
+                                            </td>
+                                        </tr>
+                                        <tbody id="labTestsBody">
+                                            {{-- Lab tests will be added here --}}
+                                        </tbody>
+                                        
+                                        <!-- Collection Kits Section -->
+                                        <tr class="table-warning">
+                                            <td colspan="7" class="fw-bold">
+                                                <i class="fas fa-box me-1"></i> Collection Kits
+                                            </td>
+                                        </tr>
+                                        <tbody id="collectionKitsBody">
+                                            {{-- Collection kits will be added here --}}
+                                        </tbody>
                                     </tbody>
                                     <tfoot class="table-light">
                                         <tr>
@@ -423,16 +471,41 @@
         
         // Define the calculateTestItemTotal function globally so it can be accessed anywhere
         window.calculateTestItemTotal = function() {
-            const rows = testItemsTable.querySelectorAll('tbody tr');
+            // Get all rows from both lab tests and collection kits sections
+            const labTestRows = document.querySelectorAll('#labTestsBody tr');
+            const collectionKitRows = document.querySelectorAll('#collectionKitsBody tr');
             let subtotal = 0;
             
-            rows.forEach(row => {
-                const charge = parseFloat(row.querySelector('.test-charge').value) || 0;
-                const qty = parseInt(row.querySelector('.test-qty').value) || 1;
-                const total = charge * qty;
+            // Calculate totals for lab test rows
+            labTestRows.forEach(row => {
+                const chargeInput = row.querySelector('.test-charge');
+                const qtyInput = row.querySelector('.test-qty');
+                const totalInput = row.querySelector('.test-total');
                 
-                row.querySelector('.test-total').value = total.toFixed(2);
-                subtotal += total;
+                if (chargeInput && qtyInput && totalInput) {
+                    const charge = parseFloat(chargeInput.value) || 0;
+                    const qty = parseInt(qtyInput.value) || 1;
+                    const total = charge * qty;
+                    
+                    totalInput.value = total.toFixed(2);
+                    subtotal += total;
+                }
+            });
+            
+            // Calculate totals for collection kit rows
+            collectionKitRows.forEach(row => {
+                const chargeInput = row.querySelector('.test-charge');
+                const qtyInput = row.querySelector('.test-qty');
+                const totalInput = row.querySelector('.test-total');
+                
+                if (chargeInput && qtyInput && totalInput) {
+                    const charge = parseFloat(chargeInput.value) || 0;
+                    const qty = parseInt(qtyInput.value) || 1;
+                    const total = charge * qty;
+                    
+                    totalInput.value = total.toFixed(2);
+                    subtotal += total;
+                }
             });
             
             document.getElementById('subtotalAmount').value = subtotal.toFixed(2);
@@ -443,6 +516,13 @@
         
         // Add event listeners for test item calculations
         testItemsTable.addEventListener('input', function(e) {
+            if (e.target.classList.contains('test-charge') || e.target.classList.contains('test-qty')) {
+                calculateTestItemTotal();
+            }
+        });
+        
+        // Also add event listeners to the specific sections
+        document.addEventListener('input', function(e) {
             if (e.target.classList.contains('test-charge') || e.target.classList.contains('test-qty')) {
                 calculateTestItemTotal();
             }
@@ -594,71 +674,187 @@
             
             // Access properties directly with fallbacks
             console.log('Data object:', data);
-            
-            // Generate a unique ID for this row
-            const rowId = 'test-row-' + Date.now();
-            
-            // Get tomorrow's date in YYYY-MM-DD format
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            const deliveryDate = tomorrow.toISOString().split('T')[0];
+            console.log('Collection kits:', data.collection_kits);
+            console.log('Collection kits type:', typeof data.collection_kits);
+            console.log('Collection kits length:', data.collection_kits ? data.collection_kits.length : 'undefined');
             
             // Extract values from the object
             const id = data.id || '';
             const code = data.code || '';
             const testName = data.test_name || '';
             const charge = parseFloat(data.charge || 0).toFixed(2);
+            const collectionKits = data.collection_kits || [];
             
             // Log the extracted values for debugging
             console.log('Extracted id:', id);
             console.log('Extracted code:', code);
             console.log('Extracted name:', testName);
             console.log('Extracted charge:', charge);
+            console.log('Collection kits:', collectionKits);
             
-            // Create the row HTML with form fields
-            const rowHtml = `
-                <tr id="${rowId}">
-                    <td>
-                        <input type="text" class="form-control form-control-sm test-code" value="${code}" readonly>
-                        <input type="hidden" name="test_ids[]" value="${id}">
-                    </td>
-                    <td>
-                        <input type="text" class="form-control form-control-sm test-name" value="${testName}" readonly>
-                    </td>
-                    <td>
-                        <input type="number" class="form-control form-control-sm test-charge" value="${charge}" step="0.01" min="0">
-                    </td>
-                    <td>
-                        <input type="date" class="form-control form-control-sm test-delivery-date" value="${deliveryDate}">
-                    </td>
-                    <td>
-                        <input type="number" class="form-control form-control-sm test-qty" value="1" min="1">
-                    </td>
-                    <td>
-                        <input type="text" class="form-control form-control-sm test-total" value="${charge}" readonly>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-sm btn-danger remove-test-btn" onclick="removeTestRow('${rowId}')">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </td>
-                </tr>
-            `;
-            
-            // Append the row to the table
-            const tbody = document.querySelector('#testItemsTable tbody');
-            tbody.insertAdjacentHTML('beforeend', rowHtml);
-            
-            // Calculate totals using the global function
-            window.calculateTestItemTotal();
+            // Check if this test already exists in the table
+            const existingTestRow = document.querySelector(`input[name="test_ids[]"][value="${id}"]`);
+            if (existingTestRow) {
+                // Test already exists, update quantity
+                const row = existingTestRow.closest('tr');
+                const qtyInput = row.querySelector('.test-qty');
+                const currentQty = parseInt(qtyInput.value) || 1;
+                qtyInput.value = currentQty + 1;
+                
+                // Trigger calculation
+                window.calculateTestItemTotal();
+                
+                console.log('Updated quantity for existing test:', testName);
+            } else {
+                // Test doesn't exist, add new row
+                const rowId = 'test-row-' + Date.now();
+                
+                // Get tomorrow's date in YYYY-MM-DD format
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                const deliveryDate = tomorrow.toISOString().split('T')[0];
+                
+                // Create the row HTML with form fields
+                const rowHtml = `
+                    <tr id="${rowId}">
+                        <td>
+                            <input type="text" class="form-control form-control-sm test-code" value="${code}" readonly>
+                            <input type="hidden" name="test_ids[]" value="${id}">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm test-name" value="${testName}" readonly>
+                        </td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm test-charge" value="${charge}" step="0.01" min="0">
+                        </td>
+                        <td>
+                            <input type="date" class="form-control form-control-sm test-delivery-date" value="${deliveryDate}">
+                        </td>
+                        <td>
+                            <input type="number" class="form-control form-control-sm test-qty" value="1" min="1">
+                        </td>
+                        <td>
+                            <input type="text" class="form-control form-control-sm test-total" value="${charge}" readonly>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-danger remove-test-btn" onclick="removeTestRow('${rowId}')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                
+                // Append the row to the table
+                const labTestsBody = document.querySelector('#labTestsBody');
+                labTestsBody.insertAdjacentHTML('beforeend', rowHtml);
+                
+                // Add collection kits if they exist
+                if (collectionKits.length > 0) {
+                    console.log('Adding collection kits:', collectionKits);
+                    collectionKits.forEach((kit, index) => {
+                        console.log('Processing kit:', kit);
+                        // Check if this kit is already added (to prevent duplicates)
+                        const kitCode = kit.pcode || kit.name;
+                        const existingKit = document.querySelector(`tr.collection-kit-row[data-kit-id="${kit.id}"]`);
+                        if (!existingKit) {
+                            console.log('Adding new kit:', kit.name);
+                            const kitRowId = 'kit-row-' + Date.now() + '-' + index;
+                            const kitCharge = parseFloat(kit.kit_charge || 0).toFixed(2);
+                            const kitColor = kit.color || '';
+                            
+                            // Create color display - only show if color exists
+                            let colorDisplay = '';
+                            if (kitColor && kitColor.trim() !== '') {
+                                // Convert color names to CSS color values
+                                let cssColor = kitColor;
+                                switch(kitColor.toLowerCase()) {
+                                    case 'red':
+                                        cssColor = '#dc3545';
+                                        break;
+                                    case 'lavender':
+                                        cssColor = '#e6e6fa';
+                                        break;
+                                    case 'light blue':
+                                        cssColor = '#add8e6';
+                                        break;
+                                    case 'gray':
+                                        cssColor = '#808080';
+                                        break;
+                                    case 'green':
+                                        cssColor = '#28a745';
+                                        break;
+                                    default:
+                                        cssColor = kitColor;
+                                }
+                                
+                                // Use white text for dark colors, black for light colors
+                                const textColor = (cssColor === '#e6e6fa' || cssColor === '#add8e6') ? '#000' : '#fff';
+                                
+                                colorDisplay = `<span class="badge" style="background-color: ${cssColor}; color: ${textColor}; margin-left: 5px;">${kitColor}</span>`;
+                            }
+                            
+                            const kitRowHtml = `
+                                <tr id="${kitRowId}" class="collection-kit-row" data-kit-id="${kit.id}">
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm" value="${kitCode}" readonly data-kit-id="${kit.id}">
+                                        <input type="hidden" name="kit_ids[]" value="${kit.id}">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <span class="me-2">${kit.name}</span>
+                                            ${colorDisplay}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm test-charge" value="${kitCharge}" step="0.01" min="0">
+                                    </td>
+                                    <td>
+                                        <span class="text-muted">-</span>
+                                    </td>
+                                    <td>
+                                        <input type="number" class="form-control form-control-sm test-qty" value="1" min="1">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control form-control-sm test-total" value="${kitCharge}" readonly>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-danger remove-test-btn" onclick="removeTestRow('${kitRowId}')">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            `;
+                            
+                            const collectionKitsBody = document.querySelector('#collectionKitsBody');
+                            collectionKitsBody.insertAdjacentHTML('beforeend', kitRowHtml);
+                        } else {
+                            console.log('Kit already exists:', kit.name);
+                        }
+                    });
+                } else {
+                    console.log('No collection kits found for this test');
+                }
+                
+                // Calculate totals using the global function
+                window.calculateTestItemTotal();
+            }
             
             // Clear the search input to make it ready for the next search
             const labTestSearchInput = document.querySelector('input[wire\\:model\\.live\\.debounce\\.300ms="search"][placeholder*="Test"]');
             if (labTestSearchInput) {
                 labTestSearchInput.value = '';
+                // Trigger Livewire update
                 labTestSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                labTestSearchInput.focus();
+                // Also trigger keyup event to ensure Livewire picks up the change
+                labTestSearchInput.dispatchEvent(new Event('keyup', { bubbles: true }));
+                // Focus back to the search input
+                setTimeout(() => {
+                    labTestSearchInput.focus();
+                }, 100);
             }
+            
+            // Trigger Livewire to clear search results instead of manipulating DOM directly
+            Livewire.dispatch('clear-search-results');
         });
         
         // Update search title when search type changes

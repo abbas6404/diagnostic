@@ -64,6 +64,31 @@
         border: 2px solid #2196F3 !important;
         box-shadow: 0 0 5px rgba(33, 150, 243, 0.3) !important;
     }
+    
+    /* Collection Kit Styling */
+    .collection-kit-row {
+        background-color: #f8f9fa;
+        border-left: 3px solid #28a745;
+    }
+    .collection-kit-row td {
+        font-size: 0.875rem;
+        color: #6c757d;
+        vertical-align: middle;
+    }
+    .collection-kit-row .text-muted {
+        font-style: italic;
+        color: #adb5bd !important;
+    }
+    .badge {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: normal;
+    }
+    .collection-kit-row .d-flex {
+        min-height: 31px;
+        align-items: center;
+    }
 </style>
 @endsection
 
@@ -188,12 +213,35 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted py-4">
-                                                <i class="fas fa-info-circle fa-2x mb-2"></i><br>
-                                                Select an invoice to view lab test details
+                                        <!-- Lab Tests Section -->
+                                        <tr class="table-info">
+                                            <td colspan="5" class="fw-bold">
+                                                <i class="fas fa-vial me-1"></i> Lab Tests
                                             </td>
                                         </tr>
+                                        <tbody id="labTestsBody">
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted py-4">
+                                                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                                                    Select an invoice to view lab test details
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                        
+                                        <!-- Collection Kits Section -->
+                                        <tr class="table-warning">
+                                            <td colspan="5" class="fw-bold">
+                                                <i class="fas fa-box me-1"></i> Collection Kits
+                                            </td>
+                                        </tr>
+                                        <tbody id="collectionKitsBody">
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted py-4">
+                                                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                                                    Collection kits will appear here
+                                                </td>
+                                            </tr>
+                                        </tbody>
                                     </tbody>
                                 </table>
                             </div>
@@ -1031,27 +1079,38 @@ window.savePayment = function() {
 }
 
 function updateInvoiceDetailsTable(details) {
-    const tbody = document.querySelector('#invoiceDetailsTable tbody');
-    if (!tbody) {
-        return;
-    }
-    
-    tbody.innerHTML = '';
-    
+    const labTestsBody = document.getElementById('labTestsBody');
+    const collectionKitsBody = document.getElementById('collectionKitsBody');
+
+    labTestsBody.innerHTML = '';
+    collectionKitsBody.innerHTML = '';
+
     if (details.length === 0) {
-        tbody.innerHTML = `
+        labTestsBody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center text-muted py-4">
                     No lab test details found for this invoice
                 </td>
             </tr>
         `;
+        collectionKitsBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    No collection kit details found for this invoice
+                </td>
+            </tr>
+        `;
         return;
     }
-    
+
     details.forEach(item => {
         const tr = document.createElement('tr');
         tr.className = 'detail-row';
+        
+        // Add collection kit class if it's a collection kit
+        if (item.is_collection_kit) {
+            tr.classList.add('collection-kit-row');
+        }
         
         // Determine status badge color
         let statusClass = 'badge bg-secondary';
@@ -1063,14 +1122,41 @@ function updateInvoiceDetailsTable(details) {
             statusClass = 'badge bg-danger';
         }
         
+        // Handle collection kit display with color
+        let testNameDisplay = item.test_name || '-';
+        if (item.is_collection_kit && item.color) {
+            let cssColor = item.color;
+            switch(item.color.toLowerCase()) {
+                case 'red': cssColor = '#dc3545'; break;
+                case 'lavender': cssColor = '#e6e6fa'; break;
+                case 'light blue': cssColor = '#add8e6'; break;
+                case 'gray': cssColor = '#808080'; break;
+                case 'green': cssColor = '#28a745'; break;
+                default: cssColor = item.color;
+            }
+            const textColor = (cssColor === '#e6e6fa' || cssColor === '#add8e6') ? '#000' : '#fff';
+            testNameDisplay = `
+                <div class="d-flex align-items-center">
+                    <span class="me-2">${item.test_name}</span>
+                    <span class="badge" style="background-color: ${cssColor}; color: ${textColor};">${item.color}</span>
+                </div>
+            `;
+        }
+        
         tr.innerHTML = `
             <td>${item.code || '-'}</td>
-            <td>${item.test_name || '-'}</td>
+            <td>${testNameDisplay}</td>
             <td class="text-end">${parseFloat(item.charge || 0).toFixed(0)}</td>
             <td class="text-center"><span class="${statusClass}">${item.status || 'pending'}</span></td>
             <td class="text-end">${parseFloat(item.charge || 0).toFixed(0)}</td>
         `;
-        tbody.appendChild(tr);
+        
+        // Determine which section to append
+        if (item.is_collection_kit) {
+            collectionKitsBody.appendChild(tr);
+        } else {
+            labTestsBody.appendChild(tr);
+        }
     });
 }
 

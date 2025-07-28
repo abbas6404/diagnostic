@@ -24,7 +24,7 @@ class DueCollectionSearchResults extends Component
             ->where('invoice_type', 'opd')
             ->whereNull('deleted_at')
             ->count();
-            
+        
         // If no opd invoices exist, show a message
         if ($allOpdInvoices == 0) {
             $this->results = [];
@@ -68,16 +68,16 @@ class DueCollectionSearchResults extends Component
                     if ($invoiceArray['date_of_birth']) {
                         $dob = \Carbon\Carbon::parse($invoiceArray['date_of_birth']);
                         $now = \Carbon\Carbon::now();
-                        
+                
                         $invoiceArray['age_years'] = (int) $dob->diffInYears($now);
                         $invoiceArray['age_months'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->diffInMonths($now);
                         $invoiceArray['age_days'] = (int) $dob->copy()->addYears($invoiceArray['age_years'])->addMonths($invoiceArray['age_months'])->diffInDays($now);
-                    } else {
+            } else {
                         $invoiceArray['age_years'] = 0;
                         $invoiceArray['age_months'] = 0;
                         $invoiceArray['age_days'] = 0;
-                    }
-                    
+            }
+            
                     return $invoiceArray;
                 })
                 ->toArray();
@@ -93,7 +93,7 @@ class DueCollectionSearchResults extends Component
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'patients.id as patient_id',
-                    'patients.name_en as patient_name',
+                'patients.name_en as patient_name',
                     'patients.patient_id as patient_code',
                     'patients.phone',
                     'patients.address',
@@ -153,7 +153,7 @@ class DueCollectionSearchResults extends Component
             $this->selectedInvoice = $invoice['invoice_id'] ?? null;
         }
     }
-    
+
     public function selectInvoice($invoiceId)
     {
         $invoice = collect($this->results)->first(function($item) use ($invoiceId) {
@@ -170,7 +170,7 @@ class DueCollectionSearchResults extends Component
             ]);
         }
     }
-    
+
     public function render()
     {
         return view('livewire.due-collection-search-results');
