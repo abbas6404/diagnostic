@@ -30,52 +30,52 @@
     
     @if(count($results) > 0)
         <div id="search-results-container" tabindex="0" style="outline: none;" onclick="this.focus()">
-            <table class="table table-sm table-hover mb-0">
-            <thead class="table-light">
-                <tr>
-                    <th style="width: 20px;"></th>
-                    <th>Invoice No</th>
-                    <th>Patient Name</th>
-                    <th>Date</th>
-                    <th>Total</th>
-                    <th>Due</th>
-                </tr>
-            </thead>
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 20px;"></th>
+                                    <th>Invoice No</th>
+                                    <th>Patient Name</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Due</th>
+                                </tr>
+                            </thead>
             <tbody id="search-results-body">
-                @foreach($results as $index => $invoice)
-                    <tr class="search-item {{ $index === 0 ? 'first-result' : '' }}"
-                        id="{{ $index === 0 ? 'first-invoice-result' : '' }}"
+                                @foreach($results as $index => $invoice)
+                                    <tr class="search-item {{ $index === 0 ? 'first-result' : '' }}"
+                                        id="{{ $index === 0 ? 'first-invoice-result' : '' }}"
                         wire:click="selectInvoice({{ $invoice['invoice_id'] }})"
                         data-index="{{ $index }}"
                         data-invoice-id="{{ $invoice['invoice_id'] }}"
                     >
-                        <td><div class="triangle-indicator"></div></td>
+                                        <td><div class="triangle-indicator"></div></td>
                         <td>{{ $invoice['invoice_no'] }}</td>
                         <td>{{ $invoice['patient_name'] }}</td>
                         <td>{{ date('d M y', strtotime($invoice['invoice_date'])) }}</td>
                         <td>{{ number_format($invoice['total_amount'], 0) }}</td>
                         <td class="text-danger fw-bold">{{ number_format($invoice['due_amount'], 0) }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        </div>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
     @elseif(strlen($search) >= 2)
         <div class="p-3 text-center">
             <div class="alert alert-info py-2 mb-0">No due OPD invoices found matching "{{ $search }}"</div>
-        </div>
-    @else
+                    </div>
+                @else
         <div class="p-3 text-center text-muted">
             <i class="fas fa-info-circle me-2"></i> 
             @if(count($results) == 0)
                 No OPD invoices found in database. Please create some OPD invoices first.
             @else
                 Type to search for due OPD invoices
-            @endif
+                @endif
         </div>
     @endif
 
-    <script>
+<script>
         document.addEventListener('livewire:init', function() {
             // Don't auto-focus - let user control focus
         });
@@ -113,8 +113,8 @@
             document.addEventListener('livewire:destroy', function() {
                 if (observer) {
                     observer.disconnect();
-                }
-            });
-        });
-    </script>
+        }
+    });
+});
+</script> 
 </div> 

@@ -172,7 +172,7 @@ class DiagnosticsController extends Controller
                     'patients.dob',
                     'patients.gender'
                 ])
-                ->where('invoice.invoice_type', 'ipd') // Only IPD invoices for diagnostics
+                ->where('invoice.invoice_type', 'dia') // Only diagnostics invoices
                 ->where(function($q) use ($query) {
                     $q->where('invoice.invoice_no', 'like', "%{$query}%")
                       ->orWhere('patients.name_en', 'like', "%{$query}%")
@@ -231,7 +231,7 @@ class DiagnosticsController extends Controller
                     'patients.dob',
                     'patients.gender'
                 ])
-                ->where('invoice.invoice_type', 'ipd') // Only IPD invoices for diagnostics
+                ->where('invoice.invoice_type', 'dia') // Only diagnostics invoices
                 ->where('invoice.paid_amount', '>', 0) // Only invoices with payments
                 ->orderBy('invoice.invoice_date', 'desc')
                 ->limit(5)
@@ -426,7 +426,7 @@ class DiagnosticsController extends Controller
                     'patients.dob',
                     'patients.gender'
                 )
-                ->where('invoice.invoice_type', 'ipd')
+                ->where('invoice.invoice_type', 'dia')
                 ->orderBy('invoice.created_at', 'desc')
                 ->limit(5)
                 ->get();
@@ -459,14 +459,14 @@ class DiagnosticsController extends Controller
             $query = $request->get('query');
             \Log::info('Search query: ' . $query);
             
-            // First, let's check what IPD invoices exist
-            $allIpdInvoices = DB::table('invoice')
-                ->where('invoice_type', 'ipd')
+            // First, let's check what diagnostics invoices exist
+            $allDiagnosticsInvoices = DB::table('invoice')
+                ->where('invoice_type', 'dia')
                 ->select('id', 'invoice_no', 'patient_id')
                 ->get();
             
-            \Log::info('Total IPD invoices: ' . $allIpdInvoices->count());
-            \Log::info('IPD invoice numbers: ' . $allIpdInvoices->pluck('invoice_no')->implode(', '));
+            \Log::info('Total diagnostics invoices: ' . $allDiagnosticsInvoices->count());
+            \Log::info('Diagnostics invoice numbers: ' . $allDiagnosticsInvoices->pluck('invoice_no')->implode(', '));
             
             $invoices = DB::table('invoice')
                 ->join('patients', 'invoice.patient_id', '=', 'patients.id')
@@ -483,7 +483,7 @@ class DiagnosticsController extends Controller
                     'patients.dob',
                     'patients.gender'
                 )
-                ->where('invoice.invoice_type', 'ipd')
+                ->where('invoice.invoice_type', 'dia')
                 ->where(function($q) use ($query) {
                     $q->where('invoice.invoice_no', 'like', "%{$query}%")
                       ->orWhere('patients.name_en', 'like', "%{$query}%")
@@ -533,7 +533,7 @@ class DiagnosticsController extends Controller
                     'patients.gender'
                 )
                 ->where('invoice.id', $id)
-                ->where('invoice.invoice_type', 'ipd')
+                ->where('invoice.invoice_type', 'dia')
                 ->first();
 
             if (!$invoice) {

@@ -52,68 +52,68 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        // Add IPD invoices with due amounts
+        // Add diagnostics invoices with due amounts
         DB::table('invoice')->insert([
             'id' => 26,
-            'invoice_no' => 'IPD-250723-022',
+            'invoice_no' => 'DIA-250723-022',
             'patient_id' => 1,
             'total_amount' => 2500,
             'paid_amount' => 1000,
             'due_amount' => 1500,
             'invoice_date' => '2025-01-15',
-            'invoice_type' => 'ipd',
+            'invoice_type' => 'dia',
             'created_by' => 1,
             'updated_by' => 1,
         ]);
         
         DB::table('invoice')->insert([
             'id' => 27,
-            'invoice_no' => 'IPD-250723-023',
+            'invoice_no' => 'DIA-250723-023',
             'patient_id' => 2,
             'total_amount' => 3200,
             'paid_amount' => 1200,
             'due_amount' => 2000,
             'invoice_date' => '2025-01-16',
-            'invoice_type' => 'ipd',
+            'invoice_type' => 'dia',
             'created_by' => 1,
             'updated_by' => 1,
         ]);
         
         DB::table('invoice')->insert([
             'id' => 28,
-            'invoice_no' => 'IPD-250723-024',
+            'invoice_no' => 'DIA-250723-024',
             'patient_id' => 3,
             'total_amount' => 1800,
             'paid_amount' => 600,
             'due_amount' => 1200,
             'invoice_date' => '2025-01-17',
-            'invoice_type' => 'ipd',
+            'invoice_type' => 'dia',
             'created_by' => 1,
             'updated_by' => 1,
         ]);
         
         DB::table('invoice')->insert([
             'id' => 29,
-            'invoice_no' => 'IPD-250723-025',
+            'invoice_no' => 'DIA-250723-025',
             'patient_id' => 4,
             'total_amount' => 4100,
             'paid_amount' => 1500,
             'due_amount' => 2600,
             'invoice_date' => '2025-01-18',
-            'invoice_type' => 'ipd',
+            'invoice_type' => 'dia',
             'created_by' => 1,
             'updated_by' => 1,
         ]);
         
         DB::table('invoice')->insert([
             'id' => 30,
-            'invoice_no' => 'IPD-250723-026',
+            'invoice_no' => 'DIA-250723-026',
             'patient_id' => 5,
             'total_amount' => 2800,
             'paid_amount' => 800,
             'due_amount' => 2000,
             'invoice_date' => '2025-01-19',
-            'invoice_type' => 'ipd',
+            'invoice_type' => 'dia',
             'created_by' => 1,
             'updated_by' => 1,
         ]);
@@ -281,7 +281,7 @@ class DueCollectionDataSeeder extends Seeder
             'opd_service_id' => 2,
         ]);
         
-        // Add Lab Request Items for IPD invoices
+        // Add Lab Request Items for diagnostics invoices
         DB::table('lab_request_items')->insert([
             'id' => 9,
             'invoice_id' => 26,

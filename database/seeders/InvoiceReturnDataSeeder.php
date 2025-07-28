@@ -22,10 +22,10 @@ class InvoiceReturnDataSeeder extends Seeder
             return;
         }
         
-        // Create IPD invoices with payments
-        $ipdInvoices = [
+        // Create diagnostics invoices with payments
+        $diagnosticsInvoices = [
             [
-                'invoice_no' => 'IPD-250727-001',
+                'invoice_no' => 'DIA-250727-001',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 3500,
                 'payable_amount' => 3500,
@@ -34,15 +34,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-25',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Cash',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-002',
+                'invoice_no' => 'DIA-250727-002',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 4200,
                 'payable_amount' => 4200,
@@ -51,15 +51,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-24',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Card',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-003',
+                'invoice_no' => 'DIA-250727-003',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 2800,
                 'payable_amount' => 2800,
@@ -68,15 +68,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-23',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Cash',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-004',
+                'invoice_no' => 'DIA-250727-004',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 5500,
                 'payable_amount' => 5500,
@@ -85,15 +85,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-22',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Cash',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-005',
+                'invoice_no' => 'DIA-250727-005',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 3200,
                 'payable_amount' => 3200,
@@ -102,15 +102,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-21',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Card',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-006',
+                'invoice_no' => 'DIA-250727-006',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 4800,
                 'payable_amount' => 4800,
@@ -119,15 +119,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-20',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Cash',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-007',
+                'invoice_no' => 'DIA-250727-007',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 3900,
                 'payable_amount' => 3900,
@@ -136,15 +136,15 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-19',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Card',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'IPD-250727-008',
+                'invoice_no' => 'DIA-250727-008',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 2600,
                 'payable_amount' => 2600,
@@ -153,17 +153,17 @@ class InvoiceReturnDataSeeder extends Seeder
                 'discount_amount' => 0,
                 'discount_percentage' => 0,
                 'invoice_date' => '2025-01-18',
-                'invoice_type' => 'ipd',
+                'invoice_type' => 'dia',
                 'payment_method' => 'Cash',
                 'created_by' => 1,
-                'remarks' => 'IPD Lab Tests',
+                'remarks' => 'Diagnostics Lab Tests',
                 'created_at' => now(),
                 'updated_at' => now()
             ]
         ];
         
-        // Insert IPD invoices
-        foreach ($ipdInvoices as $invoice) {
+        // Insert diagnostics invoices
+        foreach ($diagnosticsInvoices as $invoice) {
             $invoiceId = DB::table('invoice')->insertGetId($invoice);
             
             // Create lab request items for each invoice
@@ -191,6 +191,6 @@ class InvoiceReturnDataSeeder extends Seeder
         }
         
         $this->command->info('Invoice Return dummy data seeded successfully!');
-        $this->command->info('Created ' . count($ipdInvoices) . ' IPD invoices with lab test items.');
+        $this->command->info('Created ' . count($diagnosticsInvoices) . ' diagnostics invoices with lab test items.');
     }
 } 

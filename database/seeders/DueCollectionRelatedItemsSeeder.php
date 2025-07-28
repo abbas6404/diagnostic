@@ -109,7 +109,7 @@ class DueCollectionRelatedItemsSeeder extends Seeder
             'opd_service_id' => 2,
         ]);
         
-        // Add Lab Request Items for IPD invoices
+        // Add Lab Request Items for diagnostics invoices
         DB::table('lab_request_items')->insert([
             'id' => 9,
             'invoice_id' => 26,

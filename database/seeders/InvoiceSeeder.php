@@ -38,10 +38,10 @@ class InvoiceSeeder extends Seeder
         ]);
         DB::table('invoice')->insert([
             'id' => 3,
-            'invoice_no' => 'IPD-250723-003',
+            'invoice_no' => 'DIA-250723-003',
             'patient_id' => 3,
             'invoice_date' => '2025-01-01',
-            'invoice_type' => 'ipd',
+            'invoice_type' => 'dia',
             'total_amount' => 350,
             'paid_amount' => 200,
             'due_amount' => 150,

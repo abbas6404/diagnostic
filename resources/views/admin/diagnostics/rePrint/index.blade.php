@@ -634,7 +634,7 @@
                 tbody.appendChild(row);
             });
             
-
+            
             
 
         } else {
@@ -669,7 +669,7 @@
         if (selectedInvoiceId) {
             printType.disabled = false;
             printCopies.disabled = false;
-            printInvoiceBtn.disabled = false;
+                printInvoiceBtn.disabled = false;
         } else {
             printType.disabled = true;
             printCopies.disabled = true;

@@ -19,27 +19,27 @@ class DiagnosticsDueCollectionSearchResults extends Component
     
     public function loadDefaultDueInvoices()
     {
-        // First, let's check if there are any ipd invoices at all
-        $allIpdInvoices = \DB::table('invoice')
-            ->where('invoice_type', 'ipd')
+        // First, let's check if there are any diagnostics invoices at all
+        $allDiagnosticsInvoices = \DB::table('invoice')
+            ->where('invoice_type', 'dia')
             ->whereNull('deleted_at')
             ->count();
             
-        // If no ipd invoices exist, show a message
-        if ($allIpdInvoices == 0) {
+        // If no diagnostics invoices exist, show a message
+        if ($allDiagnosticsInvoices == 0) {
             $this->results = [];
             return;
         }
         
-        // Check for ipd invoices with due amounts
-        $dueIpdInvoices = \DB::table('invoice')
-            ->where('invoice_type', 'ipd')
+        // Check for diagnostics invoices with due amounts
+        $dueDiagnosticsInvoices = \DB::table('invoice')
+            ->where('invoice_type', 'dia')
             ->where('due_amount', '>', 0)
             ->whereNull('deleted_at')
             ->count();
             
-        // If no due ipd invoices, show all ipd invoices instead
-        if ($dueIpdInvoices == 0) {
+        // If no due diagnostics invoices, show all diagnostics invoices instead
+        if ($dueDiagnosticsInvoices == 0) {
             $dueInvoices = \DB::table('invoice')
                 ->join('patients', 'invoice.patient_id', '=', 'patients.id')
                 ->leftJoin('lab_request_items', 'invoice.id', '=', 'lab_request_items.invoice_id')
@@ -58,7 +58,7 @@ class DiagnosticsDueCollectionSearchResults extends Component
                     'patients.gender',
                     'patients.dob as date_of_birth'
                 ])
-                ->where('invoice.invoice_type', 'ipd')
+                ->where('invoice.invoice_type', 'dia')
                 ->whereNull('invoice.deleted_at')
                 ->groupBy('invoice.id')
                 ->orderBy('invoice.invoice_date', 'desc')
@@ -84,7 +84,7 @@ class DiagnosticsDueCollectionSearchResults extends Component
                 })
                 ->toArray();
         } else {
-            // Original query for due ipd invoices
+            // Original query for due diagnostics invoices
             $dueInvoices = \DB::table('invoice')
                 ->join('patients', 'invoice.patient_id', '=', 'patients.id')
                 ->leftJoin('lab_request_items', 'invoice.id', '=', 'lab_request_items.invoice_id')
@@ -104,7 +104,7 @@ class DiagnosticsDueCollectionSearchResults extends Component
                     'patients.dob as date_of_birth'
                 ])
                 ->where('invoice.due_amount', '>', 0)
-                ->where('invoice.invoice_type', 'ipd')
+                ->where('invoice.invoice_type', 'dia')
                 ->whereNull('invoice.deleted_at')
                 ->groupBy('invoice.id')
                 ->orderBy('invoice.invoice_date', 'desc')
