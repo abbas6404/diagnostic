@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\Setup\SetupController;
 use App\Http\Controllers\Admin\Setup\OverviewController;
 use App\Http\Controllers\Admin\Setup\PrefixSetupController;
 use App\Http\Controllers\Admin\Setup\DepartmentController;
+use App\Http\Controllers\Admin\Setup\LabTestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -294,4 +295,17 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/o
         Route::delete('/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [DepartmentController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('force-delete');
+    });
+
+    // Lab Test Routes
+    Route::prefix('setup/lab-test')->name('setup.lab-test.')->group(function () {
+        Route::get('/', [LabTestController::class, 'index'])->name('index');
+        Route::get('/create', [LabTestController::class, 'create'])->name('create');
+        Route::post('/', [LabTestController::class, 'store'])->name('store');
+        Route::get('/{labTest}', [LabTestController::class, 'show'])->name('show');
+        Route::get('/{labTest}/edit', [LabTestController::class, 'edit'])->name('edit');
+        Route::put('/{labTest}', [LabTestController::class, 'update'])->name('update');
+        Route::delete('/{labTest}', [LabTestController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [LabTestController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [LabTestController::class, 'forceDelete'])->name('force-delete');
     }); 

@@ -35,6 +35,10 @@
                            class="list-group-item list-group-item-action {{ request()->routeIs('admin.setup.department.*') ? 'active' : '' }}">
                             <i class="fas fa-building me-2"></i>Department
                         </a>
+                        <a href="{{ route('admin.setup.lab-test.index') }}" 
+                           class="list-group-item list-group-item-action {{ request()->routeIs('admin.setup.lab-test.*') ? 'active' : '' }}">
+                            <i class="fas fa-flask me-2"></i>Lab Tests
+                        </a>
                     </div>
                 </div>
             </div>
