@@ -11,7 +11,7 @@
                 <h5 class="card-title mb-0 text-primary">
                     <i class="fas fa-cogs me-2"></i> Prefix Configuration
                 </h5>
-                <div>
+        <div>
                     <button class="btn btn-sm btn-outline-secondary me-2" onclick="resetAllPrefixes()">
                         <i class="fas fa-refresh me-1"></i> Reset All
                     </button>
@@ -135,8 +135,8 @@
                                     </button>
                                 </div>
                             </form>
-                        </div>
-                    </div>
+        </div>
+    </div>
 
                     <!-- OPD Prefix -->
                     <div class="card border mb-4">
@@ -148,7 +148,7 @@
                         <div class="card-body">
                             <form id="opdForm">
                                 @csrf
-                                <div class="row">
+    <div class="row">
                                     <div class="col-md-4">
                                         <div class="mb-3">
                                             <label for="opd_prefix" class="form-label fw-bold">OPD Prefix</label>
@@ -277,7 +277,7 @@
                                 <i class="fas fa-tools me-1"></i> Quick Actions
                             </h6>
                         </div>
-                        <div class="card-body">
+                <div class="card-body">
                                                                 <div class="d-grid gap-2">
                                         <button class="btn btn-outline-secondary btn-sm" onclick="resetAllPrefixes()">
                                             <i class="fas fa-refresh me-1"></i> Reset All Prefixes

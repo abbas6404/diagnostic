@@ -402,7 +402,7 @@
             <a class="nav-link {{ request()->routeIs('admin.setup.*') ? 'active' : '' }}" href="{{ route('admin.setup.index') }}">
                 <i class="fas fa-cogs"></i>
                 <span>Setup</span>
-            </a>
+                        </a>
         </li>
         
         <!-- Security Options -->

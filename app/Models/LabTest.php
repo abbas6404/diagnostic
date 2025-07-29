@@ -18,6 +18,12 @@ class LabTest extends Model
         'charge',
     ];
 
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
     protected $casts = [
         'charge' => 'decimal:2',
         'created_at' => 'datetime',
@@ -28,6 +34,11 @@ class LabTest extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function collectionKits()
+    {
+        return $this->belongsToMany(CollectionKit::class, 'lab_test_collection_kit', 'lab_test_id', 'collection_kit_id');
     }
 
     public function getStatusAttribute()
@@ -44,6 +55,6 @@ class LabTest extends Model
 
     public function getFormattedChargeAttribute()
     {
-        return '$' . number_format($this->charge, 2);
+        return '৳' . number_format($this->charge, 2);
     }
 } 

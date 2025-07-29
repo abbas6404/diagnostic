@@ -634,7 +634,7 @@ function updateTestItemsTable(testItems) {
                 </td>
                 <td class="fw-bold">${item.code || ''}</td>
                 <td>${testNameDisplay}</td>
-                <td class="text-end">${Number(item.charge || 0).toFixed(0)}</td>
+                <td class="text-end">৳${Number(item.charge || 0).toFixed(0)}</td>
                 <td class="text-center">${statusBadge}</td>
                 <td class="text-end">
                     <input type="number" class="form-control form-control-sm refund-amount-input" 

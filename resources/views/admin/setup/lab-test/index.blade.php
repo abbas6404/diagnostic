@@ -75,7 +75,7 @@
                                 <th class="border-0"><i class="fas fa-hashtag me-1"></i>Code</th>
                                 <th class="border-0"><i class="fas fa-flask me-1"></i>Name</th>
                                 <th class="border-0"><i class="fas fa-building me-1"></i>Department</th>
-                                <th class="border-0"><i class="fas fa-dollar-sign me-1"></i>Charge</th>
+                                <th class="border-0"><i class="fas fa-money-bill me-1"></i>Charge</th>
                                 <th class="border-0"><i class="fas fa-info-circle me-1"></i>Status</th>
                                 <th class="border-0"><i class="fas fa-calendar me-1"></i>Created</th>
                                 <th class="border-0"><i class="fas fa-cogs me-1"></i>Actions</th>
@@ -87,7 +87,14 @@
                             <td>
                                 <strong>{{ $labTest->code }}</strong>
                             </td>
-                            <td>{{ $labTest->name }}</td>
+                            <td>
+                                {{ $labTest->name }}
+                                @if($labTest->collectionKits && $labTest->collectionKits->count() > 0)
+                                    <span class="badge bg-warning ms-1" title="{{ $labTest->collectionKits->count() }} Collection Kit(s)">
+                                        {{ $labTest->collectionKits->count() }}
+                                    </span>
+                                @endif
+                            </td>
                             <td>
                                 <span class="badge bg-info">{{ $labTest->department->name ?? 'N/A' }}</span>
                             </td>

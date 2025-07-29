@@ -43,7 +43,7 @@ class PrefixSetupController extends Controller
             'method' => $request->method(),
             'url' => $request->url()
         ]);
-
+        
         // Add validation back for proper error handling
         $request->validate([
             'type' => 'required|string|in:consolidated_invoice,diagnosis,opd',

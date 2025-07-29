@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\Setup\OverviewController;
 use App\Http\Controllers\Admin\Setup\PrefixSetupController;
 use App\Http\Controllers\Admin\Setup\DepartmentController;
 use App\Http\Controllers\Admin\Setup\LabTestController;
+use App\Http\Controllers\Admin\Setup\CollectionKitController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -257,7 +258,7 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setting
 
 // Admin Profile routes
 Route::get('/profile/password', [AdminController::class, 'showChangePasswordForm'])->name('profile.password');
-Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update');
+Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update'); 
 
 
 
@@ -308,4 +309,17 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/o
         Route::delete('/{labTest}', [LabTestController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [LabTestController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [LabTestController::class, 'forceDelete'])->name('force-delete');
+    });
+
+    // Collection Kit Routes
+    Route::prefix('setup/collection-kit')->name('setup.collection-kit.')->group(function () {
+        Route::get('/', [CollectionKitController::class, 'index'])->name('index');
+        Route::get('/create', [CollectionKitController::class, 'create'])->name('create');
+        Route::post('/', [CollectionKitController::class, 'store'])->name('store');
+        Route::get('/{collectionKit}', [CollectionKitController::class, 'show'])->name('show');
+        Route::get('/{collectionKit}/edit', [CollectionKitController::class, 'edit'])->name('edit');
+        Route::put('/{collectionKit}', [CollectionKitController::class, 'update'])->name('update');
+        Route::delete('/{collectionKit}', [CollectionKitController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [CollectionKitController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [CollectionKitController::class, 'forceDelete'])->name('force-delete');
     }); 

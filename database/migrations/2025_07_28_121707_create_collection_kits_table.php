@@ -18,12 +18,13 @@ return new class extends Migration
             $table->string('color')->nullable(); // Color of the kit
             $table->decimal('charge', 10, 2)->default(0); // Cost per kit
 
-            $table->string('status')->default('active'); // active, inactive, group_test
+            $table->string('status')->default('active'); // active, inactive 
             $table->unsignedBigInteger('created_by')->nullable()->index(); // created by user id
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable(); // updated by user id
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
-            $table->timestamps();
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');  
+            $table->timestamps();   
+            $table->softDeletes();  // Add soft deletes
         });
     }
 

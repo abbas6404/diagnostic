@@ -1069,9 +1069,9 @@
             tr.innerHTML = `
                 <td>${item.code || '-'}</td>
                 <td>${item.service_name || '-'}</td>
-                <td class="text-end">${parseFloat(item.charge || 0).toFixed(0)}</td>
+                <td class="text-end">৳${parseFloat(item.charge || 0).toFixed(0)}</td>
                 <td class="text-center">1</td>
-                <td class="text-end">${parseFloat(item.charge || 0).toFixed(0)}</td>
+                <td class="text-end">৳${parseFloat(item.charge || 0).toFixed(0)}</td>
             `;
             tbody.appendChild(tr);
         });

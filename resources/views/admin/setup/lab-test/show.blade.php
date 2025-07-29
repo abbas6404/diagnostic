@@ -4,8 +4,8 @@
 @section('page-description', 'View lab test information')
 
 @section('setup-content')
-<div class="row justify-content-center">
-    <div class="col-lg-8">
+<div class="row">
+    <div class="col-md-7">
         <div class="card shadow">
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
                 <h6 class="m-0 font-weight-bold text-primary">
@@ -116,6 +116,46 @@
                                 <i class="fas fa-trash me-1"></i>Delete Lab Test
                             </button>
                         </form>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Collection Kits Section -->
+    <div class="col-md-5">
+        <div class="card shadow h-100">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-boxes me-2"></i>Collection Kits
+                </h6>
+            </div>
+            <div class="card-body">
+                @if($labTest->collectionKits && $labTest->collectionKits->count() > 0)
+                    <div class="list-group list-group-flush">
+                        @foreach($labTest->collectionKits as $kit)
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-primary">{{ $kit->pcode }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ $kit->name }}</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">{{ $kit->formatted_charge }}</span>
+                                    <br>
+                                    <small class="text-muted">
+                                        <span class="badge" style="background-color: {{ $kit->color }}; color: white;">
+                                            {{ $kit->color }}
+                                        </span>
+                                    </small>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-4">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No collection kits assigned to this lab test.</p>
                     </div>
                 @endif
             </div>

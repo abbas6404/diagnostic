@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LabTest;
 use App\Models\Department;
+use App\Models\CollectionKit;
 use Illuminate\Support\Facades\DB;
 
 class LabTestController extends Controller
@@ -31,11 +32,15 @@ class LabTestController extends Controller
         
         if ($selectedDepartment) {
             $labTests = LabTest::withTrashed()
+                ->with('collectionKits')
                 ->where('department_id', $selectedDepartment)
                 ->orderBy('name')
                 ->get();
         } else {
-            $labTests = LabTest::withTrashed()->orderBy('name')->get();
+            $labTests = LabTest::withTrashed()
+                ->with('collectionKits')
+                ->orderBy('name')
+                ->get();
         }
         
         return view('admin.setup.lab-test.index', compact('departments', 'labTests', 'selectedDepartment', 'departmentCounts'));
@@ -44,21 +49,31 @@ class LabTestController extends Controller
     public function create()
     {
         $departments = Department::withTrashed()->orderBy('name')->get();
-        return view('admin.setup.lab-test.create', compact('departments'));
+        $collectionKits = CollectionKit::where('status', 'active')->orderBy('name')->get();
+        return view('admin.setup.lab-test.create', compact('departments', 'collectionKits'));
     }
 
     public function store(Request $request)
     {
+        // Debug the incoming request
+        \Log::info('Lab test creation request', [
+            'all_data' => $request->all(),
+            'collection_kits' => $request->collection_kits,
+            'has_collection_kits' => $request->has('collection_kits')
+        ]);
+
         $request->validate([
             'code' => 'required|string|max:50|unique:lab_tests,code',
             'department_id' => 'required|exists:departments,id',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'charge' => 'required|numeric|min:0',
+            'collection_kits' => 'nullable|array',
+            'collection_kits.*' => 'exists:collection_kits,id',
         ]);
 
         try {
-            LabTest::create([
+            $labTest = LabTest::create([
                 'code' => $request->code,
                 'department_id' => $request->department_id,
                 'name' => $request->name,
@@ -66,9 +81,22 @@ class LabTestController extends Controller
                 'charge' => $request->charge,
             ]);
 
+            // Attach collection kits if selected
+            if ($request->has('collection_kits') && !empty($request->collection_kits)) {
+                \Log::info('Attaching collection kits', [
+                    'lab_test_id' => $labTest->id,
+                    'collection_kits' => $request->collection_kits
+                ]);
+                $labTest->collectionKits()->attach($request->collection_kits);
+            }
+
             return redirect()->route('admin.setup.lab-test.index')
                 ->with('success', 'Lab test created successfully!');
         } catch (\Exception $e) {
+            \Log::error('Lab test creation error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return back()->withInput()
                 ->with('error', 'Failed to create lab test: ' . $e->getMessage());
         }
@@ -82,7 +110,9 @@ class LabTestController extends Controller
     public function edit(LabTest $labTest)
     {
         $departments = Department::withTrashed()->orderBy('name')->get();
-        return view('admin.setup.lab-test.edit', compact('labTest', 'departments'));
+        $collectionKits = CollectionKit::where('status', 'active')->orderBy('name')->get();
+        $labTest->load('collectionKits');
+        return view('admin.setup.lab-test.edit', compact('labTest', 'departments', 'collectionKits'));
     }
 
     public function update(Request $request, LabTest $labTest)
@@ -93,6 +123,8 @@ class LabTestController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'charge' => 'required|numeric|min:0',
+            'collection_kits' => 'nullable|array',
+            'collection_kits.*' => 'exists:collection_kits,id',
         ]);
 
         try {
@@ -103,6 +135,12 @@ class LabTestController extends Controller
                 'description' => $request->description,
                 'charge' => $request->charge,
             ]);
+
+            // Force update the timestamp
+            $labTest->touch();
+
+            // Sync collection kits
+            $labTest->collectionKits()->sync($request->collection_kits ?? []);
 
             return redirect()->route('admin.setup.lab-test.index')
                 ->with('success', 'Lab test updated successfully!');

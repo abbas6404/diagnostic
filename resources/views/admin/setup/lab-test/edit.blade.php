@@ -4,12 +4,14 @@
 @section('page-description', 'Update lab test information')
 
 @section('setup-content')
-<div class="row justify-content-center">
-    <div class="col-lg-8">
+<div class="row">
+    <!-- Main Form Area -->
+    <div class="col-md-7">
         <div class="card shadow">
             <div class="card-header py-3">
                 <h6 class="m-0 font-weight-bold text-primary">
                     <i class="fas fa-edit me-2"></i>Edit Lab Test: {{ $labTest->name }}
+                    <span id="selected-kits-header" class="ms-2 text-muted small"></span>
                 </h6>
             </div>
             <div class="card-body">
@@ -93,7 +95,7 @@
                     <div class="mb-3">
                         <label for="charge" class="form-label fw-bold">Charge <span class="text-danger">*</span></label>
                         <div class="input-group">
-                            <span class="input-group-text">$</span>
+                            <span class="input-group-text">৳</span>
                             <input type="number" 
                                    class="form-control @error('charge') is-invalid @enderror" 
                                    id="charge" 
@@ -107,8 +109,11 @@
                         @error('charge')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">Cost of the lab test</div>
+                        <div class="form-text">Cost of the lab test in Taka</div>
                     </div>
+
+                    <!-- Hidden collection kits inputs -->
+                    <div id="collection-kits-inputs"></div>
 
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.setup.lab-test.index') }}" class="btn btn-secondary">
@@ -122,5 +127,154 @@
             </div>
         </div>
     </div>
+
+    <!-- Collection Kits Sidebar -->
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">
+                    <i class="fas fa-box me-2"></i>Collection Kits
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="form-text mb-3">Select collection kits required for this test</div>
+                <div class="border rounded p-3" style="max-height: 400px; overflow-y: auto;">
+                    @forelse($collectionKits as $kit)
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   name="collection_kits[]" 
+                                   value="{{ $kit->id }}" 
+                                   id="kit_{{ $kit->id }}"
+                                   {{ in_array($kit->id, old('collection_kits', $labTest->collectionKits->pluck('id')->toArray())) ? 'checked' : '' }}>
+                            <label class="form-check-label" for="kit_{{ $kit->id }}">
+                                <strong>{{ $kit->pcode }}</strong> - {{ $kit->name }}
+                                @if($kit->color)
+                                    <span class="badge bg-secondary ms-2">{{ $kit->color }}</span>
+                                @endif
+                                <span class="text-muted ms-2">(৳{{ number_format($kit->charge, 2) }})</span>
+                            </label>
+                        </div>
+                    @empty
+                        <div class="text-muted">No collection kits available</div>
+                    @endforelse
+                </div>
+                @error('collection_kits')
+                    <div class="text-danger small mt-2">{{ $message }}</div>
+                @enderror
+            </div>
+        </div>
+    </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('input[name="collection_kits[]"]');
+    const headerSpan = document.getElementById('selected-kits-header');
+    const hiddenInputsContainer = document.getElementById('collection-kits-inputs');
+    
+    function updateSelectedKits() {
+        const selectedKits = [];
+        
+        // Clear existing hidden inputs
+        hiddenInputsContainer.innerHTML = '';
+        
+        checkboxes.forEach(checkbox => {
+            const label = checkbox.nextElementSibling;
+            
+            if (checkbox.checked) {
+                const kitCode = label.querySelector('strong').textContent;
+                selectedKits.push(kitCode);
+                label.classList.add('selected-kit');
+                
+                // Add hidden input to form
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.name = 'collection_kits[]';
+                hiddenInput.value = checkbox.value;
+                hiddenInputsContainer.appendChild(hiddenInput);
+            } else {
+                label.classList.remove('selected-kit');
+            }
+        });
+        
+        if (selectedKits.length > 0) {
+            const highlightedKits = selectedKits.map(kit => `<span class="selected-kit-code">${kit}</span>`).join(' ');
+            headerSpan.innerHTML = `| ${highlightedKits}`;
+            headerSpan.style.display = 'inline';
+        } else {
+            headerSpan.style.display = 'none';
+        }
+    }
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', updateSelectedKits);
+    });
+    
+    // Initialize display
+    updateSelectedKits();
+});
+</script>
+@endsection
+
+@section('styles')
+<style>
+.selected-kit {
+    background-color: #e3f2fd !important;
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin: 2px 0;
+    border-left: 4px solid #2196f3;
+    font-weight: 600;
+    color: #1976d2;
+    transition: all 0.3s ease;
+}
+
+.selected-kit strong {
+    color: #1565c0 !important;
+}
+
+.selected-kit .badge {
+    background-color: #1976d2 !important;
+}
+
+.form-check-label {
+    padding: 6px 8px;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.form-check-label:hover {
+    background-color: #f5f5f5;
+}
+
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.form-check-input {
+    margin-top: 0;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
+.selected-kit-code {
+    background-color: #2196f3;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 0.85em;
+    margin: 0 1px;
+    display: inline-block;
+}
+</style>
 @endsection 

@@ -21,6 +21,7 @@ return new class extends Migration
             
             // Ensure unique combinations
             $table->unique(['lab_test_id', 'collection_kit_id']);
+
         });
     }
 
