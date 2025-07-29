@@ -15,7 +15,19 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Role Management'),
+    'name' => env('APP_NAME', 'Hospital Diagnostic System'),
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Application Version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the version of your application. This value is used for
+    | update checking and version display throughout the application.
+    |
+    */
+    
+    'version' => env('APP_VERSION', '1.0.0'),
 
     /*
     |--------------------------------------------------------------------------

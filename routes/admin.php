@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\LaboratoryController;
 use App\Http\Controllers\Admin\SearchController;
+use App\Http\Controllers\Admin\Setup\SetupController;
+use App\Http\Controllers\Admin\Setup\OverviewController;
+use App\Http\Controllers\Admin\Setup\PrefixSetupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -252,4 +255,29 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setting
 
 // Admin Profile routes
 Route::get('/profile/password', [AdminController::class, 'showChangePasswordForm'])->name('profile.password');
-Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update'); 
+Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update');
+
+
+
+// Setup routes - protected by permissions
+Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup'], function() {
+    Route::get('/', [SetupController::class, 'index'])->name('setup.index');
+});
+
+// Overview routes - protected by permissions
+Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/overview'], function() {
+    Route::get('/', [OverviewController::class, 'index'])->name('setup.overview.index');
+    Route::post('/check-updates', [OverviewController::class, 'checkUpdates'])->name('setup.overview.check-updates');
+    Route::post('/perform-update', [OverviewController::class, 'performUpdate'])->name('setup.overview.perform-update');
+    Route::post('/clear-cache', [OverviewController::class, 'clearCache'])->name('setup.overview.clear-cache');
+    Route::post('/optimize-system', [OverviewController::class, 'optimizeSystem'])->name('setup.overview.optimize-system');
+});
+
+    // Prefix Setup Routes
+    Route::prefix('setup/prefix')->name('setup.prefix.')->group(function () {
+        Route::get('/', [PrefixSetupController::class, 'index'])->name('index');
+        Route::post('/save-settings', [PrefixSetupController::class, 'saveSettings'])->name('save-settings');
+        Route::post('/reset', [PrefixSetupController::class, 'resetPrefixes'])->name('reset');
+        Route::get('/export', [PrefixSetupController::class, 'exportSettings'])->name('export');
+        Route::post('/import', [PrefixSetupController::class, 'importSettings'])->name('import');
+    }); 

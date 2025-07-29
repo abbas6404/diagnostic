@@ -41,6 +41,38 @@
                 </ul>
             </div>
         </li>
+             <!-- Doctor/Consultant Ticket -->
+             <li class="nav-item">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.doctor.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#doctorSubmenu" aria-expanded="{{ request()->routeIs('admin.doctor.*') ? 'true' : 'false' }}">
+                <i class="fas fa-user-md"></i>
+                <span>Doctor/Consultant</span>
+                <i class="fas fa-chevron-down submenu-icon"></i>
+            </a>
+            <div class="collapse {{ request()->routeIs('admin.doctor.*') ? 'show' : '' }}" id="doctorSubmenu">
+                <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.invoice') ? 'active' : '' }}" href="{{ route('admin.doctor.invoice') }}">
+                            <span>Invoice</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.duecollection') ? 'active' : '' }}" href="{{ route('admin.doctor.duecollection') }}">
+                            <span>Due Collection</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.report') ? 'active' : '' }}" href="{{ route('admin.doctor.report') }}">
+                            <span>Report</span>
+                        </a>
+                    </li>   
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('admin.doctor.reprint') ? 'active' : '' }}" href="{{ route('admin.doctor.reprint') }}">
+                            <span>Re-print</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
         
         <!-- Hospital -->
         <li class="nav-item">
@@ -156,6 +188,35 @@
             </div>
         </li>
         
+    
+                <!-- Investigation Report -->
+                <li class="nav-item">
+            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#investigationSubmenu" aria-expanded="false">
+                <i class="fas fa-file-medical-alt"></i>
+                <span>Investigation Report</span>
+                <i class="fas fa-chevron-down submenu-icon"></i>
+            </a>
+            <div class="collapse" id="investigationSubmenu">
+                <ul class="nav flex-column submenu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span>Lab Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span>Radiology Reports</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            <span>Clinical Reports</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
         <!-- Medicine -->
         <li class="nav-item">
             <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#medicineSubmenu" aria-expanded="false">
@@ -296,66 +357,9 @@
             </div>
         </li>
         
-        <!-- Investigation Report -->
-        <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#investigationSubmenu" aria-expanded="false">
-                <i class="fas fa-file-medical-alt"></i>
-                <span>Investigation Report</span>
-                <i class="fas fa-chevron-down submenu-icon"></i>
-            </a>
-            <div class="collapse" id="investigationSubmenu">
-                <ul class="nav flex-column submenu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Lab Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Radiology Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Clinical Reports</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
+
         
-        <!-- Doctor/Consultant Ticket -->
-        <li class="nav-item">
-            <a class="nav-link has-submenu {{ request()->routeIs('admin.doctor.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#doctorSubmenu" aria-expanded="{{ request()->routeIs('admin.doctor.*') ? 'true' : 'false' }}">
-                <i class="fas fa-user-md"></i>
-                <span>Doctor/Consultant</span>
-                <i class="fas fa-chevron-down submenu-icon"></i>
-            </a>
-            <div class="collapse {{ request()->routeIs('admin.doctor.*') ? 'show' : '' }}" id="doctorSubmenu">
-                <ul class="nav flex-column submenu">
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.doctor.invoice') ? 'active' : '' }}" href="{{ route('admin.doctor.invoice') }}">
-                            <span>Invoice</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.doctor.duecollection') ? 'active' : '' }}" href="{{ route('admin.doctor.duecollection') }}">
-                            <span>Due Collection</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.doctor.report') ? 'active' : '' }}" href="{{ route('admin.doctor.report') }}">
-                            <span>Report</span>
-                        </a>
-                    </li>   
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('admin.doctor.reprint') ? 'active' : '' }}" href="{{ route('admin.doctor.reprint') }}">
-                            <span>Re-print</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </li>
+   
         
         @can('view users')
         <li class="nav-item">
@@ -393,32 +397,12 @@
 
     <div class="sidebar-heading">SYSTEM</div>
     <ul class="nav flex-column">
-        <!-- Code Maintenance -->
+        <!-- Setup -->
         <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#codeMaintenanceSubmenu" aria-expanded="false">
-                <i class="fas fa-code"></i>
-                <span>Code Maintenance</span>
-                <i class="fas fa-chevron-down submenu-icon"></i>
+            <a class="nav-link {{ request()->routeIs('admin.setup.*') ? 'active' : '' }}" href="{{ route('admin.setup.index') }}">
+                <i class="fas fa-cogs"></i>
+                <span>Setup</span>
             </a>
-            <div class="collapse" id="codeMaintenanceSubmenu">
-                <ul class="nav flex-column submenu">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>System Updates</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Error Logs</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Database Maintenance</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
         </li>
         
         <!-- Security Options -->

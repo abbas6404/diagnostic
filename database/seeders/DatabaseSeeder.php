@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $this->call(InvoiceReturnDataSeeder::class);
         $this->call(CollectionKitSeeder::class);
         $this->call(LabTestCollectionKitSeeder::class);
+        $this->call(SystemSettingsSeeder::class);
         
     }
 }
