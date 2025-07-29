@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\Setup\PrefixSetupController;
 use App\Http\Controllers\Admin\Setup\DepartmentController;
 use App\Http\Controllers\Admin\Setup\LabTestController;
 use App\Http\Controllers\Admin\Setup\CollectionKitController;
+use App\Http\Controllers\Admin\Setup\OpdServiceController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -322,4 +323,17 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/o
         Route::delete('/{collectionKit}', [CollectionKitController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [CollectionKitController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [CollectionKitController::class, 'forceDelete'])->name('force-delete');
+    });
+
+    // OPD Service Routes
+    Route::prefix('setup/opd-service')->name('setup.opd-service.')->group(function () {
+        Route::get('/', [OpdServiceController::class, 'index'])->name('index');
+        Route::get('/create', [OpdServiceController::class, 'create'])->name('create');
+        Route::post('/', [OpdServiceController::class, 'store'])->name('store');
+        Route::get('/{opdService}', [OpdServiceController::class, 'show'])->name('show');
+        Route::get('/{opdService}/edit', [OpdServiceController::class, 'edit'])->name('edit');
+        Route::put('/{opdService}', [OpdServiceController::class, 'update'])->name('update');
+        Route::delete('/{opdService}', [OpdServiceController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [OpdServiceController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [OpdServiceController::class, 'forceDelete'])->name('force-delete');
     }); 

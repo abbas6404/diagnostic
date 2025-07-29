@@ -9,9 +9,23 @@
         <h6 class="m-0 font-weight-bold text-primary">
             <i class="fas fa-building me-2"></i>Departments
         </h6>
-        <a href="{{ route('admin.setup.department.create') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus me-1"></i>Add Department
-        </a>
+        
+        <div class="d-flex align-items-center gap-2">
+            <!-- Filter Tab Button -->
+            @if(request('filter') == 'archive')
+                <a href="{{ route('admin.setup.department.index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list me-1"></i>Active ({{ $activeCount }})
+                </a>
+            @else
+                <a href="{{ route('admin.setup.department.index', ['filter' => 'archive']) }}" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-archive me-1"></i>Archive ({{ $archiveCount }})
+                </a>
+            @endif
+            
+            <a href="{{ route('admin.setup.department.create') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Department
+            </a>
+        </div>
     </div>
     <div class="card-body">
         @if(session('success'))
@@ -34,22 +48,18 @@
                     <tr>
                         <th>Name</th>
                         <th>Description</th>
-                        <th>Status</th>
                         <th>Created</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($departments as $department)
-                        <tr class="{{ $department->deleted_at ? 'table-danger' : '' }}">
+                        <tr class="{{ request('filter') == 'archive' ? 'table-warning' : '' }}">
                             <td>
                                 <strong>{{ $department->name }}</strong>
                             </td>
                             <td>
                                 {{ $department->description ?: 'No description' }}
-                            </td>
-                            <td>
-                                {!! $department->status_badge !!}
                             </td>
                             <td>
                                 {{ $department->created_at ? $department->created_at->format('M d, Y') : 'N/A' }}
@@ -61,7 +71,7 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
-                                    @if(!$department->deleted_at)
+                                    @if(request('filter') != 'archive')
                                         <a href="{{ route('admin.setup.department.edit', $department) }}" 
                                            class="btn btn-sm btn-outline-warning" title="Edit">
                                             <i class="fas fa-edit"></i>
@@ -100,7 +110,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-4">
+                            <td colspan="4" class="text-center py-4">
                                 <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">No departments found</h5>
                                 <p class="text-muted">Create your first department to get started.</p>
@@ -115,4 +125,6 @@
         </div>
     </div>
 </div>
-@endsection 
+@endsection
+
+ 

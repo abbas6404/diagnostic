@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use App\Models\OpdService;
+use App\Models\Department;
 
 class OpdServiceSeeder extends Seeder
 {
@@ -13,65 +13,64 @@ class OpdServiceSeeder extends Seeder
      */
     public function run(): void
     {
-        $now = Carbon::now();
+        // Get departments
+        $departments = Department::all();
         
-        // Get department IDs
-        $departmentId = DB::table('departments')->where('name', 'OPD')->first()->id ?? 1;
-        
-        // Sample OPD services
+        if ($departments->isEmpty()) {
+            $this->command->warn('No departments found. Please run DepartmentSeeder first.');
+            return;
+        }
+
         $opdServices = [
             [
-                'id' => 1,
                 'code' => 'OPD-001',
-                'department_id' => $departmentId,
+                'department_id' => $departments->first()->id,
                 'name' => 'General Consultation',
-                'description' => 'General doctor consultation',
+                'description' => 'Basic consultation with general physician',
                 'charge' => 500.00,
-                'created_at' => $now,
-                'updated_at' => $now,
             ],
             [
-                'id' => 2,
                 'code' => 'OPD-002',
-                'department_id' => $departmentId,
+                'department_id' => $departments->first()->id,
                 'name' => 'Specialist Consultation',
-                'description' => 'Specialist doctor consultation',
+                'description' => 'Consultation with specialist doctor',
                 'charge' => 1000.00,
-                'created_at' => $now,
-                'updated_at' => $now,
             ],
             [
-                'id' => 3,
                 'code' => 'OPD-003',
-                'department_id' => $departmentId,
-                'name' => 'Dressing',
-                'description' => 'Wound dressing service',
-                'charge' => 300.00,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'department_id' => $departments->first()->id,
+                'name' => 'Emergency Consultation',
+                'description' => 'Emergency consultation service',
+                'charge' => 1500.00,
             ],
             [
-                'id' => 4,
                 'code' => 'OPD-004',
-                'department_id' => $departmentId,
-                'name' => 'Injection',
-                'description' => 'Injection administration',
-                'charge' => 200.00,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'department_id' => $departments->first()->id,
+                'name' => 'Follow-up Consultation',
+                'description' => 'Follow-up consultation for existing patients',
+                'charge' => 300.00,
             ],
             [
-                'id' => 5,
                 'code' => 'OPD-005',
-                'department_id' => $departmentId,
-                'name' => 'Nebulization',
-                'description' => 'Nebulization treatment',
-                'charge' => 350.00,
-                'created_at' => $now,
-                'updated_at' => $now,
+                'department_id' => $departments->first()->id,
+                'name' => 'Health Check-up',
+                'description' => 'Comprehensive health check-up service',
+                'charge' => 2000.00,
             ],
         ];
-        
-        DB::table('opd_services')->insert($opdServices);
+
+        foreach ($opdServices as $service) {
+            OpdService::create([
+                'code' => $service['code'],
+                'department_id' => $service['department_id'],
+                'name' => $service['name'],
+                'description' => $service['description'],
+                'charge' => $service['charge'],
+                'created_by' => 1, // Assuming admin user ID is 1
+                'updated_by' => 1,
+            ]);
+        }
+
+        $this->command->info('OPD Services seeded successfully!');
     }
 } 

@@ -16,6 +16,8 @@ class LabTest extends Model
         'name',
         'description',
         'charge',
+        'created_by',
+        'updated_by',
     ];
 
     protected $dates = [
@@ -39,6 +41,16 @@ class LabTest extends Model
     public function collectionKits()
     {
         return $this->belongsToMany(CollectionKit::class, 'lab_test_collection_kit', 'lab_test_id', 'collection_kit_id');
+    }
+
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     public function getStatusAttribute()

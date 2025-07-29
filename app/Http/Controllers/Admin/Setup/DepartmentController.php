@@ -16,8 +16,19 @@ class DepartmentController extends Controller
 
     public function index()
     {
-        $departments = Department::withTrashed()->orderBy('name')->get();
-        return view('admin.setup.department.index', compact('departments'));
+        $filter = request('filter');
+        
+        if ($filter === 'archive') {
+            $departments = Department::onlyTrashed()->orderBy('deleted_at', 'desc')->get();
+        } else {
+            $departments = Department::whereNull('deleted_at')->orderBy('name')->get();
+        }
+        
+        // Get counts for filter tabs
+        $activeCount = Department::whereNull('deleted_at')->count();
+        $archiveCount = Department::onlyTrashed()->count();
+        
+        return view('admin.setup.department.index', compact('departments', 'activeCount', 'archiveCount'));
     }
 
     public function create()

@@ -9,9 +9,23 @@
         <h6 class="m-0 font-weight-bold text-primary">
             <i class="fas fa-flask me-2"></i>Lab Tests
         </h6>
-        <a href="{{ route('admin.setup.lab-test.create') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus me-1"></i>Add Lab Test
-        </a>
+        
+        <div class="d-flex align-items-center gap-2">
+            <!-- Filter Tab Button -->
+            @if(request('filter') == 'archive')
+                <a href="{{ route('admin.setup.lab-test.index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list me-1"></i>Active ({{ $activeCount }})
+                </a>
+            @else
+                <a href="{{ route('admin.setup.lab-test.index', ['filter' => 'archive']) }}" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-archive me-1"></i>Archive ({{ $archiveCount }})
+                </a>
+            @endif
+            
+            <a href="{{ route('admin.setup.lab-test.create') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Lab Test
+            </a>
+        </div>
     </div>
     <div class="card-body">
         @if(session('success'))
@@ -76,14 +90,13 @@
                                 <th class="border-0"><i class="fas fa-flask me-1"></i>Name</th>
                                 <th class="border-0"><i class="fas fa-building me-1"></i>Department</th>
                                 <th class="border-0"><i class="fas fa-money-bill me-1"></i>Charge</th>
-                                <th class="border-0"><i class="fas fa-info-circle me-1"></i>Status</th>
                                 <th class="border-0"><i class="fas fa-calendar me-1"></i>Created</th>
                                 <th class="border-0"><i class="fas fa-cogs me-1"></i>Actions</th>
                             </tr>
                         </thead>
                 <tbody>
                     @forelse($labTests as $labTest)
-                        <tr class="{{ $labTest->deleted_at ? 'table-danger' : '' }}">
+                        <tr class="{{ request('filter') == 'archive' ? 'table-warning' : '' }}">
                             <td>
                                 <strong>{{ $labTest->code }}</strong>
                             </td>
@@ -100,9 +113,6 @@
                             </td>
                             <td>{{ $labTest->formatted_charge }}</td>
                             <td>
-                                {!! $labTest->status_badge !!}
-                            </td>
-                            <td>
                                 {{ $labTest->created_at ? $labTest->created_at->format('M d, Y') : 'N/A' }}
                             </td>
                             <td>
@@ -112,7 +122,7 @@
                                         <i class="fas fa-eye"></i>
                                     </a>
                                     
-                                    @if(!$labTest->deleted_at)
+                                    @if(request('filter') != 'archive')
                                         <a href="{{ route('admin.setup.lab-test.edit', $labTest) }}" 
                                            class="btn btn-sm btn-outline-warning" title="Edit">
                                             <i class="fas fa-edit"></i>
@@ -151,7 +161,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4">
+                            <td colspan="6" class="text-center py-4">
                                 <i class="fas fa-flask fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">No lab tests found</h5>
                                 <p class="text-muted">

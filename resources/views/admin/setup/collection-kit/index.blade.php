@@ -9,9 +9,23 @@
         <h6 class="m-0 font-weight-bold text-primary">
             <i class="fas fa-box me-2"></i>Collection Kits
         </h6>
-        <a href="{{ route('admin.setup.collection-kit.create') }}" class="btn btn-primary btn-sm">
-            <i class="fas fa-plus me-1"></i>Add Collection Kit
-        </a>
+        
+        <div class="d-flex align-items-center gap-2">
+            <!-- Filter Tab Button -->
+            @if(request('filter') == 'archive')
+                <a href="{{ route('admin.setup.collection-kit.index') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-list me-1"></i>Active ({{ $activeCount }})
+                </a>
+            @else
+                <a href="{{ route('admin.setup.collection-kit.index', ['filter' => 'archive']) }}" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-archive me-1"></i>Archive ({{ $archiveCount }})
+                </a>
+            @endif
+            
+            <a href="{{ route('admin.setup.collection-kit.create') }}" class="btn btn-primary btn-sm">
+                <i class="fas fa-plus me-1"></i>Add Collection Kit
+            </a>
+        </div>
     </div>
     <div class="card-body">
         @if(session('success'))
@@ -51,7 +65,7 @@
                         </thead>
                         <tbody>
                             @forelse($collectionKits as $collectionKit)
-                                <tr class="{{ $collectionKit->deleted_at ? 'table-danger' : '' }}">
+                                <tr class="{{ request('filter') == 'archive' ? 'table-warning' : '' }}">
                                     <td>
                                         <strong>{{ $collectionKit->pcode }}</strong>
                                     </td>
@@ -73,38 +87,40 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('admin.setup.collection-kit.show', $collectionKit) }}" 
-                                               class="btn btn-sm btn-info" title="View">
+                                               class="btn btn-sm btn-outline-info" title="View">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('admin.setup.collection-kit.edit', $collectionKit) }}" 
-                                               class="btn btn-sm btn-warning" title="Edit">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            @if($collectionKit->deleted_at)
-                                                <form action="{{ route('admin.setup.collection-kit.restore', $collectionKit->id) }}" 
-                                                      method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success" title="Restore">
-                                                        <i class="fas fa-undo"></i>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('admin.setup.collection-kit.force-delete', $collectionKit->id) }}" 
-                                                      method="POST" class="d-inline" 
-                                                      onsubmit="return confirm('Are you sure you want to permanently delete this collection kit?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" title="Permanently Delete">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            @else
+                                            @if(request('filter') != 'archive')
+                                                <a href="{{ route('admin.setup.collection-kit.edit', $collectionKit) }}" 
+                                                   class="btn btn-sm btn-outline-warning" title="Edit">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                
                                                 <form action="{{ route('admin.setup.collection-kit.destroy', $collectionKit) }}" 
                                                       method="POST" class="d-inline" 
                                                       onsubmit="return confirm('Are you sure you want to delete this collection kit?')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger" title="Delete">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
                                                         <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <form action="{{ route('admin.setup.collection-kit.restore', $collectionKit->id) }}" 
+                                                      method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-outline-success" title="Restore">
+                                                        <i class="fas fa-undo"></i>
+                                                    </button>
+                                                </form>
+                                                
+                                                <form action="{{ route('admin.setup.collection-kit.force-delete', $collectionKit->id) }}" 
+                                                      method="POST" class="d-inline" 
+                                                      onsubmit="return confirm('Are you sure you want to permanently delete this collection kit?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Permanently Delete">
+                                                        <i class="fas fa-trash-alt"></i>
                                                     </button>
                                                 </form>
                                             @endif

@@ -16,12 +16,25 @@ class CollectionKitController extends Controller
 
     public function index()
     {
-        $collectionKits = CollectionKit::withTrashed()
-            ->with(['createdBy', 'updatedBy'])
-            ->orderBy('name')
-            ->get();
-
-        return view('admin.setup.collection-kit.index', compact('collectionKits'));
+        $filter = request('filter');
+        
+        if ($filter === 'archive') {
+            $collectionKits = CollectionKit::onlyTrashed()
+                ->with(['createdBy', 'updatedBy'])
+                ->orderBy('deleted_at', 'desc')
+                ->get();
+        } else {
+            $collectionKits = CollectionKit::whereNull('deleted_at')
+                ->with(['createdBy', 'updatedBy'])
+                ->orderBy('name')
+                ->get();
+        }
+        
+        // Get counts for filter tabs
+        $activeCount = CollectionKit::whereNull('deleted_at')->count();
+        $archiveCount = CollectionKit::onlyTrashed()->count();
+        
+        return view('admin.setup.collection-kit.index', compact('collectionKits', 'activeCount', 'archiveCount'));
     }
 
     public function create()

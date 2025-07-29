@@ -19,6 +19,10 @@ return new class extends Migration
             $table->string('name')->index();
             $table->string('description')->nullable();
             $table->decimal('charge', 10, 2)->default(0);
+            $table->unsignedBigInteger('created_by')->nullable()->index(); // created by user id
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable(); // updated by user id
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');  
             $table->timestamps();
             $table->softDeletes();
         });

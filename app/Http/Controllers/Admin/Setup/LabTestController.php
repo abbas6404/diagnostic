@@ -20,9 +20,14 @@ class LabTestController extends Controller
     {
         $departments = Department::withTrashed()->orderBy('name')->get();
         $selectedDepartment = request('department');
+        $filter = request('filter');
         
-        // Get all lab tests for counting
-        $allLabTests = LabTest::withTrashed()->get();
+        // Get all lab tests for counting based on filter
+        if ($filter === 'archive') {
+            $allLabTests = LabTest::onlyTrashed()->get();
+        } else {
+            $allLabTests = LabTest::whereNull('deleted_at')->get();
+        }
         
         // Calculate department counts
         $departmentCounts = [];
@@ -31,25 +36,47 @@ class LabTestController extends Controller
         }
         
         if ($selectedDepartment) {
-            $labTests = LabTest::withTrashed()
-                ->with('collectionKits')
-                ->where('department_id', $selectedDepartment)
-                ->orderBy('name')
-                ->get();
+            if ($filter === 'archive') {
+                $labTests = LabTest::onlyTrashed()
+                    ->with('collectionKits')
+                    ->where('department_id', $selectedDepartment)
+                    ->orderBy('deleted_at', 'desc')
+                    ->get();
+            } else {
+                $labTests = LabTest::whereNull('deleted_at')
+                    ->with('collectionKits')
+                    ->where('department_id', $selectedDepartment)
+                    ->orderBy('name')
+                    ->get();
+            }
         } else {
-            $labTests = LabTest::withTrashed()
-                ->with('collectionKits')
-                ->orderBy('name')
-                ->get();
+            if ($filter === 'archive') {
+                $labTests = LabTest::onlyTrashed()
+                    ->with('collectionKits')
+                    ->orderBy('deleted_at', 'desc')
+                    ->get();
+            } else {
+                $labTests = LabTest::whereNull('deleted_at')
+                    ->with('collectionKits')
+                    ->orderBy('name')
+                    ->get();
+            }
         }
         
-        return view('admin.setup.lab-test.index', compact('departments', 'labTests', 'selectedDepartment', 'departmentCounts'));
+        // Get counts for filter tabs
+        $activeCount = LabTest::whereNull('deleted_at')->count();
+        $archiveCount = LabTest::onlyTrashed()->count();
+        
+        return view('admin.setup.lab-test.index', compact('departments', 'labTests', 'selectedDepartment', 'departmentCounts', 'activeCount', 'archiveCount'));
     }
 
     public function create()
     {
         $departments = Department::withTrashed()->orderBy('name')->get();
-        $collectionKits = CollectionKit::where('status', 'active')->orderBy('name')->get();
+        $collectionKits = CollectionKit::where('status', 'active')
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->get();
         return view('admin.setup.lab-test.create', compact('departments', 'collectionKits'));
     }
 
@@ -69,7 +96,7 @@ class LabTestController extends Controller
             'description' => 'nullable|string|max:500',
             'charge' => 'required|numeric|min:0',
             'collection_kits' => 'nullable|array',
-            'collection_kits.*' => 'exists:collection_kits,id',
+            'collection_kits.*' => 'exists:collection_kits,id,deleted_at,NULL,status,active',
         ]);
 
         try {
@@ -79,6 +106,8 @@ class LabTestController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'charge' => $request->charge,
+                'created_by' => auth()->id(),
+                'updated_by' => auth()->id(),
             ]);
 
             // Attach collection kits if selected
@@ -104,13 +133,17 @@ class LabTestController extends Controller
 
     public function show(LabTest $labTest)
     {
+        $labTest->load(['department', 'collectionKits', 'createdBy', 'updatedBy']);
         return view('admin.setup.lab-test.show', compact('labTest'));
     }
 
     public function edit(LabTest $labTest)
     {
         $departments = Department::withTrashed()->orderBy('name')->get();
-        $collectionKits = CollectionKit::where('status', 'active')->orderBy('name')->get();
+        $collectionKits = CollectionKit::where('status', 'active')
+            ->whereNull('deleted_at')
+            ->orderBy('name')
+            ->get();
         $labTest->load('collectionKits');
         return view('admin.setup.lab-test.edit', compact('labTest', 'departments', 'collectionKits'));
     }
@@ -124,7 +157,7 @@ class LabTestController extends Controller
             'description' => 'nullable|string|max:500',
             'charge' => 'required|numeric|min:0',
             'collection_kits' => 'nullable|array',
-            'collection_kits.*' => 'exists:collection_kits,id',
+            'collection_kits.*' => 'exists:collection_kits,id,deleted_at,NULL,status,active',
         ]);
 
         try {
@@ -134,6 +167,7 @@ class LabTestController extends Controller
                 'name' => $request->name,
                 'description' => $request->description,
                 'charge' => $request->charge,
+                'updated_by' => auth()->id(),
             ]);
 
             // Force update the timestamp
