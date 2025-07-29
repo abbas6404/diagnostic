@@ -31,6 +31,10 @@
                            class="list-group-item list-group-item-action {{ request()->routeIs('admin.setup.prefix.*') ? 'active' : '' }}">
                             <i class="fas fa-download me-2"></i>Prefix Setup
                         </a>
+                        <a href="{{ route('admin.setup.department.index') }}" 
+                           class="list-group-item list-group-item-action {{ request()->routeIs('admin.setup.department.*') ? 'active' : '' }}">
+                            <i class="fas fa-building me-2"></i>Department
+                        </a>
                     </div>
                 </div>
             </div>

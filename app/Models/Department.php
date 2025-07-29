@@ -13,11 +13,23 @@ class Department extends Model
     protected $fillable = [
         'name',
         'description',
-        'status'
     ];
 
-    public function labTests()
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
+    ];
+
+    public function getStatusAttribute()
     {
-        return $this->hasMany(LabTest::class);
+        return $this->deleted_at ? 'Deleted' : 'Active';
+    }
+
+    public function getStatusBadgeAttribute()
+    {
+        return $this->deleted_at 
+            ? '<span class="badge bg-danger">Deleted</span>'
+            : '<span class="badge bg-success">Active</span>';
     }
 } 

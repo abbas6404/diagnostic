@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\Setup\SetupController;
 use App\Http\Controllers\Admin\Setup\OverviewController;
 use App\Http\Controllers\Admin\Setup\PrefixSetupController;
+use App\Http\Controllers\Admin\Setup\DepartmentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -280,4 +281,17 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/o
         Route::post('/reset', [PrefixSetupController::class, 'resetPrefixes'])->name('reset');
         Route::get('/export', [PrefixSetupController::class, 'exportSettings'])->name('export');
         Route::post('/import', [PrefixSetupController::class, 'importSettings'])->name('import');
+    });
+
+    // Department Routes
+    Route::prefix('setup/department')->name('setup.department.')->group(function () {
+        Route::get('/', [DepartmentController::class, 'index'])->name('index');
+        Route::get('/create', [DepartmentController::class, 'create'])->name('create');
+        Route::post('/', [DepartmentController::class, 'store'])->name('store');
+        Route::get('/{department}', [DepartmentController::class, 'show'])->name('show');
+        Route::get('/{department}/edit', [DepartmentController::class, 'edit'])->name('edit');
+        Route::put('/{department}', [DepartmentController::class, 'update'])->name('update');
+        Route::delete('/{department}', [DepartmentController::class, 'destroy'])->name('destroy');
+        Route::post('/{id}/restore', [DepartmentController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/force-delete', [DepartmentController::class, 'forceDelete'])->name('force-delete');
     }); 
