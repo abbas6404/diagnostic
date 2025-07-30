@@ -39,7 +39,13 @@ class OpdController extends Controller
     public function storeInvoice(Request $request)
     {
         $request->validate([
-            'patient_id' => 'required|exists:patients,id',
+            'patient_id' => 'nullable|exists:patients,id', // Changed from required to nullable
+            'patient_name' => 'required|string|max:255', // Added for new patient creation
+            'patient_phone' => 'required|string|max:20', // Added for new patient creation
+            'patient_address' => 'nullable|string', // Added for new patient creation
+            'patient_age_years' => 'nullable|integer|min:0', // Added for new patient creation
+            'patient_age_months' => 'nullable|integer|min:0', // Added for new patient creation
+            'patient_age_days' => 'nullable|integer|min:0', // Added for new patient creation
             'invoice_date' => 'required|date',
             'total_amount' => 'required|numeric|min:0',
             'discount_percentage' => 'nullable|numeric|min:0|max:100',
@@ -56,6 +62,16 @@ class OpdController extends Controller
             // Start a transaction
             DB::beginTransaction();
             
+            // Handle patient creation if patient_id is not provided
+            $patientId = $request->patient_id;
+            $patientCreated = false;
+            
+            if (!$patientId) {
+                // Create new patient
+                $patientId = $this->createNewPatient($request);
+                $patientCreated = true;
+            }
+            
             // Generate invoice number
             $invoiceNo = $this->generateInvoiceNumber();
             
@@ -70,7 +86,7 @@ class OpdController extends Controller
             // Create invoice
             $invoiceId = DB::table('invoice')->insertGetId([
                 'invoice_no' => $invoiceNo,
-                'patient_id' => $request->patient_id,
+                'patient_id' => $patientId,
                 'total_amount' => $totalAmount,
                 'payable_amount' => $payableAmount,
                 'paid_amount' => $paidAmount,
@@ -103,8 +119,9 @@ class OpdController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'OPD invoice created successfully',
-                'invoice_id' => $invoiceId,
                 'invoice_no' => $invoiceNo,
+                'invoice_id' => $invoiceId,
+                'patient_created' => $patientCreated,
                 'redirect_url' => route('admin.opd.reprint') . '?invoice_id=' . $invoiceId
             ]);
             
@@ -112,11 +129,9 @@ class OpdController extends Controller
             // Rollback the transaction
             DB::rollBack();
             
-            \Log::error('Error creating OPD invoice: ' . $e->getMessage());
-            
             return response()->json([
                 'success' => false,
-                'message' => 'Error creating invoice: ' . $e->getMessage()
+                'message' => 'An error occurred: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -624,113 +639,30 @@ class OpdController extends Controller
         $month = now()->format('m');
         $day = now()->format('d');
         
-        // Get the last invoice number for today
+        // Get the last invoice number for today specifically
         $lastInvoice = DB::table('invoice')
             ->where('invoice_type', 'opd')
+            ->where('invoice_no', 'like', $prefix . '-' . $date . '-%')
             ->orderBy('invoice_no', 'desc')
             ->first();
         
         $sequence = 1;
         if ($lastInvoice) {
-            // Try to extract sequence from the last invoice number
+            // Extract sequence from the last invoice number for today
             $lastNumber = $lastInvoice->invoice_no;
             
-            // Handle different formats
-            switch ($format) {
-                case 'prefix-yymmdd-number':
-                    if (preg_match('/^' . preg_quote($prefix) . '-(\d{6})-(\d+)$/', $lastNumber, $matches)) {
-                        if ($matches[1] === $date) {
-                            $sequence = intval($matches[2]) + 1;
-                        }
-                    }
-                    break;
-                    
-                case 'prefixyymmddnumber':
-                    if (preg_match('/^' . preg_quote($prefix) . '(\d{6})(\d+)$/', $lastNumber, $matches)) {
-                        if ($matches[1] === $date) {
-                            $sequence = intval($matches[2]) + 1;
-                        }
-                    }
-                    break;
-                    
-                case 'prefix-yymm-number':
-                    $yearMonth = $year . $month;
-                    if (preg_match('/^' . preg_quote($prefix) . '-(\d{4})-(\d+)$/', $lastNumber, $matches)) {
-                        if ($matches[1] === $yearMonth) {
-                            $sequence = intval($matches[2]) + 1;
-                        }
-                    }
-                    break;
-                    
-                case 'prefixyymmnumber':
-                    $yearMonth = $year . $month;
-                    if (preg_match('/^' . preg_quote($prefix) . '(\d{4})(\d+)$/', $lastNumber, $matches)) {
-                        if ($matches[1] === $yearMonth) {
-                            $sequence = intval($matches[2]) + 1;
-                        }
-                    }
-                    break;
-                    
-                case 'prefix-yy-number':
-                    if (preg_match('/^' . preg_quote($prefix) . '-(\d{2})-(\d+)$/', $lastNumber, $matches)) {
-                        if ($matches[1] === $year) {
-                            $sequence = intval($matches[2]) + 1;
-                        }
-                    }
-                    break;
-                    
-                case 'prefixyynumber':
-                    if (preg_match('/^' . preg_quote($prefix) . '(\d{2})(\d+)$/', $lastNumber, $matches)) {
-                        if ($matches[1] === $year) {
-                            $sequence = intval($matches[2]) + 1;
-                        }
-                    }
-                    break;
-                    
-                case 'prefix-number':
-                    if (preg_match('/^' . preg_quote($prefix) . '-(\d+)$/', $lastNumber, $matches)) {
-                        $sequence = intval($matches[1]) + 1;
-                    }
-                    break;
-                    
-                case 'prefixnumber':
-                    if (preg_match('/^' . preg_quote($prefix) . '(\d+)$/', $lastNumber, $matches)) {
-                        $sequence = intval($matches[1]) + 1;
-                    }
-                    break;
+            // Handle the prefix-yymmdd-number format
+            if (preg_match('/^' . preg_quote($prefix) . '-(\d{6})-(\d+)$/', $lastNumber, $matches)) {
+                if ($matches[1] === $date) {
+                    $sequence = intval($matches[2]) + 1;
+                }
             }
         }
         
-        // Generate invoice number based on format
-        switch ($format) {
-            case 'prefix-yymmdd-number':
-                return $prefix . '-' . $date . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefixyymmddnumber':
-                return $prefix . $date . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefix-yymm-number':
-                return $prefix . '-' . $year . $month . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefixyymmnumber':
-                return $prefix . $year . $month . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefix-yy-number':
-                return $prefix . '-' . $year . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefixyynumber':
-                return $prefix . $year . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefix-number':
-                return $prefix . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            case 'prefixnumber':
-                return $prefix . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-                
-            default:
-                // Fallback to default format
-                return $prefix . '-' . $date . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
-        }
+        // Generate the new invoice number
+        $invoiceNo = $prefix . '-' . $date . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        
+        return $invoiceNo;
     }
 
     /**
@@ -792,5 +724,63 @@ class OpdController extends Controller
         } catch (\Exception $e) {
             return ['years' => 0, 'months' => 0, 'days' => 0];
         }
+    }
+
+    /**
+     * Create a new patient.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return int  $patientId
+     */
+    private function createNewPatient(Request $request)
+    {
+        $patientId = $this->generatePatientId();
+        $dob = null;
+        
+        if ($request->patient_age_years || $request->patient_age_months || $request->patient_age_days) {
+            $dob = now()->subYears($request->patient_age_years ?? 0)
+                       ->subMonths($request->patient_age_months ?? 0)
+                       ->subDays($request->patient_age_days ?? 0);
+        }
+        
+        $patientId = DB::table('patients')->insertGetId([
+            'patient_id' => $patientId,
+            'name_en' => $request->patient_name,
+            'phone' => $request->patient_phone,
+            'address' => $request->patient_address ?? '',
+            'dob' => $dob,
+            'gender' => $request->patient_gender ?? 'Male',
+            'reg_date' => now(),
+            'created_by' => Auth::id(),
+            'updated_by' => Auth::id(),
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+        
+        return $patientId;
+    }
+
+    /**
+     * Generate a unique patient ID.
+     *
+     * @return string
+     */
+    private function generatePatientId()
+    {
+        $today = now();
+        $datePrefix = $today->format('ymd'); // Format: YYMMDD
+        $lastPatientToday = DB::table('patients')
+            ->where('patient_id', 'like', $datePrefix . '%')
+            ->orderBy('id', 'desc')
+            ->first();
+        
+        if ($lastPatientToday) {
+            $lastId = substr($lastPatientToday->patient_id, 6); // Get digits after YYMMDD
+            $nextId = intval($lastId) + 1;
+        } else {
+            $nextId = 1;
+        }
+        
+        return $datePrefix . str_pad($nextId, 3, '0', STR_PAD_LEFT);
     }
 } 

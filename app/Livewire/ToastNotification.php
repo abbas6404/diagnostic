@@ -51,7 +51,7 @@ class ToastNotification extends Component
         $this->showToast($message, 'warning');
     }
 
-    public function showInvoiceSuccess($message, $invoiceNo, $ticketNo)
+    public function showInvoiceSuccess($message, $invoiceNo, $ticketNo = '')
     {
         $this->showToast($message, 'success', $invoiceNo, $ticketNo);
     }

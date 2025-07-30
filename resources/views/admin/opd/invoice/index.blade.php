@@ -480,14 +480,54 @@
         
         // Reset form button
         document.getElementById('resetFormBtn').addEventListener('click', function() {
-            // Reset form here
-            // For now, just reload the page
-            window.location.reload();
+            // Show warning toast
+            Livewire.dispatch('showWarning', { message: 'Are you sure you want to reset the form? All data will be cleared.' });
+            
+            // Clear all form fields after a short delay
+            setTimeout(() => {
+                // Clear patient fields
+                document.getElementById('patient_id_hidden').value = '';
+                document.getElementById('patient_name').value = '';
+                document.getElementById('patient_phone').value = '';
+                document.getElementById('patient_address').value = '';
+                document.getElementById('age_years').value = '';
+                document.getElementById('age_months').value = '';
+                document.getElementById('age_days').value = '';
+                document.getElementById('gender').value = 'Male';
+                
+                // Clear doctor and PCP fields
+                document.getElementById('doctor_id_hidden').value = '';
+                document.getElementById('referred_by_hidden').value = '';
+                
+                // Clear remarks
+                document.querySelector('textarea[name="remarks"]').value = '';
+                
+                // Clear OPD items table
+                document.querySelector('#testItemsTable tbody').innerHTML = '';
+                
+                // Reset invoice summary
+                document.getElementById('totalAmount').value = '0.00';
+                document.getElementById('discountPercent').value = '0';
+                document.getElementById('discountAmount').value = '0.00';
+                document.getElementById('netPayable').value = '0.00';
+                document.getElementById('paidAmount').value = '0.00';
+                document.getElementById('dueAmount').value = '0.00';
+                document.getElementById('subtotalAmount').value = '0.00';
+                
+                // Show success toast
+                Livewire.dispatch('showSuccess', { message: 'Form has been reset successfully! All fields cleared.' });
+            }, 1000);
         });
         
         // Cancel button
         document.getElementById('cancelBtn').addEventListener('click', function() {
-            window.location.href = "{{ route('admin.dashboard') }}";
+            // Show warning toast
+            Livewire.dispatch('showWarning', { message: 'Are you sure you want to cancel? All unsaved changes will be lost.' });
+            
+            // Redirect after delay
+            setTimeout(() => {
+                window.location.href = "{{ route('admin.dashboard') }}";
+            }, 2000);
         });
         
         // Save & Print button
@@ -501,20 +541,21 @@
         // Validate required fields
         const patientId = document.getElementById('patient_id_hidden').value;
         const patientName = document.getElementById('patient_name').value;
+        const patientPhone = document.getElementById('patient_phone').value;
         const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
         
-        if (!patientId) {
-            alert('Please select a patient');
+        if (!patientName) {
+            Livewire.dispatch('showError', { message: 'Please enter patient name' });
             return;
         }
         
-        if (!patientName) {
-            alert('Please enter patient name');
+        if (!patientPhone) {
+            Livewire.dispatch('showError', { message: 'Please enter patient contact' });
             return;
         }
         
         if (totalAmount <= 0) {
-            alert('Please add at least one OPD service');
+            Livewire.dispatch('showError', { message: 'Please add at least one OPD service' });
             return;
         }
         
@@ -533,13 +574,20 @@
         });
         
         if (opdItems.length === 0) {
-            alert('Please add at least one OPD service');
+            Livewire.dispatch('showError', { message: 'Please add at least one OPD service' });
             return;
         }
         
         // Prepare form data
         const formData = {
-            patient_id: patientId,
+            patient_id: patientId || null, // Can be null if no patient selected
+            patient_name: patientName,
+            patient_phone: patientPhone,
+            patient_address: document.getElementById('patient_address').value,
+            patient_age_years: parseInt(document.getElementById('age_years').value) || null,
+            patient_age_months: parseInt(document.getElementById('age_months').value) || null,
+            patient_age_days: parseInt(document.getElementById('age_days').value) || null,
+            patient_gender: document.getElementById('gender').value,
             invoice_date: document.querySelector('input[name="invoice_date"]').value,
             total_amount: totalAmount,
             discount_percentage: parseFloat(document.getElementById('discountPercent').value) || 0,
@@ -571,15 +619,22 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Invoice created successfully!');
-                // Redirect to reprint page with the new invoice
-                if (data.redirect_url) {
-                    window.location.href = data.redirect_url;
-                } else {
-                    window.location.reload();
-                }
+                // Show success toast with invoice details
+                Livewire.dispatch('showInvoiceSuccess', { 
+                    message: data.message,
+                    invoiceNo: data.invoice_no
+                });
+                
+                // Re-enable save button
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+                
+                // Don't redirect automatically - let user decide via toast buttons
+                console.log('OPD invoice created successfully. Toast will stay open for user interaction.');
+                
             } else {
-                alert('Error creating invoice: ' + data.message);
+                // Show error toast using Livewire
+                Livewire.dispatch('showError', { message: 'Error creating invoice: ' + data.message });
                 // Re-enable save button
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = originalText;
@@ -587,7 +642,8 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Error creating invoice. Please try again.');
+            // Show error toast
+            Livewire.dispatch('showError', { message: 'Error creating invoice. Please try again.' });
             // Re-enable save button
             saveBtn.disabled = false;
             saveBtn.innerHTML = originalText;

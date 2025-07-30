@@ -260,19 +260,71 @@
                                 </div>
                             </div>
                             
+                            <div class="row mb-3">
+                                <label class="col-sm-5 col-form-label">Remarks</label>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control form-control-sm" id="remarks" rows="2" placeholder="Enter payment remarks (optional)"></textarea>
+                                </div>
+                            </div>
 
                             
                             <div class="d-flex justify-content-center gap-2">
                                 <button class="btn btn-success" id="savePaymentBtn" disabled>
                                     <i class="fas fa-save me-1"></i> Save & Print
                                 </button>
-                                <button class="btn btn-secondary">
+                                <button class="btn btn-info" id="viewHistoryBtn" disabled>
+                                    <i class="fas fa-history me-1"></i> History
+                                </button>
+                                <button class="btn btn-secondary" id="resetBtn">
                                     <i class="fas fa-redo me-1"></i> Reset
                                 </button>
             
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Payment History Modal -->
+    <div class="modal fade" id="paymentHistoryModal" tabindex="-1" aria-labelledby="paymentHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentHistoryModalLabel">
+                        <i class="fas fa-history me-2"></i> Payment History
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover" id="paymentHistoryTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Collection #</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-end">Due Before</th>
+                                    <th class="text-end">Due After</th>
+                                    <th>Collected By</th>
+                                    <th>Remarks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted py-4">
+                                        <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                                        Select an invoice to view payment history
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                 </div>
             </div>
         </div>
@@ -537,6 +589,15 @@
         // Handle Enter key on collection amount to focus save button
         else if (e.key === 'Enter' && document.activeElement.id === 'collectionAmount') {
             e.preventDefault();
+            const remarksInput = document.getElementById('remarks');
+            if (remarksInput) {
+                remarksInput.focus();
+            }
+        }
+        
+        // Handle Enter key on remarks to focus save button
+        else if (e.key === 'Enter' && document.activeElement.id === 'remarks') {
+            e.preventDefault();
             const saveButton = document.getElementById('savePaymentBtn');
             if (saveButton && !saveButton.disabled) {
                 saveButton.focus();
@@ -629,6 +690,10 @@ window.addEventListener('invoice-selected', event => {
     
     // Enable save button
     document.getElementById('savePaymentBtn').disabled = false;
+    
+    // Enable history button and store selected invoice ID
+    document.getElementById('viewHistoryBtn').disabled = false;
+    window.selectedInvoiceId = invoice.invoice_id;
     
     // Select the corresponding invoice in Due Invoices table
     setTimeout(() => {
@@ -940,9 +1005,43 @@ function handleCollectionAmountChange(e) {
 // Add event listeners
 document.addEventListener('DOMContentLoaded', function() {
     const savePaymentBtn = document.getElementById('savePaymentBtn');
+    const viewHistoryBtn = document.getElementById('viewHistoryBtn');
+    const resetBtn = document.getElementById('resetBtn');
     
     if (savePaymentBtn) {
         savePaymentBtn.addEventListener('click', window.savePayment);
+    }
+    
+    if (viewHistoryBtn) {
+        viewHistoryBtn.addEventListener('click', window.viewPaymentHistory);
+    }
+
+    if (resetBtn) {
+        resetBtn.addEventListener('click', function() {
+            document.getElementById('collectionAmount').value = '';
+            document.getElementById('remarks').value = '';
+            document.getElementById('dueAmount').value = '0.00';
+            document.getElementById('remainingDue').value = '0.00';
+            document.getElementById('invoiceTotalDisplay').textContent = '৳ 0.00';
+            document.getElementById('paidAmountDisplay').textContent = '৳ 0.00';
+            document.getElementById('savePaymentBtn').disabled = true;
+            document.getElementById('viewHistoryBtn').disabled = true;
+            window.selectedInvoiceId = null;
+            // Clear triangle indicators
+            document.querySelectorAll('.due-invoice-item').forEach(item => {
+                const firstCell = item.querySelector('td:first-child');
+                if (firstCell) {
+                    firstCell.innerHTML = '';
+                }
+            });
+            document.querySelectorAll('.search-item').forEach(item => {
+                item.classList.remove('selected');
+                const triangle = item.querySelector('.triangle-indicator');
+                if (triangle) {
+                    triangle.style.visibility = 'hidden';
+                }
+            });
+        });
     }
     
     // Set up collection amount listeners
@@ -980,6 +1079,7 @@ window.calculateRemainingDue = function() {
 window.savePayment = function() {
     const collectionAmount = parseFloat(document.getElementById('collectionAmount').value);
     const dueAmount = parseFloat(document.getElementById('dueAmount').value);
+    const remarks = document.getElementById('remarks').value;
     
     // Validate collection amount
     if (collectionAmount <= 0) {
@@ -995,53 +1095,163 @@ window.savePayment = function() {
     // Get selected invoice ID
     const selectedInvoiceId = window.selectedInvoiceId;
     if (!selectedInvoiceId) {
-            Livewire.dispatch('showError', { message: 'Please select an invoice first' });
-            return;
+        Livewire.dispatch('showError', { message: 'Please select an invoice first' });
+        return;
+    }
+    
+    // Disable save button to prevent double submission
+    const saveBtn = document.getElementById('savePaymentBtn');
+    const originalText = saveBtn.innerHTML;
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+    
+    const paymentData = {
+        invoice_id: selectedInvoiceId,
+        collection_amount: collectionAmount,
+        remarks: remarks
+    };
+    
+    // Send payment data to server
+    fetch('/admin/doctor/duecollection/store', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(paymentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Show success toast with payment details
+            Livewire.dispatch('showPaymentSuccess', { 
+                message: 'Payment collected successfully!',
+                invoiceNo: data.collection_no
+            });
+            
+            // Update the UI
+            updatePaymentUI(data.updated_invoice);
+            
+            // Clear the collection form
+            document.getElementById('collectionAmount').value = '';
+            document.getElementById('remarks').value = '';
+            
+            // Refresh the due invoices list by triggering a search
+            const searchInput = document.querySelector('input[wire\\:model\\.live\\.debounce\\.300ms="search"]');
+            if (searchInput && searchInput.value) {
+                // Trigger a new search to refresh the data
+                searchInput.dispatchEvent(new Event('input'));
+            }
+            
+        } else {
+            // Show error toast
+            Livewire.dispatch('showError', { message: 'Error saving payment: ' + data.message });
         }
         
-        const paymentData = {
-        invoice_id: selectedInvoiceId,
-        payment_amount: collectionAmount
-        };
+        // Re-enable save button
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Show error toast
+        Livewire.dispatch('showError', { message: 'Error saving payment. Please try again.' });
         
-        // Send payment data to server
-    fetch('/admin/doctor/duecollection/store', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify(paymentData)
-        })
+        // Re-enable save button
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = originalText;
+    });
+}
+
+function updatePaymentUI(updatedInvoice) {
+    // Update the payment summary display
+    if (updatedInvoice) {
+        document.getElementById('invoiceTotalDisplay').textContent = '৳ ' + parseFloat(updatedInvoice.total_amount || 0).toFixed(0);
+        document.getElementById('paidAmountDisplay').textContent = '৳ ' + parseFloat(updatedInvoice.paid_amount || 0).toFixed(0);
+        document.getElementById('dueAmount').value = parseFloat(updatedInvoice.due_amount || 0).toFixed(0);
+        
+        // Update collection amount to remaining due
+        document.getElementById('collectionAmount').value = parseFloat(updatedInvoice.due_amount || 0).toFixed(0);
+        document.getElementById('remainingDue').value = '0.00';
+        
+        // Disable save button if no due amount
+        const saveBtn = document.getElementById('savePaymentBtn');
+        if (parseFloat(updatedInvoice.due_amount || 0) <= 0) {
+            saveBtn.disabled = true;
+        }
+    }
+}
+
+function loadDueInvoices() {
+    // This function would reload the due invoices for the current patient
+    // Implementation depends on how you want to refresh the data
+    console.log('Reloading due invoices...');
+    // You can trigger a Livewire event or make an AJAX call here
+}
+
+// Make function globally accessible
+window.viewPaymentHistory = function() {
+    const selectedInvoiceId = window.selectedInvoiceId;
+    if (!selectedInvoiceId) {
+        Livewire.dispatch('showError', { message: 'Please select an invoice first' });
+        return;
+    }
+    
+    // Load payment history
+    fetch(`/admin/doctor/duecollection/invoice/${selectedInvoiceId}/payment-history`)
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Show success toast with payment details
-                Livewire.dispatch('showPaymentSuccess', { 
-                    message: 'Payment collected successfully!',
-                    invoiceNo: selectedInvoice.invoice_no
-                });
-                
-                // Update the UI
-                updatePaymentUI(data.updated_invoice);
-                
-                // Clear the collection form
-                document.getElementById('collectionAmount').value = '';
-                document.getElementById('remarks').value = '';
-                
-                // Refresh the due invoices list
-                loadDueInvoices();
-                
+                updatePaymentHistoryTable(data.payments);
+                // Show the modal
+                const modal = new bootstrap.Modal(document.getElementById('paymentHistoryModal'));
+                modal.show();
             } else {
-                // Show error toast
-                Livewire.dispatch('showError', { message: 'Error saving payment: ' + data.message });
+                Livewire.dispatch('showError', { message: 'Error loading payment history: ' + data.message });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            // Show error toast
-            Livewire.dispatch('showError', { message: 'Error saving payment. Please try again.' });
+            Livewire.dispatch('showError', { message: 'Error loading payment history. Please try again.' });
         });
+}
+
+function updatePaymentHistoryTable(payments) {
+    const tbody = document.querySelector('#paymentHistoryTable tbody');
+    if (!tbody) {
+        return;
+    }
+    
+    tbody.innerHTML = '';
+    
+    if (!payments || payments.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="8" class="text-center text-muted py-4">
+                    <i class="fas fa-info-circle fa-2x mb-2"></i><br>
+                    No payment history found for this invoice
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    payments.forEach(payment => {
+        const tr = document.createElement('tr');
+        
+        tr.innerHTML = `
+            <td><strong>${payment.collection_no}</strong></td>
+            <td>${payment.collection_date}</td>
+            <td>${payment.collection_time}</td>
+            <td class="text-end text-success fw-bold">৳ ${parseFloat(payment.collection_amount).toFixed(0)}</td>
+            <td class="text-end">৳ ${parseFloat(payment.due_before_collection).toFixed(0)}</td>
+            <td class="text-end">৳ ${parseFloat(payment.due_after_collection).toFixed(0)}</td>
+            <td>${payment.collected_by_name || 'N/A'}</td>
+            <td>${payment.remarks || '-'}</td>
+        `;
+        
+        tbody.appendChild(tr);
+    });
 }
 
 function updateConsultantTicketsTable(tickets) {
