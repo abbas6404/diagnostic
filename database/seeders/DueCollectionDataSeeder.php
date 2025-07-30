@@ -191,7 +191,6 @@ class DueCollectionDataSeeder extends Seeder
             'ticket_status' => 'completed',
             'ticket_date' => '2025-01-15',
             'ticket_time' => '14:30',
-            'doctor_fee' => '300',
             'patient_type' => 'new',
             'patient_id' => 1,
             'doctor_id' => 1,
@@ -204,7 +203,6 @@ class DueCollectionDataSeeder extends Seeder
             'ticket_status' => 'pending',
             'ticket_date' => '2025-01-16',
             'ticket_time' => '09:15',
-            'doctor_fee' => '450',
             'patient_type' => 'old',
             'patient_id' => 2,
             'doctor_id' => 2,
@@ -217,7 +215,6 @@ class DueCollectionDataSeeder extends Seeder
             'ticket_status' => 'completed',
             'ticket_date' => '2025-01-17',
             'ticket_time' => '11:45',
-            'doctor_fee' => '450',
             'patient_type' => 'new',
             'patient_id' => 3,
             'doctor_id' => 3,
@@ -230,7 +227,6 @@ class DueCollectionDataSeeder extends Seeder
             'ticket_status' => 'pending',
             'ticket_date' => '2025-01-18',
             'ticket_time' => '16:00',
-            'doctor_fee' => '500',
             'patient_type' => 'old',
             'patient_id' => 4,
             'doctor_id' => 4,
@@ -242,8 +238,7 @@ class DueCollectionDataSeeder extends Seeder
             'ticket_no' => 'dt-00015',
             'ticket_status' => 'cancelled',
             'ticket_date' => '2025-01-19',
-            'ticket_time' => '13:20',
-            'doctor_fee' => '700',
+            'ticket_time' => '13:20',   
             'patient_type' => 'new',
             'patient_id' => 5,
             'doctor_id' => 5,
@@ -281,45 +276,85 @@ class DueCollectionDataSeeder extends Seeder
             'opd_service_id' => 2,
         ]);
         
-        // Add Lab Request Items for diagnostics invoices
-        DB::table('lab_request_items')->insert([
+        // Add Lab Test Orders for diagnostics invoices
+        DB::table('lab_test_orders')->insert([
             'id' => 9,
+            'order_no' => 'LAB-250730-014',
             'invoice_id' => 26,
             'lab_test_id' => 1,
+            'patient_id' => 1,
+            'referred_by' => 1,
             'charge' => 1500,
             'status' => 'completed',
+            'collection_date' => '2025-07-30',
+            'collection_time' => '08:00:00',
+            'sample_type' => 'Blood',
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
         
-        DB::table('lab_request_items')->insert([
+        DB::table('lab_test_orders')->insert([
             'id' => 10,
+            'order_no' => 'LAB-250730-015',
             'invoice_id' => 27,
             'lab_test_id' => 2,
+            'patient_id' => 2,
+            'referred_by' => 1,
             'charge' => 2000,
             'status' => 'pending',
+            'collection_date' => '2025-07-30',
+            'collection_time' => '09:00:00',
+            'sample_type' => 'Urine',
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
         
-        DB::table('lab_request_items')->insert([
+        DB::table('lab_test_orders')->insert([
             'id' => 11,
+            'order_no' => 'LAB-250730-016',
             'invoice_id' => 28,
             'lab_test_id' => 3,
+            'patient_id' => 3,
+            'referred_by' => 1,
             'charge' => 1200,
             'status' => 'completed',
+            'collection_date' => '2025-07-30',
+            'collection_time' => '10:00:00',
+            'sample_type' => 'Blood',
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
         
-        DB::table('lab_request_items')->insert([
+        DB::table('lab_test_orders')->insert([
             'id' => 12,
+            'order_no' => 'LAB-250730-017',
             'invoice_id' => 29,
             'lab_test_id' => 1,
+            'patient_id' => 4,
+            'referred_by' => 1,
             'charge' => 2600,
             'status' => 'pending',
+            'collection_date' => '2025-07-30',
+            'collection_time' => '11:00:00',
+            'sample_type' => 'Blood',
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
         
-        DB::table('lab_request_items')->insert([
+        DB::table('lab_test_orders')->insert([
             'id' => 13,
+            'order_no' => 'LAB-250730-018',
             'invoice_id' => 30,
             'lab_test_id' => 2,
+            'patient_id' => 5,
+            'referred_by' => 1,
             'charge' => 2000,
             'status' => 'cancelled',
+            'collection_date' => '2025-07-30',
+            'collection_time' => '12:00:00',
+            'sample_type' => 'Urine',
+            'created_by' => 1,
+            'updated_by' => 1,
         ]);
     }
 } 

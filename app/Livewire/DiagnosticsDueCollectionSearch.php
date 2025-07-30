@@ -34,7 +34,7 @@ class DiagnosticsDueCollectionSearch extends Component
         
         $this->results = DB::table('invoice')
             ->leftJoin('patients', 'invoice.patient_id', '=', 'patients.id')
-            ->leftJoin('lab_request_items', 'invoice.id', '=', 'lab_request_items.invoice_id')
+            ->leftJoin('lab_test_orders', 'invoice.id', '=', 'lab_test_orders.invoice_id')
             ->where('invoice.due_amount', '>', 0)
             ->where('invoice.invoice_type', 'dia')
             ->where(function($q) use ($query) {
@@ -137,16 +137,16 @@ class DiagnosticsDueCollectionSearch extends Component
     
     private function loadInvoiceDetails($invoiceId)
     {
-        $invoiceDetails = DB::table('lab_request_items')
-            ->join('lab_tests', 'lab_request_items.lab_test_id', '=', 'lab_tests.id')
-            ->where('lab_request_items.invoice_id', $invoiceId)
-            ->whereNull('lab_request_items.deleted_at')
+        $invoiceDetails = DB::table('lab_test_orders')
+            ->join('lab_tests', 'lab_test_orders.lab_test_id', '=', 'lab_tests.id')
+            ->where('lab_test_orders.invoice_id', $invoiceId)
+            ->whereNull('lab_test_orders.deleted_at')
             ->select(
                 'lab_tests.code',
                 'lab_tests.name as test_name',
-                'lab_request_items.charge',
-                'lab_request_items.id as item_id',
-                'lab_request_items.status'
+                'lab_test_orders.charge',
+                'lab_test_orders.id as item_id',
+                'lab_test_orders.status'
             )
             ->get()
             ->toArray();

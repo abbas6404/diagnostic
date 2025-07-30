@@ -17,8 +17,7 @@ return new class extends Migration
             $table->string('ticket_status')->nullable()->index(); //Pending,Completed,Cancelled
             $table->string('ticket_date')->nullable()->index(); //Ticket Date
             $table->string('ticket_time')->nullable()->index(); //Ticket Time
-            $table->string('doctor_fee')->nullable()->index(); //Doctor Fee
-            $table->string('remarks')->nullable();
+          
             $table->unsignedBigInteger('invoice_id')->nullable()->index(); //Invoice ID
             $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
             $table->unsignedBigInteger('referred_by')->nullable()->index(); //PCP
@@ -28,7 +27,6 @@ return new class extends Migration
             $table->string('patient_type')->nullable()->index(); //new,old
             $table->unsignedBigInteger('doctor_id')->index(); //Doctor
             $table->foreign('doctor_id')->references('id')->on('users')->onDelete('cascade');
-          
             $table->timestamps();
         });
     }

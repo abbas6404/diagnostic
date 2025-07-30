@@ -25,7 +25,7 @@ class InvoiceReturnDataSeeder extends Seeder
         // Create diagnostics invoices with payments
         $diagnosticsInvoices = [
             [
-                'invoice_no' => 'DIA-250727-001',
+                'invoice_no' => 'DIA-250731-001',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 3500,
                 'payable_amount' => 3500,
@@ -42,7 +42,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-002',
+                'invoice_no' => 'DIA-250731-002',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 4200,
                 'payable_amount' => 4200,
@@ -59,7 +59,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-003',
+                'invoice_no' => 'DIA-250731-003',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 2800,
                 'payable_amount' => 2800,
@@ -76,7 +76,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-004',
+                'invoice_no' => 'DIA-250731-004',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 5500,
                 'payable_amount' => 5500,
@@ -93,7 +93,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-005',
+                'invoice_no' => 'DIA-250731-005',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 3200,
                 'payable_amount' => 3200,
@@ -110,7 +110,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-006',
+                'invoice_no' => 'DIA-250731-006',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 4800,
                 'payable_amount' => 4800,
@@ -127,7 +127,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-007',
+                'invoice_no' => 'DIA-250731-007',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 3900,
                 'payable_amount' => 3900,
@@ -144,7 +144,7 @@ class InvoiceReturnDataSeeder extends Seeder
                 'updated_at' => now()
             ],
             [
-                'invoice_no' => 'DIA-250727-008',
+                'invoice_no' => 'DIA-250731-008',
                 'patient_id' => $patients[array_rand($patients)],
                 'total_amount' => 2600,
                 'payable_amount' => 2600,
@@ -163,10 +163,11 @@ class InvoiceReturnDataSeeder extends Seeder
         ];
         
         // Insert diagnostics invoices
+        $orderCounter = 1;
         foreach ($diagnosticsInvoices as $invoice) {
             $invoiceId = DB::table('invoice')->insertGetId($invoice);
             
-            // Create lab request items for each invoice
+            // Create lab test orders for each invoice
             $numTests = rand(2, 4); // 2-4 tests per invoice
             $selectedTests = array_rand($labTests, $numTests);
             
@@ -179,14 +180,24 @@ class InvoiceReturnDataSeeder extends Seeder
                 $charge = rand(300, 800); // Random charge between 300-800
                 $status = ['pending', 'completed', 'cancelled'][rand(0, 2)];
                 
-                DB::table('lab_request_items')->insert([
+                DB::table('lab_test_orders')->insert([
+                    'order_no' => 'LAB-250731-' . str_pad($orderCounter, 3, '0', STR_PAD_LEFT),
                     'invoice_id' => $invoiceId,
                     'lab_test_id' => $labTestId,
+                    'patient_id' => $invoice['patient_id'],
+                    'referred_by' => 1,
                     'charge' => $charge,
                     'status' => $status,
+                    'collection_date' => '2025-07-31',
+                    'collection_time' => '09:00:00',
+                    'sample_type' => 'Blood',
+                    'created_by' => 1,
+                    'updated_by' => 1,
                     'created_at' => now(),
                     'updated_at' => now()
                 ]);
+                
+                $orderCounter++;
             }
         }
         

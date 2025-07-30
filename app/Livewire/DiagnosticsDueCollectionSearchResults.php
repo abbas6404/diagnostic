@@ -42,7 +42,7 @@ class DiagnosticsDueCollectionSearchResults extends Component
         if ($dueDiagnosticsInvoices == 0) {
             $dueInvoices = \DB::table('invoice')
                 ->join('patients', 'invoice.patient_id', '=', 'patients.id')
-                ->leftJoin('lab_request_items', 'invoice.id', '=', 'lab_request_items.invoice_id')
+                ->leftJoin('lab_test_orders', 'invoice.id', '=', 'lab_test_orders.invoice_id')
                 ->select([
                     'invoice.id as invoice_id',
                     'invoice.invoice_no',
@@ -87,7 +87,7 @@ class DiagnosticsDueCollectionSearchResults extends Component
             // Original query for due diagnostics invoices
             $dueInvoices = \DB::table('invoice')
                 ->join('patients', 'invoice.patient_id', '=', 'patients.id')
-                ->leftJoin('lab_request_items', 'invoice.id', '=', 'lab_request_items.invoice_id')
+                ->leftJoin('lab_test_orders', 'invoice.id', '=', 'lab_test_orders.invoice_id')
                 ->select([
                     'invoice.id as invoice_id',
                     'invoice.invoice_no',

@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->call(DepartmentSeeder::class);
         $this->call(InvoiceSeeder::class);
         $this->call(LabTestSeeder::class);
-        $this->call(LabRequestItemSeeder::class);
+        $this->call(LabTestOrderSeeder::class);
         $this->call(OpdServiceSeeder::class);
         $this->call(InventoryItemSeeder::class);
         $this->call(InventoryStockEntriesSeeder::class);
