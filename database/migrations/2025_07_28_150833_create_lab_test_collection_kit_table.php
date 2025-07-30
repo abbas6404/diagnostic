@@ -18,6 +18,11 @@ return new class extends Migration
             $table->unsignedBigInteger('collection_kit_id');
             $table->foreign('collection_kit_id')->references('id')->on('collection_kits')->onDelete('cascade');
             $table->timestamps();
+
+            $table->unsignedBigInteger('created_by')->nullable()->index();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             
             // Ensure unique combinations
             $table->unique(['lab_test_id', 'collection_kit_id']);

@@ -53,7 +53,9 @@
         </div>
         <div class="card-body">
             <!-- Invoice Form -->
-            <div class="row mb-4">
+            <form id="opdInvoiceForm" action="{{ route('admin.opd.invoice.store') }}" method="POST">
+                @csrf
+                <div class="row mb-4">
                 <!-- Left Column -->
                 <div class="col-md-7">
                     <div class="card border">
@@ -127,14 +129,6 @@
                                     </div>
                                     
                                     <div class="row mb-2">
-                                        <label class="col-sm-4 col-form-label">Dr. Ticket:</label>
-                                        <div class="col-sm-8">
-                                            @livewire('ticket-search')
-                                            <input type="hidden" name="ticket_id_hidden" id="ticket_id_hidden">
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Cons. Dr:</label>
                                         <div class="col-sm-8">
                                             @livewire('doctor-search')
@@ -147,6 +141,13 @@
                                         <div class="col-sm-8">
                                             @livewire('pcp-search')
                                             <input type="hidden" name="referred_by_hidden" id="referred_by_hidden">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row mb-2">
+                                        <label class="col-sm-4 col-form-label">Remarks:</label>
+                                        <div class="col-sm-8">
+                                            <textarea class="form-control form-control-sm" rows="2" name="remarks" placeholder="Any additional notes..." tabindex="10"></textarea>
                                         </div>
                                     </div>
                                     
@@ -278,8 +279,7 @@
                 </div>
             </div>
         </div>
-    
-    </div>
+    </form>
 </div>
 @endsection
 
@@ -489,7 +489,110 @@
         document.getElementById('cancelBtn').addEventListener('click', function() {
             window.location.href = "{{ route('admin.dashboard') }}";
         });
+        
+        // Save & Print button
+        document.getElementById('saveInvoiceBtn').addEventListener('click', function() {
+            saveInvoice();
+        });
     });
+    
+    // Function to save the invoice
+    function saveInvoice() {
+        // Validate required fields
+        const patientId = document.getElementById('patient_id_hidden').value;
+        const patientName = document.getElementById('patient_name').value;
+        const totalAmount = parseFloat(document.getElementById('totalAmount').value) || 0;
+        
+        if (!patientId) {
+            alert('Please select a patient');
+            return;
+        }
+        
+        if (!patientName) {
+            alert('Please enter patient name');
+            return;
+        }
+        
+        if (totalAmount <= 0) {
+            alert('Please add at least one OPD service');
+            return;
+        }
+        
+        // Collect OPD items data
+        const opdItems = [];
+        const testRows = document.querySelectorAll('#testItemsTable tbody tr');
+        
+        testRows.forEach(row => {
+            const opdServiceId = row.querySelector('input[name="test_ids[]"]').value;
+            
+            if (opdServiceId) {
+                opdItems.push({
+                    opd_service_id: opdServiceId
+                });
+            }
+        });
+        
+        if (opdItems.length === 0) {
+            alert('Please add at least one OPD service');
+            return;
+        }
+        
+        // Prepare form data
+        const formData = {
+            patient_id: patientId,
+            invoice_date: document.querySelector('input[name="invoice_date"]').value,
+            total_amount: totalAmount,
+            discount_percentage: parseFloat(document.getElementById('discountPercent').value) || 0,
+            discount_amount: parseFloat(document.getElementById('discountAmount').value) || 0,
+            paid_amount: parseFloat(document.getElementById('paidAmount').value) || 0,
+            due_amount: parseFloat(document.getElementById('dueAmount').value) || 0,
+            opd_items: opdItems,
+            doctor_id: document.getElementById('doctor_id_hidden').value || null,
+            referred_by: document.getElementById('referred_by_hidden').value || null,
+            remarks: document.querySelector('textarea[name="remarks"]')?.value || null,
+            _token: document.querySelector('input[name="_token"]').value
+        };
+        
+        // Disable save button to prevent double submission
+        const saveBtn = document.getElementById('saveInvoiceBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+        
+        // Send AJAX request
+        fetch('{{ route("admin.opd.invoice.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Invoice created successfully!');
+                // Redirect to reprint page with the new invoice
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    window.location.reload();
+                }
+            } else {
+                alert('Error creating invoice: ' + data.message);
+                // Re-enable save button
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error creating invoice. Please try again.');
+            // Re-enable save button
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        });
+    }
     
     // Direct DOM manipulation for patient fields
     document.addEventListener('livewire:init', () => {
@@ -553,33 +656,6 @@
         Livewire.on('pcp-selected', (pcpData) => {
             console.log('PCP selected:', pcpData);
             document.getElementById('referred_by_hidden').value = pcpData.id;
-        });
-        
-        // Ticket selected event
-        Livewire.on('fill-ticket-fields', (ticketData) => {
-            console.log('Ticket selected:', ticketData);
-            
-            // Fill hidden ticket ID field
-            document.getElementById('ticket_id_hidden').value = ticketData.id;
-            
-            // If there's a doctor name, try to find the doctor search field and fill it
-            if (ticketData.doctorName) {
-                const doctorSearchInput = document.querySelector('input[wire\\:model\\.live\\.debounce\\.300ms="search"][placeholder*="Doctor"]');
-                if (doctorSearchInput) {
-                    // This will trigger the Livewire property update
-                    doctorSearchInput.value = ticketData.doctorName;
-                    doctorSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-            }
-            
-            // If there's a doctor fee, fill the consultation fee field
-            if (ticketData.doctorFee) {
-                const consultationFeeInput = document.getElementById('consultationFee');
-                if (consultationFeeInput) {
-                    consultationFeeInput.value = ticketData.doctorFee;
-                    consultationFeeInput.dispatchEvent(new Event('input', { bubbles: true }));
-                }
-            }
         });
         
         // OPD Service selected event

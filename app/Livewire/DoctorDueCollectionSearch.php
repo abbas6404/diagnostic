@@ -137,25 +137,23 @@ class DoctorDueCollectionSearch extends Component
     
     private function loadConsultantTickets($invoiceId)
     {
-        $tickets = DB::table('consultant_tickets')
+        $consultantTickets = DB::table('consultant_tickets')
             ->leftJoin('users as doctors', 'consultant_tickets.doctor_id', '=', 'doctors.id')
             ->leftJoin('users as referred_by', 'consultant_tickets.referred_by', '=', 'referred_by.id')
-            ->where('consultant_tickets.invoice_id', $invoiceId)
             ->select(
                 'consultant_tickets.id',
                 'consultant_tickets.ticket_no',
                 'consultant_tickets.ticket_date',
                 'consultant_tickets.ticket_time',
-                'consultant_tickets.doctor_fee',
                 'consultant_tickets.ticket_status',
                 'consultant_tickets.patient_type',
                 'doctors.name as doctor_name',
                 'referred_by.name as referred_by_name'
             )
-            ->get()
-            ->toArray();
+            ->where('consultant_tickets.invoice_id', $invoiceId)
+            ->get();
             
-        $this->dispatch('consultant-tickets-loaded', $tickets);
+        $this->dispatch('consultant-tickets-loaded', $consultantTickets);
     }
     
     #[On('select-invoice-from-results')]

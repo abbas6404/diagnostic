@@ -122,6 +122,7 @@ Route::prefix('diagnostics')->group(function () {
 Route::prefix('opd')->group(function () {
     // Invoice
     Route::get('/invoice', [OpdController::class, 'invoice'])->name('opd.invoice');
+    Route::post('/invoice/store', [OpdController::class, 'storeInvoice'])->name('opd.invoice.store');
     
     // Due Collection
     Route::get('/duecollection', [OpdController::class, 'dueCollection'])->name('opd.duecollection');
@@ -129,6 +130,7 @@ Route::prefix('opd')->group(function () {
     Route::get('/duecollection/patient/{patientId}/invoices', [OpdController::class, 'getPatientDueInvoices'])->name('opd.duecollection.patient.invoices');
     Route::get('/duecollection/invoice/{invoiceId}/details', [OpdController::class, 'getInvoiceDetails'])->name('opd.duecollection.invoice.details');
     Route::get('/duecollection/invoice/{invoiceId}/full-data', [OpdController::class, 'getInvoiceFullData'])->name('opd.duecollection.invoice.full-data');
+    Route::get('/duecollection/invoice/{invoiceId}/payment-history', [OpdController::class, 'getPaymentHistory'])->name('opd.duecollection.invoice.payment-history');
     
     // Re-Print
     Route::get('/reprint', [OpdController::class, 'rePrint'])->name('opd.reprint');
@@ -143,6 +145,7 @@ Route::prefix('doctor')->group(function () {
     // Invoice
     Route::get('/invoice', [DoctorController::class, 'invoice'])->name('doctor.invoice');
     Route::post('/invoice/store', [DoctorController::class, 'storeInvoice'])->name('doctor.invoice.store');
+    Route::get('/invoice/doctor-ticket-count', [DoctorController::class, 'getDoctorTicketCount'])->name('doctor.invoice.ticket-count');
     
     // Due Collection
     Route::get('/duecollection', [DoctorController::class, 'dueCollection'])->name('doctor.duecollection');
@@ -150,6 +153,7 @@ Route::prefix('doctor')->group(function () {
     Route::get('/duecollection/patient/{patientId}/invoices', [DoctorController::class, 'getPatientDueInvoices'])->name('doctor.duecollection.patient.invoices');
     Route::get('/duecollection/invoice/{invoiceId}/tickets', [DoctorController::class, 'getConsultantTickets'])->name('doctor.duecollection.invoice.tickets');
     Route::get('/duecollection/invoice/{invoiceId}/full-data', [DoctorController::class, 'getInvoiceFullData'])->name('doctor.duecollection.invoice.full-data');
+    Route::get('/duecollection/invoice/{invoiceId}/payment-history', [DoctorController::class, 'getPaymentHistory'])->name('doctor.duecollection.invoice.payment-history');
     
     // Report
     Route::get('/report', [DoctorController::class, 'report'])->name('doctor.report');

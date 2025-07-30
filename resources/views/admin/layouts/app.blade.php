@@ -1037,6 +1037,19 @@
     <!-- Custom Scripts -->
     @livewireScripts
     
+    <!-- Toast Notification Component -->
+    @livewire('toast-notification')
+    
+    <script>
+        // Listen for reloadPage event from toast
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('reloadPage', () => {
+                console.log('Reloading page after toast close...');
+                window.location.reload();
+            });
+        });
+    </script>
+    
     @yield('scripts')
 </body>
 

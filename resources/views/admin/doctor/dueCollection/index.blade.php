@@ -981,20 +981,21 @@ window.savePayment = function() {
     const collectionAmount = parseFloat(document.getElementById('collectionAmount').value);
     const dueAmount = parseFloat(document.getElementById('dueAmount').value);
     
+    // Validate collection amount
     if (collectionAmount <= 0) {
-        alert('Please enter a valid collection amount');
-            return;
-        }
-        
+        Livewire.dispatch('showError', { message: 'Please enter a valid collection amount' });
+        return;
+    }
+    
     if (collectionAmount > dueAmount) {
-        alert('Collection amount cannot exceed due amount');
+        Livewire.dispatch('showError', { message: 'Collection amount cannot exceed due amount' });
         return;
     }
     
     // Get selected invoice ID
     const selectedInvoiceId = window.selectedInvoiceId;
     if (!selectedInvoiceId) {
-            alert('Please select an invoice first');
+            Livewire.dispatch('showError', { message: 'Please select an invoice first' });
             return;
         }
         
@@ -1015,20 +1016,32 @@ window.savePayment = function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-            alert('Payment collected successfully!');
-            // Reset collection amount
-            document.getElementById('collectionAmount').value = '0.00';
-            document.getElementById('remainingDue').value = '0.00';
-            // Optionally refresh the due invoices
-            // loadPatientDueInvoices(patientId);
+                // Show success toast with payment details
+                Livewire.dispatch('showPaymentSuccess', { 
+                    message: 'Payment collected successfully!',
+                    invoiceNo: selectedInvoice.invoice_no
+                });
+                
+                // Update the UI
+                updatePaymentUI(data.updated_invoice);
+                
+                // Clear the collection form
+                document.getElementById('collectionAmount').value = '';
+                document.getElementById('remarks').value = '';
+                
+                // Refresh the due invoices list
+                loadDueInvoices();
+                
             } else {
-            alert('Error saving payment: ' + data.message);
+                // Show error toast
+                Livewire.dispatch('showError', { message: 'Error saving payment: ' + data.message });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-        alert('Error saving payment');
-    });
+            // Show error toast
+            Livewire.dispatch('showError', { message: 'Error saving payment. Please try again.' });
+        });
 }
 
 function updateConsultantTicketsTable(tickets) {
@@ -1065,11 +1078,11 @@ function updateConsultantTicketsTable(tickets) {
         }
         
         tr.innerHTML = `
-            <td>${ticket.ticket_no || '-'}</td>
+            <td>${Number(ticket.ticket_no || 0)}</td>
             <td>${ticket.doctor_name || '-'}</td>
             <td>${ticket.ticket_date || '-'}</td>
             <td>${ticket.ticket_time || '-'}</td>
-            <td class="text-end">${parseFloat(ticket.doctor_fee || 0).toFixed(0)}</td>
+            <td class="text-end">N/A</td>
             <td class="text-center"><span class="${statusClass}">${ticket.ticket_status || 'pending'}</span></td>
         `;
         tbody.appendChild(tr);

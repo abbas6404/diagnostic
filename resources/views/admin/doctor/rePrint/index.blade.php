@@ -632,7 +632,7 @@
                     <td>${ticket.ticket_date || ''}</td>
                     <td>${ticket.ticket_time || ''}</td>
                     <td>${ticket.doctor_name || ''}</td>
-                    <td class="text-end">${Number(ticket.doctor_fee || 0).toFixed(0)}</td>
+                    <td class="text-end">N/A</td>
                     <td class="text-center">${statusBadge}</td>
                     <td class="text-center">${ticket.patient_type || ''}</td>
                 `;

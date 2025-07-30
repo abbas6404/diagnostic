@@ -162,14 +162,14 @@
                                 '{{ is_object($ticket) ? $ticket->ticket_no : $ticket['ticket_no'] }}', 
                                 '{{ is_object($ticket) ? $ticket->patient_name : $ticket['patient_name'] }}', 
                                 '{{ is_object($ticket) ? $ticket->doctor_name : $ticket['doctor_name'] }}', 
-                                '{{ is_object($ticket) ? $ticket->doctor_fee : $ticket['doctor_fee'] }}'
+                                '0'
                             )">
                             <td><div class="triangle-indicator"></div></td>
                             <td>{{ is_object($ticket) ? $ticket->ticket_no : $ticket['ticket_no'] }}</td>
                             <td>{{ is_object($ticket) ? $ticket->ticket_date : $ticket['ticket_date'] }}</td>
                             <td>{{ is_object($ticket) ? $ticket->patient_name : $ticket['patient_name'] }}</td>
                             <td>{{ is_object($ticket) ? $ticket->doctor_name : $ticket['doctor_name'] }}</td>
-                            <td>{{ is_object($ticket) ? $ticket->doctor_fee : $ticket['doctor_fee'] }}</td>
+                            <td>N/A</td>
                         </tr>
                     @endforeach
                 </tbody>
@@ -391,15 +391,15 @@
                 });
             });
             
-            // Immediately select the first result if available
-            const firstResult = document.querySelector('.first-result');
-            if (firstResult) {
-                firstResult.classList.add('selected');
-                const triangle = firstResult.querySelector('.triangle-indicator');
-                if (triangle) {
-                    triangle.style.visibility = 'visible';
-                }
-            }
+            // Removed immediate auto-selection - let user manually select
+            // const firstResult = document.querySelector('.first-result');
+            // if (firstResult) {
+            //     firstResult.classList.add('selected');
+            //     const triangle = firstResult.querySelector('.triangle-indicator');
+            //     if (triangle) {
+            //         triangle.style.visibility = 'visible';
+            //     }
+            // }
         });
     </script>
 </div>

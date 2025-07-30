@@ -21,6 +21,11 @@ return new class extends Migration
             $table->decimal('charge', 10, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unsignedBigInteger('created_by')->nullable()->index();
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
     /**

@@ -59,7 +59,7 @@
                     <div class="col-md-7">
                         <div class="card border">
                             <div class="card-header bg-light py-2">
-                                <h6 class="mb-0">Consultation Details =><span class="text-info"> DT-YYMMDD (Daily Ticket No)</span></h6>  
+                                <h6 class="mb-0">Consultation Details =><span class="text-info"> DT-001 (Daily Ticket No - Each Doctor Starts from 1)</span></h6>  
                             </div>
                             <div class="card-body">
                                 <div class="row mb-3">
@@ -131,7 +131,7 @@
                                             </div>
                                         </div>
                                         <div class="row mb-2">
-                                            <label class="col-sm-4 col-form-label">Doctor:</label>
+                                            <label class="col-sm-4 col-form-label">Doctor: <span class="text-danger">*</span></label>
                                             <div class="col-sm-8">
                                                 @livewire('doctor-search')
                                                 <input type="hidden" name="doctor_id_hidden">
@@ -351,15 +351,147 @@
         
         // Reset form button
         document.getElementById('resetFormBtn').addEventListener('click', function() {
-            document.getElementById('consultantInvoiceForm').reset();
-            updateDueAmount();
+            resetForm();
         });
         
         // Cancel button
         document.getElementById('cancelBtn').addEventListener('click', function() {
-            window.location.href = "{{ route('admin.dashboard') }}";
+            cancelForm();
+        });
+        
+        // Save & Print button
+        document.getElementById('saveInvoiceBtn').addEventListener('click', function() {
+            saveConsultantInvoice();
         });
     });
+    
+    // Function to save the consultant invoice
+    function saveConsultantInvoice() {
+        // Validate required fields
+        const patientId = document.getElementById('patient_id_hidden').value;
+        const patientName = document.getElementById('patient_name').value;
+        const patientPhone = document.getElementById('patient_phone').value;
+        const patientAddress = document.getElementById('patient_address').value;
+        const ageYears = document.getElementById('age_years').value;
+        const ageMonths = document.getElementById('age_months').value;
+        const ageDays = document.getElementById('age_days').value;
+        const doctorId = document.querySelector('input[name="doctor_id_hidden"]').value;
+        const consultationFee = parseFloat(document.getElementById('consultationFee').value) || 0;
+        
+        console.log('Validation values:', {
+            patientId: patientId,
+            patientName: patientName,
+            patientPhone: patientPhone,
+            doctorId: doctorId,
+            consultationFee: consultationFee
+        });
+        
+        // Check if we have patient information (either selected or entered)
+        if (!patientName) {
+            Livewire.dispatch('showError', { message: 'Please enter patient name' });
+            return;
+        }
+        
+        if (!patientPhone) {
+            Livewire.dispatch('showError', { message: 'Please enter patient contact' });
+            return;
+        }
+        
+        if (!doctorId) {
+            Livewire.dispatch('showError', { message: 'Please select a doctor' });
+            return;
+        }
+        
+        if (consultationFee <= 0) {
+            Livewire.dispatch('showError', { message: 'Please enter a valid consultation fee' });
+            return;
+        }
+        
+        // Prepare form data
+        const formData = {
+            patient_id: patientId || null, // Can be null if no patient selected
+            patient_name: patientName,
+            patient_phone: patientPhone,
+            patient_address: patientAddress,
+            patient_age_years: parseInt(ageYears) || null,
+            patient_age_months: parseInt(ageMonths) || null,
+            patient_age_days: parseInt(ageDays) || null,
+            ticket_date: document.querySelector('input[name="ticket_date"]').value,
+            ticket_time: document.querySelector('input[name="ticket_time"]').value,
+            doctor_id: doctorId,
+            patient_type: document.getElementById('patient_type').value,
+            consultation_fee: consultationFee,
+            paid_amount: parseFloat(document.getElementById('paidAmount').value) || 0,
+            referred_by: document.querySelector('input[name="referred_by_hidden"]').value || null,
+            remarks: document.querySelector('textarea[name="remarks"]')?.value || null,
+            _token: document.querySelector('input[name="_token"]').value
+        };
+        
+        // Disable save button to prevent double submission
+        const saveBtn = document.getElementById('saveInvoiceBtn');
+        const originalText = saveBtn.innerHTML;
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Saving...';
+        
+        // Send AJAX request
+        fetch('{{ route("admin.doctor.invoice.store") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success toast with invoice and ticket details
+                Livewire.dispatch('showInvoiceSuccess', { 
+                    message: data.message,
+                    invoiceNo: data.invoice_no,
+                    ticketNo: data.ticket_no
+                });
+                
+                // Re-enable save button
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+                
+                // Don't redirect automatically - let user decide via toast buttons
+                console.log('Invoice created successfully. Toast will stay open for user interaction.');
+                
+            } else {
+                // Show error toast using Livewire
+                Livewire.dispatch('showError', { message: 'Error creating invoice: ' + data.message });
+                // Re-enable save button
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = originalText;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            // Show error toast using Livewire
+            Livewire.dispatch('showError', { message: 'Network error occurred. Please try again.' });
+            // Re-enable save button
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
+        });
+    }
+    
+    // Function to calculate due amount
+    function calculateDueAmount() {
+        const consultationFee = parseFloat(document.getElementById('consultationFee').value) || 0;
+        const paidAmount = parseFloat(document.getElementById('paidAmount').value) || 0;
+        const dueAmount = consultationFee - paidAmount;
+        
+        document.getElementById('dueAmount').value = dueAmount.toFixed(2);
+    }
+    
+    // Function to auto-set paid amount when consultation fee changes
+    function autoSetPaidAmount() {
+        const consultationFee = parseFloat(document.getElementById('consultationFee').value) || 0;
+        document.getElementById('paidAmount').value = consultationFee.toFixed(2);
+        calculateDueAmount();
+    }
     
     // Direct DOM manipulation for patient fields
     document.addEventListener('livewire:init', () => {
@@ -419,6 +551,106 @@
             }
         });
         
+        // Doctor selected event
+        Livewire.on('doctor-selected', (doctorData) => {
+            console.log('Doctor selected:', doctorData);
+            
+            // Check if we have an array with one element (which contains our object)
+            let data = doctorData;
+            if (Array.isArray(doctorData) && doctorData.length > 0) {
+                data = doctorData[0];
+            }
+            
+            console.log('Processed doctor data:', data);
+            
+            // Fill hidden doctor ID field
+            const doctorIdField = document.querySelector('input[name="doctor_id_hidden"]');
+            if (doctorIdField) {
+                doctorIdField.value = data.id;
+                console.log('Doctor ID field updated:', data.id);
+                
+                // Fetch current ticket count for this doctor
+                fetchDoctorTicketCount(data.id);
+            } else {
+                console.error('Doctor ID field not found!');
+            }
+            
+            // Update the doctor search field with the selected doctor's code
+            // Find the doctor search input field specifically
+            const doctorSearchField = document.querySelector('input[wire\\:model="search"]');
+            if (doctorSearchField) {
+                doctorSearchField.value = data.code || data.name || '';
+                console.log('Doctor search field updated:', data.code || data.name);
+            }
+            
+            // Also try to find the doctor search field by looking for the doctor-search component
+            const doctorSearchComponent = document.querySelector('[wire\\:id*="doctor-search"] input');
+            if (doctorSearchComponent) {
+                doctorSearchComponent.value = data.code || data.name || '';
+                console.log('Doctor search component updated:', data.code || data.name);
+            }
+            
+            // Test: Log all input fields to see what's available
+            console.log('All input fields:', document.querySelectorAll('input'));
+        });
+        
+        // Function to fetch current ticket count for a doctor
+        function fetchDoctorTicketCount(doctorId) {
+            const today = new Date().toISOString().split('T')[0];
+            
+            fetch(`/admin/doctor/invoice/doctor-ticket-count?doctor_id=${doctorId}&date=${today}`, {
+                method: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log(`Doctor ${doctorId} has ${data.ticket_count} tickets today. Next ticket: ${data.next_ticket_number}`);
+                    
+                    // You can display this information somewhere in the UI if needed
+                    // For example, show it near the ticket date/time fields
+                    const ticketInfo = document.getElementById('ticketInfo');
+                    if (ticketInfo) {
+                        ticketInfo.innerHTML = `<small class="text-info">Today's tickets: ${data.ticket_count} | Next: DT-${String(data.next_ticket_number).padStart(3, '0')}</small>`;
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching ticket count:', error);
+            });
+        }
+        
+        // PCP selected event
+        Livewire.on('pcp-selected', (pcpData) => {
+            console.log('PCP selected:', pcpData);
+            
+            // Check if we have an array with one element (which contains our object)
+            let data = pcpData;
+            if (Array.isArray(pcpData) && pcpData.length > 0) {
+                data = pcpData[0];
+            }
+            
+            console.log('Processed PCP data:', data);
+            
+            // Fill hidden PCP ID field
+            const pcpIdField = document.querySelector('input[name="referred_by_hidden"]');
+            if (pcpIdField) {
+                pcpIdField.value = data.id;
+                console.log('PCP ID field updated:', data.id);
+            } else {
+                console.error('PCP ID field not found!');
+            }
+            
+            // Update the PCP search field with the selected PCP's code
+            const pcpSearchField = document.querySelector('input[wire\\:model="search"]');
+            if (pcpSearchField) {
+                pcpSearchField.value = data.code || data.name || '';
+                console.log('PCP search field updated:', data.code || data.name);
+            }
+        });
+        
         // Update search title when search type changes
         Livewire.on('searchTypeChanged', (type) => {
             const titleElement = document.getElementById('search-title');
@@ -426,6 +658,69 @@
                 titleElement.textContent = type + ' Search Results';
             }
         });
+        
+        // Auto-set paid amount when consultation fee changes
+        const consultationFeeInput = document.getElementById('consultationFee');
+        if (consultationFeeInput) {
+            consultationFeeInput.addEventListener('input', autoSetPaidAmount);
+            consultationFeeInput.addEventListener('change', autoSetPaidAmount);
+        }
+        
+        // Calculate due amount when paid amount changes
+        const paidAmountInput = document.getElementById('paidAmount');
+        if (paidAmountInput) {
+            paidAmountInput.addEventListener('input', calculateDueAmount);
+            paidAmountInput.addEventListener('change', calculateDueAmount);
+        }
+        
+        // Initial calculation
+        calculateDueAmount();
     });
+
+    // Reset form function
+    function resetForm() {
+        // Show confirmation toast
+        Livewire.dispatch('showWarning', { message: 'Are you sure you want to reset the form? All data will be cleared.' });
+        
+        // Clear all form fields
+        document.getElementById('patient_name').value = '';
+        document.getElementById('patient_phone').value = '';
+        document.getElementById('patient_address').value = '';
+        document.getElementById('age_years').value = '';
+        document.getElementById('age_months').value = '';
+        document.getElementById('age_days').value = '';
+        document.getElementById('consultationFee').value = '';
+        document.getElementById('paidAmount').value = '';
+        document.getElementById('dueAmount').value = '';
+        document.getElementById('patient_id_hidden').value = '';
+        document.querySelector('input[name="doctor_id_hidden"]').value = '';
+        document.querySelector('input[name="referred_by_hidden"]').value = '';
+        document.querySelector('textarea[name="remarks"]').value = '';
+        
+        // Clear search fields
+        const doctorSearchField = document.querySelector('input[wire\\:model="search"]');
+        if (doctorSearchField) {
+            doctorSearchField.value = '';
+        }
+        
+        // Reset patient type to default
+        document.getElementById('patient_type').value = 'new';
+        
+        // Show success toast after reset
+        setTimeout(() => {
+            Livewire.dispatch('showSuccess', { message: 'Form has been reset successfully! All fields cleared.' });
+        }, 1000);
+    }
+
+    // Cancel function
+    function cancelForm() {
+        // Show confirmation toast
+        Livewire.dispatch('showWarning', { message: 'Are you sure you want to cancel? All unsaved changes will be lost.' });
+        
+        // Redirect to dashboard after confirmation
+        setTimeout(() => {
+            window.location.href = '{{ route("admin.dashboard") }}';
+        }, 2000);
+    }
 </script>
 @endsection 

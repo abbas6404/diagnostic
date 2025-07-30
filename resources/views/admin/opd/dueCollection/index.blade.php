@@ -199,6 +199,37 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Payment History -->
+                    <div class="card border mt-3">
+                        <div class="card-header bg-light py-2">
+                            <h6 class="mb-0"><i class="fas fa-history me-1"></i> Payment History</h6>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                <table class="table table-sm table-bordered mb-0" id="paymentHistoryTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th style="width: 120px;">Collection #</th>
+                                            <th style="width: 100px;">Date</th>
+                                            <th style="width: 100px;" class="text-end">Amount</th>
+                                            <th style="width: 100px;" class="text-end">Due After</th>
+                                            <th style="width: 120px;">Collected By</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted py-4">
+                                                <i class="fas fa-history fa-2x mb-2"></i><br>
+                                                Select an invoice to view payment history
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Right Column -->
@@ -248,9 +279,9 @@
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Collection Amount</label>
                                 <div class="col-sm-7">
-                                    <input type="number" class="form-control form-control-sm text-end" id="collectionAmount" value="0.00" step="0.01" min="0">
+                                    <input type="number" class="form-control form-control-sm text-end" id="collectionAmount" value="0.00" step="0.01" min="0" tabindex="1">
                             </div>
-                                </div>
+                            </div>
                             
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Remaining Due</label>
@@ -259,13 +290,20 @@
                                 </div>
                             </div>
                             
+                            <div class="row mb-2">
+                                <label class="col-sm-5 col-form-label">Remarks</label>
+                                <div class="col-sm-7">
+                                    <textarea class="form-control form-control-sm" id="collectionRemarks" rows="2" placeholder="Any notes about this payment..." tabindex="2"></textarea>
+                                </div>
+                            </div>
+                            
 
                             
                             <div class="d-flex justify-content-center gap-2">
-                                <button class="btn btn-success" id="savePaymentBtn" disabled>
+                                <button class="btn btn-success" id="savePaymentBtn" disabled tabindex="3">
                                     <i class="fas fa-save me-1"></i> Save & Print
                                 </button>
-                                <button class="btn btn-secondary">
+                                <button class="btn btn-secondary" tabindex="4">
                                     <i class="fas fa-redo me-1"></i> Reset
                                 </button>
             
@@ -517,6 +555,8 @@
                     // Load invoice details for the selected item
                     const invoiceId = nextItem.getAttribute('data-invoice-id');
                     if (invoiceId) {
+                        // Set the selected invoice ID globally
+                        window.selectedInvoiceId = invoiceId;
                         loadInvoiceDetails(invoiceId);
                     }
                     
@@ -541,8 +581,17 @@
                 }, 100);
             }
             
-            // Handle Enter key on collection amount to focus save button
+            // Handle Enter key on collection amount to focus remarks field
             else if (e.key === 'Enter' && document.activeElement.id === 'collectionAmount') {
+                e.preventDefault();
+                const remarksField = document.getElementById('collectionRemarks');
+                if (remarksField) {
+                    remarksField.focus();
+                }
+            }
+            
+            // Handle Enter key on remarks field to focus save button
+            else if (e.key === 'Enter' && document.activeElement.id === 'collectionRemarks') {
                 e.preventDefault();
                 const saveButton = document.getElementById('savePaymentBtn');
                 if (saveButton && !saveButton.disabled) {
@@ -633,6 +682,9 @@
         if (collectionAmountInput) collectionAmountInput.value = parseFloat(invoice.due_amount).toFixed(0);
         const remainingDueInput = document.getElementById('remainingDue');
         if (remainingDueInput) remainingDueInput.value = '0';
+        
+        // Set the selected invoice ID globally
+        window.selectedInvoiceId = invoice.invoice_id;
         
         // Enable save button
         document.getElementById('savePaymentBtn').disabled = false;
@@ -847,6 +899,9 @@
                         triangle.style.visibility = 'visible';
                     }
                     
+                    // Set the selected invoice ID globally
+                    window.selectedInvoiceId = invoice.id;
+                    
                     loadInvoiceDetails(invoice.id);
                     
                     // Focus the due invoices table for keyboard navigation
@@ -904,6 +959,56 @@
             .catch(error => {
                 console.error('Error loading full invoice data:', error);
             });
+        
+        // Load payment history
+        loadPaymentHistory(invoiceId);
+    }
+    
+    function loadPaymentHistory(invoiceId) {
+        fetch(`/admin/opd/duecollection/invoice/${invoiceId}/payment-history`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.payments) {
+                    updatePaymentHistoryTable(data.payments);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading payment history:', error);
+            });
+    }
+    
+    function updatePaymentHistoryTable(payments) {
+        const tbody = document.querySelector('#paymentHistoryTable tbody');
+        if (!tbody) {
+            return;
+        }
+        
+        tbody.innerHTML = '';
+        
+        if (payments.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center text-muted py-4">
+                        No payment history found for this invoice
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        payments.forEach(payment => {
+            const tr = document.createElement('tr');
+            tr.className = 'payment-history-row';
+            tr.innerHTML = `
+                <td>${payment.collection_no}</td>
+                <td>${payment.collection_date}</td>
+                <td class="text-end">৳${parseFloat(payment.collection_amount).toFixed(0)}</td>
+                <td class="text-end">৳${parseFloat(payment.due_after_collection).toFixed(0)}</td>
+                <td>${payment.collected_by_name || '-'}</td>
+                <td>${payment.remarks || '-'}</td>
+            `;
+            tbody.appendChild(tr);
+        });
     }
     
     function updatePaymentSummary(invoice) {
@@ -993,6 +1098,7 @@
     window.savePayment = function() {
         const collectionAmount = parseFloat(document.getElementById('collectionAmount').value);
         const dueAmount = parseFloat(document.getElementById('dueAmount').value);
+        const remarks = document.getElementById('collectionRemarks').value;
         
         if (collectionAmount <= 0) {
             alert('Please enter a valid collection amount');
@@ -1013,7 +1119,8 @@
             
             const paymentData = {
             invoice_id: selectedInvoiceId,
-            payment_amount: collectionAmount
+            collection_amount: collectionAmount,
+            remarks: remarks
             };
             
             // Send payment data to server
@@ -1029,9 +1136,12 @@
             .then(data => {
                 if (data.success) {
                 alert('Payment collected successfully!');
-                // Reset collection amount
+                // Reset collection amount and remarks
                 document.getElementById('collectionAmount').value = '0.00';
+                document.getElementById('collectionRemarks').value = '';
                 document.getElementById('remainingDue').value = '0.00';
+                // Reload payment history
+                loadPaymentHistory(selectedInvoiceId);
                 // Optionally refresh the due invoices
                 // loadPatientDueInvoices(patientId);
                 } else {

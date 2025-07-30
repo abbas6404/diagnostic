@@ -86,7 +86,14 @@ class SystemSettingsSeeder extends Seeder
             'Format for OPD numbering'
         );
 
-
+        // Doctor Ticket Prefix Setting
+        SystemSetting::setValue(
+            'doctor_ticket_prefix',
+            'DT',
+            'string',
+            'prefix',
+            'Prefix for doctor ticket numbers (daily per doctor)'
+        );
 
         SystemSetting::setValue(
             'app_version',

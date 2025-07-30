@@ -71,7 +71,8 @@ class SearchResults extends Component
         });
         
         if (count($this->results) > 0) {
-            $this->dispatch('focusFirstResult', 'patient');
+            // Removed auto-selection for patients - let user manually select
+            // $this->dispatch('focusFirstResult', 'patient');
         }
     }
     
@@ -120,7 +121,8 @@ class SearchResults extends Component
         });
         
         if (count($this->results) > 0) {
-            $this->dispatch('focusFirstResult', 'patient');
+            // Removed auto-selection for patients - let user manually select
+            // $this->dispatch('focusFirstResult', 'patient');
         }
     }
     
@@ -191,7 +193,6 @@ class SearchResults extends Component
                 'consultant_tickets.ticket_no', 
                 'consultant_tickets.ticket_date', 
                 'consultant_tickets.ticket_status',
-                'consultant_tickets.doctor_fee',
                 'patients.name_en as patient_name',
                 'doctors.name as doctor_name'
             )
@@ -454,7 +455,10 @@ class SearchResults extends Component
     public function dehydrate()
     {
         if (count($this->results) > 0 && $this->searchType !== 'none') {
-            $this->dispatch('focusFirstResult', $this->searchType);
+            // Don't auto-select for patients - let user manually select
+            if ($this->searchType !== 'patient') {
+                $this->dispatch('focusFirstResult', $this->searchType);
+            }
         }
     }
 }
