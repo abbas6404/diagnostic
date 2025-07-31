@@ -16,8 +16,9 @@ return new class extends Migration
             $table->string('code')->index()->unique();  
             $table->unsignedBigInteger('department_id')->index();
             $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade');
+            $table->unsignedBigInteger('category_id')->nullable()->index();
+            $table->foreign('category_id')->references('id')->on('lab_test_categories')->onDelete('set null');
             $table->string('name')->index();
-            $table->string('description')->nullable();
             $table->decimal('charge', 10, 2)->default(0);
             $table->timestamps();
             $table->softDeletes();

@@ -27,7 +27,7 @@
                     @method('PUT')
                     
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="code" class="form-label fw-bold">Test Code <span class="text-danger">*</span></label>
                                 <input type="text" 
@@ -43,7 +43,7 @@
                                 <div class="form-text">Unique code for the lab test</div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <div class="mb-3">
                                 <label for="department_id" class="form-label fw-bold">Department <span class="text-danger">*</span></label>
                                 <select class="form-select @error('department_id') is-invalid @enderror" 
@@ -63,6 +63,26 @@
                                 @enderror
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label for="category_id" class="form-label fw-bold">Category</label>
+                                <select class="form-select @error('category_id') is-invalid @enderror" 
+                                        id="category_id" 
+                                        name="category_id">
+                                    <option value="">Select Category</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" 
+                                                {{ old('category_id', $labTest->category_id) == $category->id ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('category_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                                <div class="form-text">Optional category for organizing tests</div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-3">
@@ -79,17 +99,92 @@
                         @enderror
                     </div>
 
-                    <div class="mb-3">
-                        <label for="description" class="form-label fw-bold">Description</label>
-                        <textarea class="form-control @error('description') is-invalid @enderror" 
-                                  id="description" 
-                                  name="description" 
-                                  rows="3" 
-                                  placeholder="Enter test description">{{ old('description', $labTest->description) }}</textarea>
-                        @error('description')
-                            <div class="invalid-feedback">{{ $message }}</div>
+                    <!-- Test Parameters Section -->
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="fas fa-list me-1"></i>Test Parameters
+                        </label>
+                        <div class="card border">
+                            <div class="card-body">
+                                <div id="parameters-container">
+                                    @if($labTest->parameters && $labTest->parameters->count() > 0)
+                                        @foreach($labTest->parameters as $index => $parameter)
+                                            <div class="parameter-item border rounded p-3 mb-3" id="parameter-{{ $index + 1 }}">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="mb-2">
+                                                            <label class="form-label small fw-bold">Parameter Name</label>
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="parameters[{{ $index + 1 }}][name_description]" 
+                                                                   value="{{ $parameter->name_description }}"
+                                                                   placeholder="e.g., Hemoglobin"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="mb-2">
+                                                            <label class="form-label small fw-bold">Unit</label>
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="parameters[{{ $index + 1 }}][unit]" 
+                                                                   value="{{ $parameter->unit }}"
+                                                                   placeholder="e.g., g/dL">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="mb-2">
+                                                            <label class="form-label small fw-bold">Normal Value</label>
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="parameters[{{ $index + 1 }}][normal_value]" 
+                                                                   value="{{ $parameter->normal_value }}"
+                                                                   placeholder="e.g., 12-16">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="mb-2">
+                                                            <label class="form-label small fw-bold">Sort Order</label>
+                                                            <input type="number" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="parameters[{{ $index + 1 }}][sort_order]" 
+                                                                   value="{{ $parameter->sort_order ?? $index + 1 }}"
+                                                                   min="1">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-8">
+                                                        <div class="mb-2">
+                                                            <label class="form-label small fw-bold">Default Result</label>
+                                                            <input type="text" 
+                                                                   class="form-control form-control-sm" 
+                                                                   name="parameters[{{ $index + 1 }}][default_result]" 
+                                                                   value="{{ $parameter->default_result }}"
+                                                                   placeholder="Default result value">
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="mb-2 d-flex align-items-end">
+                                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeParameter({{ $index + 1 }})">
+                                                                <i class="fas fa-trash me-1"></i>Remove
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="addParameter()">
+                                    <i class="fas fa-plus me-1"></i>Add Parameter
+                                </button>
+                            </div>
+                        </div>
+                        @error('parameters')
+                            <div class="text-danger small mt-2">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">Optional description for the lab test</div>
+                        <div class="form-text">Add parameters that will be tested in this lab test</div>
                     </div>
 
                     <div class="mb-3">
@@ -170,6 +265,88 @@
 
 @section('scripts')
 <script>
+// Parameter management
+let parameterCounter = {{ $labTest->parameters ? $labTest->parameters->count() : 0 }};
+
+function addParameter() {
+    parameterCounter++;
+    const container = document.getElementById('parameters-container');
+    
+    const parameterDiv = document.createElement('div');
+    parameterDiv.className = 'parameter-item border rounded p-3 mb-3';
+    parameterDiv.id = `parameter-${parameterCounter}`;
+    
+    parameterDiv.innerHTML = `
+        <div class="row">
+            <div class="col-md-4">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Parameter Name</label>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           name="parameters[${parameterCounter}][name_description]" 
+                           placeholder="e.g., Hemoglobin"
+                           required>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Unit</label>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           name="parameters[${parameterCounter}][unit]" 
+                           placeholder="e.g., g/dL">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Normal Value</label>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           name="parameters[${parameterCounter}][normal_value]" 
+                           placeholder="e.g., 12-16">
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Sort Order</label>
+                    <input type="number" 
+                           class="form-control form-control-sm" 
+                           name="parameters[${parameterCounter}][sort_order]" 
+                           value="${parameterCounter}"
+                           min="1">
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Default Result</label>
+                    <input type="text" 
+                           class="form-control form-control-sm" 
+                           name="parameters[${parameterCounter}][default_result]" 
+                           placeholder="Default result value">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="mb-2 d-flex align-items-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeParameter(${parameterCounter})">
+                        <i class="fas fa-trash me-1"></i>Remove
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    container.appendChild(parameterDiv);
+}
+
+function removeParameter(counter) {
+    const parameterDiv = document.getElementById(`parameter-${counter}`);
+    if (parameterDiv) {
+        parameterDiv.remove();
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const checkboxes = document.querySelectorAll('input[name="collection_kits[]"]');
     const headerSpan = document.getElementById('selected-kits-header');

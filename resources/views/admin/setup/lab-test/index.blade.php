@@ -89,6 +89,7 @@
                                 <th class="border-0"><i class="fas fa-hashtag me-1"></i>Code</th>
                                 <th class="border-0"><i class="fas fa-flask me-1"></i>Name</th>
                                 <th class="border-0"><i class="fas fa-building me-1"></i>Department</th>
+                                <th class="border-0"><i class="fas fa-tags me-1"></i>Category</th>
                                 <th class="border-0"><i class="fas fa-money-bill me-1"></i>Charge</th>
                                 <th class="border-0"><i class="fas fa-calendar me-1"></i>Created</th>
                                 <th class="border-0"><i class="fas fa-cogs me-1"></i>Actions</th>
@@ -110,6 +111,13 @@
                             </td>
                             <td>
                                 <span class="badge bg-info">{{ $labTest->department->name ?? 'N/A' }}</span>
+                            </td>
+                            <td>
+                                @if($labTest->category)
+                                    <span class="badge bg-secondary">{{ $labTest->category->name }}</span>
+                                @else
+                                    <span class="text-muted">No Category</span>
+                                @endif
                             </td>
                             <td>{{ $labTest->formatted_charge }}</td>
                             <td>
@@ -161,7 +169,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-4">
+                            <td colspan="7" class="text-center py-4">
                                 <i class="fas fa-flask fa-3x text-muted mb-3"></i>
                                 <h5 class="text-muted">No lab tests found</h5>
                                 <p class="text-muted">

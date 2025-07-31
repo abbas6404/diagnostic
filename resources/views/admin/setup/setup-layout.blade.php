@@ -47,10 +47,7 @@
                             class="list-group-item list-group-item-action {{ request()->routeIs('admin.setup.opd-service.*') ? 'active' : '' }}">
                                 <i class="fas fa-stethoscope me-2"></i>OPD Services
                         </a>
-                        <a href="{{ route('admin.setup.invoice-template.index') }}" 
-                            class="list-group-item list-group-item-action {{ request()->routeIs('admin.setup.invoice-template.*') ? 'active' : '' }}">
-                                <i class="fas fa-file-invoice me-2"></i>Invoice Templates
-                        </a>
+                      
                     </div>
                 </div>
             </div>

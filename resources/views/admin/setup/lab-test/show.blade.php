@@ -45,6 +45,16 @@
                                     </td>
                                 </tr>
                                 <tr>
+                                    <td class="fw-bold text-muted">Category:</td>
+                                    <td>
+                                        @if($labTest->category)
+                                            <span class="badge bg-secondary">{{ $labTest->category->name }}</span>
+                                        @else
+                                            <span class="text-muted">No Category</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
                                     <td class="fw-bold text-muted">Charge:</td>
                                     <td><strong class="text-success">{{ $labTest->formatted_charge }}</strong></td>
                                 </tr>
@@ -97,14 +107,38 @@
                     </div>
                 </div>
 
-                <!-- Description Section -->
-                @if($labTest->description)
-                    <div class="card border-left-primary mb-4">
+                <!-- Parameters Section -->
+                @if($labTest->parameters && $labTest->parameters->count() > 0)
+                    <div class="card border-left-info mb-4">
                         <div class="card-body">
-                            <h6 class="card-title text-primary">
-                                <i class="fas fa-info-circle me-2"></i>Description
+                            <h6 class="card-title text-info">
+                                <i class="fas fa-list me-2"></i>Test Parameters
+                                <span class="badge bg-info ms-2">{{ $labTest->parameters->count() }}</span>
                             </h6>
-                            <p class="card-text">{{ $labTest->description }}</p>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Parameter</th>
+                                            <th>Unit</th>
+                                            <th>Normal Value</th>
+                                            <th>Default Result</th>
+                                            <th>Sort Order</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($labTest->parameters->sortBy('sort_order') as $parameter)
+                                            <tr>
+                                                <td><strong>{{ $parameter->name_description }}</strong></td>
+                                                <td>{{ $parameter->unit ?: 'N/A' }}</td>
+                                                <td>{{ $parameter->normal_value ?: 'N/A' }}</td>
+                                                <td>{{ $parameter->default_result ?: 'N/A' }}</td>
+                                                <td><span class="badge bg-secondary">{{ $parameter->sort_order }}</span></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 @endif

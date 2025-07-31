@@ -19,8 +19,6 @@ return new class extends Migration
             $table->string('default_result')->nullable();
             $table->string('unit')->nullable();
             $table->string('normal_value')->nullable();
-            $table->unsignedBigInteger('category_id')->nullable()->index();
-            $table->foreign('category_id')->references('id')->on('lab_test_categories')->onDelete('set null');
             $table->integer('sort_order')->default(0);
             $table->timestamps();
             $table->softDeletes();
