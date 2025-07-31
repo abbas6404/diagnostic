@@ -111,6 +111,103 @@ class SystemSettingsSeeder extends Seeder
             'Maintenance mode status'
         );
 
+        // Hospital/Clinic Information Settings
+        SystemSetting::setValue(
+            'hospital_name',
+            'City General Hospital & Diagnostic Center',
+            'string',
+            'hospital',
+            'Hospital/Clinic name for invoices and reports'
+        );
+
+        SystemSetting::setValue(
+            'hospital_address',
+            '123 Medical Plaza, City Center, Dhaka-1200',
+            'string',
+            'hospital',
+            'Hospital/Clinic address'
+        );
+
+        SystemSetting::setValue(
+            'hospital_phone',
+            '+880 2-955-1234',
+            'string',
+            'hospital',
+            'Hospital/Clinic phone number'
+        );
+
+        SystemSetting::setValue(
+            'hospital_phone_2',
+            '+880 2-955-1235',
+            'string',
+            'hospital',
+            'Hospital/Clinic second phone number'
+        );
+
+        SystemSetting::setValue(
+            'hospital_email',
+            'info@cityhospital.com',
+            'string',
+            'hospital',
+            'Hospital/Clinic email address'
+        );
+
+        SystemSetting::setValue(
+            'hospital_website',
+            'www.cityhospital.com',
+            'string',
+            'hospital',
+            'Hospital/Clinic website'
+        );
+
+        SystemSetting::setValue(
+            'hospital_logo',
+            '',
+            'string',
+            'hospital',
+            'Hospital/Clinic logo file path'
+        );
+
+        // Invoice Template Assignment Settings
+        SystemSetting::setValue(
+            'default_diagnostic_template_id',
+            '1',
+            'integer',
+            'invoice_template',
+            'Default template ID for diagnostic invoices'
+        );
+
+        SystemSetting::setValue(
+            'default_opd_template_id',
+            '2',
+            'integer',
+            'invoice_template',
+            'Default template ID for OPD invoices'
+        );
+
+        SystemSetting::setValue(
+            'default_consultant_template_id',
+            '3',
+            'integer',
+            'invoice_template',
+            'Default template ID for consultant invoices'
+        );
+
+        SystemSetting::setValue(
+            'default_lab_report_template_id',
+            '4',
+            'integer',
+            'invoice_template',
+            'Default template ID for lab report invoices'
+        );
+
+        SystemSetting::setValue(
+            'default_general_template_id',
+            '5',
+            'integer',
+            'invoice_template',
+            'Default template ID for general invoices'
+        );
 
     }
 }
