@@ -13,6 +13,7 @@ class Department extends Model
     protected $fillable = [
         'name',
         'description',
+        'status',
     ];
 
     protected $casts = [
@@ -21,15 +22,20 @@ class Department extends Model
         'deleted_at' => 'datetime',
     ];
 
-    public function getStatusAttribute()
+    public function getStatusAttribute($value)
     {
-        return $this->deleted_at ? 'Deleted' : 'Active';
+        return $value ?? 'active';
     }
 
     public function getStatusBadgeAttribute()
     {
-        return $this->deleted_at 
-            ? '<span class="badge bg-danger">Deleted</span>'
-            : '<span class="badge bg-success">Active</span>';
+        $status = $this->status;
+        $badgeClass = match($status) {
+            'active' => 'bg-success',
+            'inactive' => 'bg-danger',
+            default => 'bg-secondary'
+        };
+        
+        return '<span class="badge ' . $badgeClass . '">' . ucfirst($status) . '</span>';
     }
 } 

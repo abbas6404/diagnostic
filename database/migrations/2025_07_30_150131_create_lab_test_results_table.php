@@ -19,11 +19,14 @@ return new class extends Migration
             $table->foreign('lab_test_parameter_id')->references('id')->on('lab_test_parameters')->onDelete('cascade');
             $table->string('result_value')->nullable();
             $table->text('remarks')->nullable();
+            $table->enum('status', ['pending', 'tested', 'verified', 'reported', 'completed'])->default('pending');
             $table->date('report_date')->nullable();
+            $table->unsignedBigInteger('incharge_by')->nullable()->index();
+            $table->foreign('incharge_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('checked_by')->nullable()->index();
             $table->foreign('checked_by')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('checked_by_2')->nullable()->index();
-            $table->foreign('checked_by_2')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('referred_by')->nullable()->index();
+            $table->foreign('referred_by')->references('id')->on('users')->onDelete('cascade');
         
             $table->timestamps();
             $table->softDeletes();

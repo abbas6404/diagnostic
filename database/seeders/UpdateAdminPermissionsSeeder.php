@@ -15,7 +15,7 @@ class UpdateAdminPermissionsSeeder extends Seeder
     public function run(): void
     {
         // Find or create the admin user
-        $admin = User::where('email', 'admin@example.com')->first();
+        $admin = User::where('email', 'admin@gmail.com')->first();
         
         if (!$admin) {
             $this->command->error('Admin user not found. Please run the RolesAndPermissionsSeeder first.');

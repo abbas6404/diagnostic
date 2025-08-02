@@ -90,8 +90,9 @@ class LabTestResultSeeder extends Seeder
             'result_value' => $resultValue,
             'remarks' => $this->getResultRemarks($status, $parameter),
             'report_date' => now(),
-            'checked_by' => 1, // Admin user
-            'checked_by_2' => rand(1, 3), // Random second checker
+            'checked_by' => 1, // Admin user    
+            'incharge_by' => rand(1, 3), // Random second checker incharge
+            'referred_by' => rand(1, 3), // Random second checker referred  
             'created_by' => 1,
             'updated_by' => 1,
             'created_at' => now(),

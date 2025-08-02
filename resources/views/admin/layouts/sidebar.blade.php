@@ -191,28 +191,19 @@
     
                 <!-- Investigation Report -->
                 <li class="nav-item">
-            <a class="nav-link has-submenu" href="#" data-bs-toggle="collapse" data-bs-target="#investigationSubmenu" aria-expanded="false">
+            <a class="nav-link has-submenu {{ request()->routeIs('admin.investigation-reporting.*') ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#investigationSubmenu" aria-expanded="{{ request()->routeIs('admin.investigation-reporting.*') ? 'true' : 'false' }}">
                 <i class="fas fa-file-medical-alt"></i>
-                <span>Investigation Report</span>
+                <span>Investigation Reporting</span>
                 <i class="fas fa-chevron-down submenu-icon"></i>
             </a>
-            <div class="collapse" id="investigationSubmenu">
+            <div class="collapse {{ request()->routeIs('admin.investigation-reporting.*') ? 'show' : '' }}" id="investigationSubmenu">
                 <ul class="nav flex-column submenu">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Lab Reports</span>
+                        <a class="nav-link {{ request()->routeIs('admin.investigation-reporting.all-reporting') ? 'active' : '' }}" href="{{ route('admin.investigation-reporting.all-reporting') }}">
+                            <span>All Reporting</span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Radiology Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">
-                            <span>Clinical Reports</span>
-                        </a>
-                    </li>
+                 
                 </ul>
             </div>
         </li>

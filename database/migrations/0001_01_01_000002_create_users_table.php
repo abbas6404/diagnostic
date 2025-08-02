@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique()->nullable()->index(); //Code (DT-001)
+            $table->string('code')->unique()->nullable()->index(); //Code (DR-001)
             $table->string('name'); //Name
             $table->string('description')->nullable(); //Description
             $table->string('email')->unique()->index(); //Email
@@ -29,8 +29,10 @@ return new class extends Migration
             $table->string('zip')->nullable(); //Zip
             $table->string('country')->nullable(); //Country
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active'); //Status
-
+            
             $table->string('profile_photo_path')->nullable(); //Profile Photo Path
+            $table->unsignedBigInteger('department_id')->nullable(); //Department ID    
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade'); //Department ID 
             
             $table->rememberToken(); //Remember Token
             $table->timestamps(); //Created At, Updated At

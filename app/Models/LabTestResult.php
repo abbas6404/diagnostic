@@ -10,44 +10,55 @@ class LabTestResult extends Model
     use HasFactory;
 
     protected $fillable = [
-        'patient_id',
-        'lab_test_id',
+        'lab_test_order_id',
         'lab_test_parameter_id',
         'result_value',
         'remarks',
-        'lab_incharge_id',
-        'doctor_report_id',
-        'verified_by',
-        'verified_at',
-        'tested_at',
-        'status'
+        'status',
+        'report_date',
+        'incharge_by',
+        'checked_by',
+        'referred_by',
+        'created_by',
+        'updated_by'
     ];
 
     protected $casts = [
-        'patient_id' => 'integer',
-        'lab_test_id' => 'integer',
+        'lab_test_order_id' => 'integer',
         'lab_test_parameter_id' => 'integer',
-        'lab_incharge_id' => 'integer',
-        'doctor_report_id' => 'integer',
-        'verified_by' => 'integer',
-        'verified_at' => 'datetime',
-        'tested_at' => 'datetime',
+        'incharge_by' => 'integer',
+        'checked_by' => 'integer',
+        'referred_by' => 'integer',
+        'created_by' => 'integer',
+        'updated_by' => 'integer',
+        'report_date' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+        'deleted_at' => 'datetime',
     ];
 
     /**
-     * Get the patient that owns the result.
+     * Get the lab test order that owns the result.
      */
-    public function patient()
+    public function labTestOrder()
     {
-        return $this->belongsTo(Patient::class);
+        return $this->belongsTo(LabTestOrder::class);
     }
 
     /**
-     * Get the lab test that owns the result.
+     * Get the lab test through the order.
      */
     public function labTest()
     {
-        return $this->belongsTo(LabTest::class);
+        return $this->hasOneThrough(LabTest::class, LabTestOrder::class, 'id', 'id', 'lab_test_order_id', 'lab_test_id');
+    }
+
+    /**
+     * Get the patient through the order.
+     */
+    public function patient()
+    {
+        return $this->hasOneThrough(Patient::class, LabTestOrder::class, 'id', 'id', 'lab_test_order_id', 'patient_id');
     }
 
     /**
@@ -59,27 +70,43 @@ class LabTestResult extends Model
     }
 
     /**
-     * Get the lab incharge who performed the test.
+     * Get the first checker.
      */
-    public function labIncharge()
+    public function checkedBy()
     {
-        return $this->belongsTo(User::class, 'lab_incharge_id');
+        return $this->belongsTo(User::class, 'checked_by');
     }
 
     /**
-     * Get the doctor who reported the result.
+     * Get the incharge.
      */
-    public function doctorReport()
+    public function inchargeBy()
     {
-        return $this->belongsTo(User::class, 'doctor_report_id');
+        return $this->belongsTo(User::class, 'incharge_by');
     }
 
     /**
-     * Get the user who verified the result.
+     * Get the referred by.
      */
-    public function verifiedBy()
+    public function referredBy()
     {
-        return $this->belongsTo(User::class, 'verified_by');
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    /**
+     * Get the user who created the result.
+     */
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the user who updated the result.
+     */
+    public function updatedBy()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
     }
 
     /**

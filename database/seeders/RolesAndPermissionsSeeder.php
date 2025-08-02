@@ -54,17 +54,17 @@ class RolesAndPermissionsSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles and assign permissions
         
         // Super Admin role
-        $superAdminRole = Role::create(['name' => 'Super Admin']);
+        $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin']);
         $superAdminRole->givePermissionTo(Permission::all());
         
         // Admin role
-        $adminRole = Role::create(['name' => 'Admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'Admin']);
         $adminRole->givePermissionTo([
             'view users',
             'create users',
@@ -76,7 +76,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
         
         // Moderator role
-        $moderatorRole = Role::create(['name' => 'Moderator']);
+        $moderatorRole = Role::firstOrCreate(['name' => 'Moderator']);
         $moderatorRole->givePermissionTo([
             'view users',
             'access admin dashboard',
@@ -84,7 +84,7 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
         
         // Doctor role
-        $doctorRole = Role::create(['name' => 'Doctor']);
+        $doctorRole = Role::firstOrCreate(['name' => 'Doctor']);
         $doctorRole->givePermissionTo([
             'access admin dashboard',
             'view patients',
@@ -92,7 +92,17 @@ class RolesAndPermissionsSeeder extends Seeder
             'view medical records',
             'view reports'
         ]);
-        $pcpRole = Role::create(['name' => 'PCP']);
+        
+        // Pathologist role
+        $pathologistRole = Role::firstOrCreate(['name' => 'pathologist']);
+        $pathologistRole->givePermissionTo([
+            'access admin dashboard',
+            'view patients',
+            'view medical records',
+            'view reports'
+        ]);
+        
+        $pcpRole = Role::firstOrCreate(['name' => 'PCP']);
         $pcpRole->givePermissionTo([
             'access admin dashboard',
             'view patients',
@@ -103,69 +113,94 @@ class RolesAndPermissionsSeeder extends Seeder
 
         
         // User role
-        $userRole = Role::create(['name' => 'User']);
+        $userRole = Role::firstOrCreate(['name' => 'User']);
         // Regular users don't have admin permissions
 
         // Create a super admin user
-        $superAdmin = User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'phone' => '01742184298',
-            'password' => Hash::make('12345678')
-        ]);
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'superadmin@gmail.com'],
+            [
+                'name' => 'Super Admin',
+                'phone' => '01742184298',
+                'department_id' => 1, // No department for super admin
+                'password' => Hash::make('12345678')
+            ]
+        );
         $superAdmin->assignRole('Super Admin');
         
         // Create an admin user
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@gmail.com',
-            'phone' => '01752345678',
-            'password' => Hash::make('12345678')
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@gmail.com'],
+            [
+                'name' => 'Admin User',
+                'phone' => '01752345678',
+                'password' => Hash::make('12345678')
+            ]
+        );
         $admin->assignRole('Admin');
 
         // Create a Doctor user
-        $doctor = User::create([
-            'name' => 'Dr. Ahmed Hossain',
-            'code' => 'DR-001',
-            'email' => 'doctor@gmail.com',
-            'phone' => '01712345678',
-            'description' => 'Consultant',
-            'password' => Hash::make('12345678')
-        ]);
+        $doctor = User::firstOrCreate(
+            ['email' => 'doctor@gmail.com'],
+            [
+                'name' => 'Dr. Ahmed Hossain',
+                'code' => 'DR-001',
+                'phone' => '01712345678',
+                'description' => 'Consultant',
+                'password' => Hash::make('12345678')
+            ]
+        );
         $doctor->assignRole('Doctor');
         
         // Create another Doctor user
-        $doctor2 = User::create([
-            'name' => 'Dr. Fatima Begum',
-            'code' => 'DR-002',
-            'email' => 'doctor2@gmail.com',
-            'phone' => '01812345678',
-            'description' => 'Consultant',
-            'password' => Hash::make('12345678')
-        ]);
+        $doctor2 = User::firstOrCreate(
+            ['email' => 'doctor2@gmail.com'],
+            [
+                'name' => 'Dr. Fatima Begum',
+                'code' => 'DR-002',
+                'phone' => '01812345678',
+                'description' => 'Consultant',
+                'password' => Hash::make('12345678')
+            ]
+        );
         $doctor2->assignRole('Doctor');
 
         // Create a PCP user
-        $pcp = User::create([
-            'name' => 'Ahmed Hasan',
-            'code' => 'PCP-001',
-            'email' => 'pcp@gmail.com',
-            'phone' => '01912345678',   
-            'description' => 'PCP',
-            'password' => Hash::make('12345678')
-        ]);
+        $pcp = User::firstOrCreate(
+            ['email' => 'pcp@gmail.com'],
+            [
+                'name' => 'Ahmed Hasan',
+                'code' => 'PCP-001',
+                'phone' => '01912345678',   
+                'description' => 'PCP',
+                'password' => Hash::make('12345678')
+            ]
+        );
         $pcp->assignRole('PCP');
-        $pcp2 = User::create([
-            'name' => 'Makbul Hasan',
-            'code' => 'PCP-002',
-            'email' => 'pcp2@gmail.com',
-            'phone' => '01912345675',   
-            'description' => 'PCP',
-            'password' => Hash::make('12345678')
-        ]);
+        $pcp2 = User::firstOrCreate(
+            ['email' => 'pcp2@gmail.com'],
+            [
+                'name' => 'Makbul Hasan',
+                'code' => 'PCP-002',
+                'phone' => '01912345675',   
+                'description' => 'PCP',
+                'password' => Hash::make('12345678')
+            ]
+        );
         $pcp2->assignRole('PCP');
 
+        // Create a Pathologist user
+        $pathologist = User::firstOrCreate(
+            ['email' => 'pathologist@gmail.com'],
+            [
+                'name' => 'Dr. Sarah Johnson',
+                'code' => 'PATH-001',
+                'phone' => '01612345678',
+                'description' => 'Senior Pathologist',
+                'password' => Hash::make('12345678')
+            ]
+        );
+        $pathologist->assignRole('pathologist');
         
     }
 }

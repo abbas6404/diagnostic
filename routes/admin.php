@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\OpdController;
 use App\Http\Controllers\Admin\DoctorController;
 use App\Http\Controllers\Admin\HospitalController;
 use App\Http\Controllers\Admin\LaboratoryController;
+use App\Http\Controllers\Admin\InvestigationReportController;
 use App\Http\Controllers\Admin\SearchController;
 use App\Http\Controllers\Admin\Setup\SetupController;
 use App\Http\Controllers\Admin\Setup\OverviewController;
@@ -340,4 +341,10 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/o
         Route::delete('/{opdService}', [OpdServiceController::class, 'destroy'])->name('destroy');
         Route::post('/{id}/restore', [OpdServiceController::class, 'restore'])->name('restore');
         Route::delete('/{id}/force-delete', [OpdServiceController::class, 'forceDelete'])->name('force-delete');
+    }); 
+
+    // Investigation Reporting Routes
+    Route::prefix('investigation-reporting')->name('investigation-reporting.')->group(function () {
+        // Main Reporting Page (Livewire Component)
+        Route::get('/all-reporting', [InvestigationReportController::class, 'testReporting'])->name('all-reporting');
     }); 
