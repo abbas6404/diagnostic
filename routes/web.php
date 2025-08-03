@@ -23,14 +23,14 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// Add home route that redirects to login
+// Add home route that redirects to admin dashboard
 Route::get('/home', function () {
-    return redirect()->route('login');
+    return redirect()->route('admin.dashboard');
 })->name('home');
 
-// Redirect any other routes to login
+// Redirect any other routes to admin dashboard
 Route::fallback(function () {
-    return redirect()->route('login');
+    return redirect()->route('admin.dashboard');
 });
 
 // Remove all guest routes

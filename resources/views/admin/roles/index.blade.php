@@ -155,56 +155,7 @@
 @endsection
 
 @push('styles')
-<style>
-    .badge {
-        font-size: 0.75rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .badge.rounded-pill {
-        padding: 0.3rem 0.6rem;
-    }
-    
-    .badge:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-    .btn-group .btn {
-        border-radius: 4px;
-        margin-right: 5px;
-    }
-    
-    .table th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-    
-    .table td {
-        vertical-align: middle;
-    }
-    
-    .gap-1 {
-        gap: 0.25rem !important;
-    }
-    
-    .alert-info {
-        border-left: 4px solid #17a2b8;
-        background-color: rgba(23, 162, 184, 0.1);
-        color: #17a2b8;
-    }
-    
-    .alert-info .fas {
-        color: #17a2b8;
-    }
-    
-    .card-header h6 {
-        color: #4e73df;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')

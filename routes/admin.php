@@ -263,6 +263,8 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setting
 });
 
 // Admin Profile routes
+Route::get('/profile', [AdminController::class, 'showProfile'])->name('profile.index');
+Route::put('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
 Route::get('/profile/password', [AdminController::class, 'showChangePasswordForm'])->name('profile.password');
 Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password.update'); 
 

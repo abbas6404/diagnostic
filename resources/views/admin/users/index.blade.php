@@ -106,44 +106,7 @@
 @endsection
 
 @push('styles')
-<style>
-    .avatar {
-        width: 30px;
-        height: 30px;
-        font-size: 14px;
-        font-weight: 600;
-    }
-    
-    .gap-1 {
-        gap: 0.25rem !important;
-    }
-    
-    .badge {
-        font-size: 0.75rem;
-        font-weight: 500;
-        transition: all 0.2s ease;
-    }
-    
-    .badge:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
-    }
-    
-    .btn-group .btn {
-        border-radius: 4px;
-        margin-right: 5px;
-    }
-    
-    .table th {
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-    
-    .table td {
-        vertical-align: middle;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')

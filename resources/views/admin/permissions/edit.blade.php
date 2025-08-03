@@ -92,14 +92,5 @@
 @endsection
 
 @push('styles')
-<style>
-    .gap-1 {
-        gap: 0.25rem !important;
-    }
-    
-    .badge {
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endpush 

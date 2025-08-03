@@ -3,64 +3,7 @@
 @section('title', 'Diagnostics Invoice')
 
 @section('styles')
-<style>
-    .search-results {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        position: absolute;
-        z-index: 1000;
-        background-color: white;
-        width: 100%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .search-item {
-        cursor: pointer;
-    }
-    .search-item:hover {
-        background-color: rgba(0,123,255,0.1);
-    }
-    .search-item.selected {
-        background-color: rgba(0,123,255,0.2);
-    }
-    
-    /* Position the search results properly */
-    .col-sm-8 {
-        position: relative;
-    }
-    
-    /* Collection kit row styling */
-    .collection-kit-row {
-        background-color: #f8f9fa;
-        border-left: 3px solid #28a745;
-    }
-    
-    .collection-kit-row td {
-        font-size: 0.875rem;
-        color: #6c757d;
-        vertical-align: middle;
-    }
-    
-    .collection-kit-row .text-muted {
-        font-style: italic;
-        color: #adb5bd !important;
-    }
-    
-    /* Color badge styling */
-    .badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        font-weight: normal;
-    }
-    
-    /* Improve alignment for collection kit particulars */
-    .collection-kit-row .d-flex {
-        min-height: 31px;
-        align-items: center;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

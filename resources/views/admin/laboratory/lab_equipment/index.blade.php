@@ -3,51 +3,7 @@
 @section('title', 'Lab Equipment')
 
 @section('styles')
-<style>
-    .equipment-card {
-        transition: transform 0.2s, box-shadow 0.2s;
-        height: 100%;
-    }
-    
-    .equipment-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
-    }
-    
-    .equipment-img {
-        height: 160px;
-        object-fit: contain;
-        padding: 1rem;
-    }
-    
-    .status-operational {
-        color: #28a745;
-    }
-    
-    .status-maintenance {
-        color: #ffc107;
-    }
-    
-    .status-out-of-order {
-        color: #dc3545;
-    }
-    
-    .status-calibration {
-        color: #17a2b8;
-    }
-    
-    .maintenance-alert {
-        border-left: 4px solid #ffc107;
-        background-color: #fff8e1;
-        padding: 0.75rem;
-    }
-    
-    .calibration-alert {
-        border-left: 4px solid #17a2b8;
-        background-color: #e3f2fd;
-        padding: 0.75rem;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

@@ -298,31 +298,7 @@
 @endsection
 
 @push('styles')
-<style>
-    .form-switch {
-        padding-left: 2.5em;
-    }
-    
-    .form-switch .form-check-input {
-        width: 2em;
-        margin-left: -2.5em;
-    }
-    
-    .nav-tabs .nav-link {
-        border: none;
-        color: #6c757d;
-        font-weight: 500;
-    }
-    
-    .nav-tabs .nav-link.active {
-        color: var(--primary-color);
-        border-bottom: 2px solid var(--primary-color);
-    }
-    
-    .tab-pane {
-        padding: 1.25rem 0.25rem;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endpush
 
 @push('scripts')

@@ -3,56 +3,7 @@
 @section('title', 'Laboratory Test Results')
 
 @section('styles')
-<style>
-    .result-value-input {
-        width: 100%;
-        border: 1px solid #ced4da;
-        border-radius: 4px;
-        padding: 0.25rem 0.5rem;
-    }
-    
-    .result-value-input:focus {
-        border-color: #80bdff;
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-    
-    .test-group-header {
-        background-color: #e9ecef;
-        font-weight: 600;
-        border-left: 4px solid #007bff;
-    }
-    
-    .test-subgroup-header {
-        background-color: #f8f9fa;
-        font-weight: 500;
-        border-left: 4px solid #6c757d;
-    }
-    
-    .normal-range {
-        color: #6c757d;
-        font-size: 0.8rem;
-    }
-    
-    .abnormal-result {
-        color: #dc3545;
-        font-weight: 600;
-    }
-    
-    .patient-info-box {
-        background-color: #f8f9fa;
-        border-left: 4px solid #28a745;
-    }
-    
-    .report-actions {
-        position: sticky;
-        bottom: 0;
-        background-color: rgba(255, 255, 255, 0.9);
-        border-top: 1px solid #dee2e6;
-        padding: 0.75rem 1rem;
-        z-index: 100;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

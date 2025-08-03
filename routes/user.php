@@ -16,15 +16,15 @@ use App\Http\Controllers\User\OrderController;
 |
 */
 
-// Dashboard routes
-Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// Dashboard routes - COMMENTED OUT
+// Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// Profile routes
-Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
-Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
-Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo');
+// Profile routes - COMMENTED OUT
+// Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
+// Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+// Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password.update');
+// Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo');
 
-// Order routes
-Route::get('/orders', [OrderController::class, 'index'])->name('orders');
-Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show'); 
+// Order routes - COMMENTED OUT
+// Route::get('/orders', [OrderController::class, 'index'])->name('orders');
+// Route::get('/orders/{id}', [OrderController::class, 'show'])->name('orders.show'); 

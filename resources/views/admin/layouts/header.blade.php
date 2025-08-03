@@ -126,7 +126,7 @@
                             <p class="mb-0 text-muted">{{ Auth::user()->email }}</p>
                         </div>
                         <div class="p-1">
-                            <a class="dropdown-item rounded-3" href="#">
+                            <a class="dropdown-item rounded-3" href="{{ route('admin.profile.index') }}">
                                 <i class="fas fa-user"></i> My Profile
                             </a>
                             <a class="dropdown-item rounded-3" href="{{ route('admin.profile.password') }}">

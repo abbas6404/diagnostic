@@ -3,33 +3,7 @@
 @section('title', 'OPD Invoice')
 
 @section('styles')
-<style>
-    .search-results {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        position: absolute;
-        z-index: 1000;
-        background-color: white;
-        width: 100%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .search-item {
-        cursor: pointer;
-    }
-    .search-item:hover {
-        background-color: rgba(0,123,255,0.1);
-    }
-    .search-item.selected {
-        background-color: rgba(0,123,255,0.2);
-    }
-    
-    /* Position the search results properly */
-    .col-sm-8 {
-        position: relative;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')

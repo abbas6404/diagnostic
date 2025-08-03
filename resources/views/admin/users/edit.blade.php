@@ -141,19 +141,5 @@
 @endsection
 
 @push('styles')
-<style>
-    .badge {
-        font-size: 0.75rem;
-        font-weight: 500;
-    }
-    
-    .card-body {
-        padding: 1.25rem;
-    }
-    
-    .roles-section {
-        max-height: 250px;
-        overflow-y: auto;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endpush 

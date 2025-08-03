@@ -23,6 +23,7 @@ class Patient extends Model
         'emergency_contact',
         'emergency_phone',
         'reg_date',
+        'reg_fee',
         'status',
         'created_by',
         'updated_by'

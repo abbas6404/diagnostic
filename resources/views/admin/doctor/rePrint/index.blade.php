@@ -3,68 +3,6 @@
 @section('title', 'Doctor/Consultation Re-Print')
 
 @section('styles')
-<style>
-    .search-results {
-        max-height: 200px;
-        overflow-y: auto;
-        border: 1px solid #dee2e6;
-        border-radius: 0.25rem;
-        position: absolute;
-        z-index: 1000;
-        background-color: white;
-        width: 100%;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .search-item {
-        cursor: pointer;
-    }
-    .search-item:hover {
-        background-color: rgba(0,123,255,0.1);
-    }
-    .search-item.selected {
-        background-color: #e3f2fd !important;
-        border-left: 3px solid #2196f3;
-    }
-    
-    /* Position the search results properly */
-    .col-sm-8 {
-        position: relative;
-    }
-    
-    .keyboard-hint {
-        font-size: 0.75rem;
-        opacity: 0.8;
-    }
-
-    .triangle-indicator {
-        width: 0;
-        height: 0;
-        border-top: 5px solid transparent;
-        border-left: 8px solid #2196f3;
-        border-bottom: 5px solid transparent;
-        display: inline-block;
-        margin-right: 8px;
-        visibility: hidden;
-    }
-    
-    .search-item.selected .triangle-indicator {
-        visibility: visible !important;
-    }
-    
-    .search-item:hover .triangle-indicator {
-        visibility: visible;
-    }
-
-    .selected-item {
-        background-color: #e8f5e8;
-    }
-
-    .item-selector:focus,
-    .print-item-btn:focus {
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-        border-color: #80bdff;
-    }
-</style>
 @endsection
 
 @section('content')

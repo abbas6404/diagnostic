@@ -3,68 +3,7 @@
 @section('title', 'Sample Collection')
 
 @section('styles')
-<style>
-    .sample-status-pending {
-        color: #ffc107;
-    }
-    
-    .sample-status-collected {
-        color: #28a745;
-    }
-    
-    .sample-status-rejected {
-        color: #dc3545;
-    }
-    
-    .sample-type-badge {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-    }
-    
-    .sample-type-blood {
-        background-color: #ffebee;
-        color: #b71c1c;
-    }
-    
-    .sample-type-urine {
-        background-color: #fff8e1;
-        color: #ff8f00;
-    }
-    
-    .sample-type-stool {
-        background-color: #efebe9;
-        color: #4e342e;
-    }
-    
-    .sample-type-swab {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-    
-    .sample-type-fluid {
-        background-color: #e3f2fd;
-        color: #0d47a1;
-    }
-    
-    .sample-type-tissue {
-        background-color: #f3e5f5;
-        color: #6a1b9a;
-    }
-    
-    .collection-instructions {
-        background-color: #f8f9fa;
-        border-left: 4px solid #17a2b8;
-        padding: 1rem;
-    }
-    
-    .barcode-container {
-        border: 1px dashed #ced4da;
-        padding: 0.5rem;
-        text-align: center;
-        background-color: #f8f9fa;
-    }
-</style>
+<link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
