@@ -398,11 +398,16 @@ class InvestigationReportingAllReporting extends Component
     
     public function saveAndPrintReport()
     {
-        // Save without notification
+        // Save the report first
         $this->saveTestResults(false);
         
-        // Show success message instead of print
-        $this->dispatch('show-success', 'Report saved successfully!');
+        // Show success message and trigger print
+        if ($this->selectedInvoiceId) {
+            $this->dispatch('show-success', 'Report saved successfully!');
+            $this->dispatch('trigger-print', ['invoiceId' => $this->selectedInvoiceId]);
+        } else {
+            $this->dispatch('show-error', 'Please select an invoice to print');
+        }
     }
     
     public function viewReport()
@@ -410,10 +415,20 @@ class InvestigationReportingAllReporting extends Component
         // Do nothing for now
         $this->dispatch('show-success', 'View functionality removed');
     }
+
+    public function printReport()
+    {
+        if ($this->selectedInvoiceId) {
+            // Redirect to print view
+            return redirect()->route('admin.investigation-reporting.print-report', ['invoiceId' => $this->selectedInvoiceId]);
+        } else {
+            $this->dispatch('show-error', 'Please select an invoice to print');
+        }
+    }
     
     public function exitPage()
     {
-        return redirect()->route('admin.dashboard');
+        return redirect()->route('admin.investigation-reporting.all-reporting');
     }
 
     public function getInvoicesProperty()

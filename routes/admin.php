@@ -347,4 +347,6 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setup/o
     Route::prefix('investigation-reporting')->name('investigation-reporting.')->group(function () {
         // Main Reporting Page (Livewire Component)
         Route::get('/all-reporting', [InvestigationReportController::class, 'testReporting'])->name('all-reporting');
+        // Print Report Route
+        Route::get('/print/{invoiceId}', [InvestigationReportController::class, 'printReport'])->name('print-report');
     }); 

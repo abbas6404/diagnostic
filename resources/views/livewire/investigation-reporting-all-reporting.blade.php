@@ -213,8 +213,8 @@
                 </div>
                 <div class="row mt-2">
                     <div class="col-6">
-                        <button wire:click="viewReport" class="btn btn-action btn-view w-100" style="padding: 6px 12px !important; font-size: 12px !important;">
-                            <i class="fas fa-eye me-1"></i>View Report
+                        <button wire:click="printReport" class="btn btn-action btn-view w-100" style="padding: 6px 12px !important; font-size: 12px !important;">
+                            <i class="fas fa-print me-1"></i>View Report
                         </button>
                     </div>
                     <div class="col-6">
@@ -226,6 +226,34 @@
 
             </div>
         </div>
+
+        <script>
+            // Listen for print trigger event
+            document.addEventListener('livewire:init', () => {
+                Livewire.on('trigger-print', (data) => {
+                    // Create a hidden iframe to load the print page
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = '{{ route("admin.investigation-reporting.print-report", ["invoiceId" => "INVOICE_ID"]) }}'.replace('INVOICE_ID', data.invoiceId);
+                    
+                    document.body.appendChild(iframe);
+                    
+                    // Wait for iframe to load, then print
+                    iframe.onload = function() {
+                        try {
+                            iframe.contentWindow.print();
+                        } catch (e) {
+                            console.log('Print triggered');
+                        }
+                        
+                        // Remove iframe after printing
+                        setTimeout(() => {
+                            document.body.removeChild(iframe);
+                        }, 1000);
+                    };
+                });
+            });
+        </script>
 
         <!-- Right Side - Test Results or Search Results -->
         <div class="col-md-8">
