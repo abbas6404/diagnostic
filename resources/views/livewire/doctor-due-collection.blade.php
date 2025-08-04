@@ -16,23 +16,6 @@
             </div>
         </div>
         <div class="card-body">
-            <!-- Success/Error Messages -->
-            @if($showSuccess)
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fas fa-check-circle me-2"></i>
-                    {{ $successMessage }}
-                    <button type="button" class="btn-close" wire:click="closeSuccess"></button>
-                </div>
-            @endif
-
-            @if($showError)
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle me-2"></i>
-                    {{ $errorMessage }}
-                    <button type="button" class="btn-close" wire:click="closeError"></button>
-                </div>
-            @endif
-
             <div class="row">
                 <!-- Left Column -->
                 <div class="col-md-7">
@@ -272,7 +255,7 @@
                                 <label class="col-sm-5 col-form-label">Collection Amount</label>
                                 <div class="col-sm-7">
                                     <input type="number" class="form-control form-control-sm text-end" 
-                                           wire:model="collectionAmount" step="0.01" min="0">
+                                           wire:model="collectionAmount" wire:input="calculateRemainingDue" step="0.01" min="0">
                                 </div>
                             </div>
                             
@@ -293,18 +276,25 @@
                             </div>
 
                             <div class="d-flex justify-content-center gap-2">
-                                <button class="btn btn-success" wire:click="savePayment" 
+                                <button class="btn btn-primary" wire:click="saveOnly" 
                                         wire:loading.attr="disabled" wire:loading.class="disabled"
                                         {{ !$selectedInvoiceId ? 'disabled' : '' }}>
                                     <i class="fas fa-save me-1"></i> 
+                                    <span wire:loading.remove>Save</span>
+                                    <span wire:loading>Saving...</span>
+                                </button>
+                                <button class="btn btn-success" wire:click="saveAndPrint" 
+                                        wire:loading.attr="disabled" wire:loading.class="disabled"
+                                        {{ !$selectedInvoiceId ? 'disabled' : '' }}>
+                                    <i class="fas fa-print me-1"></i> 
                                     <span wire:loading.remove>Save & Print</span>
                                     <span wire:loading>Saving...</span>
                                 </button>
-                                <button class="btn btn-info" disabled>
-                                    <i class="fas fa-history me-1"></i> History
-                                </button>
                                 <button class="btn btn-secondary" wire:click="resetForm">
                                     <i class="fas fa-redo me-1"></i> Reset
+                                </button>
+                                <button class="btn btn-danger" wire:click="cancelForm">
+                                    <i class="fas fa-times me-1"></i> Cancel
                                 </button>
                             </div>
                         </div>
@@ -324,6 +314,121 @@
             if (searchTitle) {
                 searchTitle.textContent = data.title;
             }
+        });
+        
+        // Listen for print window event
+        Livewire.on('openPrintWindow', (data) => {
+            const templateUrl = '{{ route("admin.admin.invoice-templates.due-collection") }}?invoice_id=' + data.invoiceId;
+            console.log('Opening print window with URL:', templateUrl);
+            
+            let printWindow = null;
+            let iframeUsed = false;
+            
+            // Create a hidden iframe for printing
+            const printFrame = document.createElement('iframe');
+            printFrame.style.display = 'none';
+            printFrame.src = templateUrl;
+            document.body.appendChild(printFrame);
+            
+            printFrame.onload = function() {
+                console.log('Print frame loaded, attempting to print automatically...');
+                iframeUsed = true;
+                
+                setTimeout(() => {
+                    try {
+                        // Try to print automatically without dialog
+                        const frameWindow = printFrame.contentWindow;
+                        frameWindow.focus();
+                        frameWindow.print();
+                        console.log('Automatic print triggered successfully');
+                        
+                        // Remove the iframe after printing
+                        setTimeout(() => {
+                            if (document.body.contains(printFrame)) {
+                                document.body.removeChild(printFrame);
+                            }
+                        }, 1000);
+                        
+                    } catch (printError) {
+                        console.error('Automatic print error:', printError);
+                        
+                        // Only open fallback window if iframe method was used
+                        if (iframeUsed && !printWindow) {
+                            printWindow = window.open(templateUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                            
+                            if (printWindow) {
+                                printWindow.onload = function() {
+                                    setTimeout(() => {
+                                        try {
+                                            printWindow.print();
+                                            console.log('Fallback print dialog opened');
+                                            
+                                            // Close the popup window after printing
+                                            setTimeout(() => {
+                                                printWindow.close();
+                                                console.log('Print window closed automatically');
+                                            }, 3000);
+                                            
+                                        } catch (fallbackError) {
+                                            console.error('Fallback print error:', fallbackError);
+                                            // Close the popup window even if print fails
+                                            setTimeout(() => {
+                                                printWindow.close();
+                                            }, 2000);
+                                        }
+                                    }, 2000);
+                                };
+                            } else {
+                                console.error('Popup was blocked');
+                            }
+                        }
+                        
+                        // Remove the iframe
+                        if (document.body.contains(printFrame)) {
+                            document.body.removeChild(printFrame);
+                        }
+                    }
+                }, 1500);
+            };
+            
+            // Fallback if iframe doesn't load (only if iframe wasn't used)
+            setTimeout(() => {
+                if (document.body.contains(printFrame) && !iframeUsed) {
+                    console.log('Iframe timeout, trying fallback...');
+                    document.body.removeChild(printFrame);
+                    
+                    // Only open fallback window if no window is already open
+                    if (!printWindow) {
+                        printWindow = window.open(templateUrl, '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+                        
+                        if (printWindow) {
+                            printWindow.onload = function() {
+                                setTimeout(() => {
+                                    try {
+                                        printWindow.print();
+                                        console.log('Fallback print dialog opened');
+                                        
+                                        // Close the popup window after printing
+                                        setTimeout(() => {
+                                            printWindow.close();
+                                            console.log('Print window closed automatically');
+                                        }, 3000);
+                                        
+                                    } catch (fallbackError) {
+                                        console.error('Fallback print error:', fallbackError);
+                                        // Close the popup window even if print fails
+                                        setTimeout(() => {
+                                            printWindow.close();
+                                        }, 2000);
+                                    }
+                                }, 2000);
+                            };
+                        } else {
+                            console.error('Popup was blocked');
+                        }
+                    }
+                }
+            }, 5000);
         });
     });
 </script> 

@@ -104,6 +104,19 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-money-bill-wave fa-3x text-success mb-3"></i>
+                            <h6>Due Collection Receipt</h6>
+                            <p class="text-muted small">Payment collection receipt</p>
+                            <a href="{{ route('admin.admin.invoice-templates.due-collection') }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-eye me-1"></i> View Template
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

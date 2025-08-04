@@ -26,8 +26,6 @@ return new class extends Migration
             $table->time('collection_time')->nullable();
             $table->unsignedBigInteger('collected_by')->nullable()->index(); // Who collected payment
             $table->foreign('collected_by')->references('id')->on('users')->onDelete('cascade');
-            $table->unsignedBigInteger('created_by')->nullable()->index();
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();

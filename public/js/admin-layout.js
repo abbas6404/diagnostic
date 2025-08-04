@@ -304,6 +304,15 @@ document.addEventListener('livewire:init', () => {
     // Payment success notification handler
     Livewire.on('show-payment-success', (data) => {
         console.log('Payment success event received:', data);
+        
+        // Handle data as array (Livewire sends it as array)
+        const notificationData = Array.isArray(data) ? data[0] : data;
+        
+        console.log('Processed data:', notificationData);
+        console.log('Data keys:', Object.keys(notificationData));
+        console.log('Collection No:', notificationData.collectionNo);
+        console.log('Amount:', notificationData.amount);
+        
         if (typeof Swal !== 'undefined') {
             console.log('SweetAlert2 is available, showing payment success notification...');
             const Toast = Swal.mixin({
@@ -322,9 +331,9 @@ document.addEventListener('livewire:init', () => {
                 title: 'Payment Collected Successfully!',
                 html: `
                     <div class="text-start">
-                        <p><strong>Message:</strong> ${data.message || 'Payment collected successfully!'}</p>
-                        <p><strong>Collection No:</strong> ${data.collectionNo || 'N/A'}</p>
-                        <p><strong>Amount:</strong> ${data.amount || 'N/A'}</p>
+                        <p><strong>Message:</strong> ${notificationData.message || 'Payment collected successfully!'}</p>
+                        <p><strong>Collection No:</strong> ${notificationData.collectionNo || 'N/A'}</p>
+                        <p><strong>Amount:</strong> ${notificationData.amount || 'N/A'}</p>
                     </div>
                 `,
                 customClass: {
@@ -334,7 +343,7 @@ document.addEventListener('livewire:init', () => {
             });
         } else {
             console.log('SweetAlert2 not available, using alert...');
-            alert('Payment Success: ' + (data.message || 'Payment collected successfully!'));
+            alert('Payment Success: ' + (notificationData.message || 'Payment collected successfully!'));
         }
     });
 }); 

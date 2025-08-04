@@ -170,7 +170,7 @@
         
         @media print {
             body {
-                font-size: 11px;
+                font-size: 12px;
             }
             
             .invoice-container {

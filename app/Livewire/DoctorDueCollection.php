@@ -39,11 +39,7 @@ class DoctorDueCollection extends Component
     public $dueAmount = 0;
     public $remainingDue = 0;
 
-    // UI states
-    public $showSuccess = false;
-    public $showError = false;
-    public $successMessage = '';
-    public $errorMessage = '';
+    // UI states - using notification system instead
 
     public function mount()
     {
@@ -54,10 +50,6 @@ class DoctorDueCollection extends Component
     {
         if ($propertyName === 'searchDueInvoices') {
             $this->handleDueInvoiceSearch();
-        }
-
-        if ($propertyName === 'collectionAmount') {
-            $this->calculateRemainingDue();
         }
     }
 
@@ -230,11 +222,14 @@ class DoctorDueCollection extends Component
         
         if ($this->selectedInvoice) {
             $this->dueAmount = $this->selectedInvoice->due_amount;
-            $this->collectionAmount = $this->selectedInvoice->due_amount;
-            $this->remainingDue = 0;
+            $this->collectionAmount = 0; // Start with 0 collection amount
+            $this->calculateRemainingDue(); // Calculate remaining due
             
             // Load consultant tickets
             $this->loadConsultantTickets($invoiceId);
+            
+            // Dispatch event to update JavaScript calculation
+            $this->dispatch('invoiceSelected');
         }
     }
 
@@ -254,14 +249,19 @@ class DoctorDueCollection extends Component
 
     public function calculateRemainingDue()
     {
-        if ($this->collectionAmount > $this->dueAmount) {
-            $this->collectionAmount = $this->dueAmount;
+        // Ensure values are treated as numbers
+        $collectionAmount = (float) $this->collectionAmount;
+        $dueAmount = (float) $this->dueAmount;
+        
+        if ($collectionAmount > $dueAmount) {
+            $this->collectionAmount = $dueAmount;
+            $collectionAmount = $dueAmount;
         }
         
-        $this->remainingDue = $this->dueAmount - $this->collectionAmount;
+        $this->remainingDue = $dueAmount - $collectionAmount;
     }
 
-    public function savePayment()
+    public function saveOnly()
     {
         $this->validate([
             'collectionAmount' => 'required|numeric|min:0.01',
@@ -269,8 +269,7 @@ class DoctorDueCollection extends Component
         ]);
 
         if ($this->collectionAmount > $this->dueAmount) {
-            $this->showError = true;
-            $this->errorMessage = 'Collection amount cannot exceed due amount';
+            $this->dispatch('show-error', 'Collection amount cannot exceed due amount');
             return;
         }
 
@@ -283,6 +282,7 @@ class DoctorDueCollection extends Component
             DB::table('payment_collections')->insert([
                 'collection_no' => $collectionNo,
                 'invoice_id' => $this->selectedInvoiceId,
+                'patient_id' => $this->patient_id,
                 'collection_amount' => $this->collectionAmount,
                 'due_before_collection' => $this->dueAmount,
                 'due_after_collection' => $this->remainingDue,
@@ -305,9 +305,12 @@ class DoctorDueCollection extends Component
 
             DB::commit();
 
-            // Show success message
-            $this->showSuccess = true;
-            $this->successMessage = "Payment collected successfully! Collection #: {$collectionNo}";
+            // Show success notification
+            $this->dispatch('show-payment-success', [
+                'message' => 'Payment collected successfully!',
+                'collectionNo' => $collectionNo,
+                'amount' => '৳ ' . number_format($this->collectionAmount, 2)
+            ]);
 
             // Reset form
             $this->collectionAmount = 0;
@@ -321,9 +324,84 @@ class DoctorDueCollection extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->showError = true;
-            $this->errorMessage = 'Error saving payment: ' . $e->getMessage();
+            $this->dispatch('show-error', 'Error saving payment: ' . $e->getMessage());
         }
+    }
+
+    public function saveAndPrint()
+    {
+        $this->validate([
+            'collectionAmount' => 'required|numeric|min:0.01',
+            'selectedInvoiceId' => 'required',
+        ]);
+
+        if ($this->collectionAmount > $this->dueAmount) {
+            $this->dispatch('show-error', 'Collection amount cannot exceed due amount');
+            return;
+        }
+
+        try {
+            DB::beginTransaction();
+
+            // Create payment collection record
+            $collectionNo = $this->generateCollectionNumber();
+            
+            DB::table('payment_collections')->insert([
+                'collection_no' => $collectionNo,
+                'invoice_id' => $this->selectedInvoiceId,
+                'patient_id' => $this->patient_id,
+                'collection_amount' => $this->collectionAmount,
+                'due_before_collection' => $this->dueAmount,
+                'due_after_collection' => $this->remainingDue,
+                'remarks' => $this->remarks,
+                'collected_by' => auth()->id(),
+                'collection_date' => now()->format('Y-m-d'),
+                'collection_time' => now()->format('H:i:s'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Update invoice paid amount
+            DB::table('invoices')
+                ->where('id', $this->selectedInvoiceId)
+                ->update([
+                    'paid_amount' => DB::raw('paid_amount + ' . $this->collectionAmount),
+                    'due_amount' => $this->remainingDue,
+                    'updated_at' => now(),
+                ]);
+
+            DB::commit();
+
+            // Show success notification
+            $this->dispatch('show-payment-success', [
+                'message' => 'Payment collected successfully!',
+                'collectionNo' => $collectionNo,
+                'amount' => '৳ ' . number_format($this->collectionAmount, 2)
+            ]);
+
+            // Trigger print event
+            $this->dispatch('openPrintWindow', invoiceId: $this->selectedInvoiceId);
+
+            // Reset form
+            $this->collectionAmount = 0;
+            $this->remarks = '';
+            $this->remainingDue = 0;
+
+            // Refresh due invoices
+            if ($this->patient_id) {
+                $this->loadDueInvoices($this->patient_id);
+            }
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $this->dispatch('show-error', 'Error saving payment: ' . $e->getMessage());
+        }
+    }
+
+    public function cancelForm()
+    {
+        // Redirect to dashboard
+        return redirect()->route('admin.dashboard');
     }
 
     private function generateCollectionNumber()
@@ -344,17 +422,7 @@ class DoctorDueCollection extends Component
         $this->loadDefaultDueInvoices();
     }
 
-    public function closeSuccess()
-    {
-        $this->showSuccess = false;
-        $this->successMessage = '';
-    }
 
-    public function closeError()
-    {
-        $this->showError = false;
-        $this->errorMessage = '';
-    }
 
     public function render()
     {

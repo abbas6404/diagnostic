@@ -268,6 +268,8 @@ Route::group(['prefix' => 'invoice-templates'], function() {
     Route::get('/test', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showTest'])->name('admin.invoice-templates.test');
     
     Route::get('/doctor-consultant', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDoctorConsultant'])->name('admin.invoice-templates.doctor-consultant');
+    
+    Route::get('/due-collection', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDueCollection'])->name('admin.invoice-templates.due-collection');
 
     // API routes for invoice data
     Route::get('/invoice-data/{invoiceId}', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'getInvoiceData'])->name('admin.invoice-templates.invoice-data');

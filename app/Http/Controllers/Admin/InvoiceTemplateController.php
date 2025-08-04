@@ -200,6 +200,113 @@ class InvoiceTemplateController extends Controller
         }
     }
 
+    public function showDueCollection(Request $request)
+    {
+        // Get collection ID from request
+        $collectionId = $request->get('collection_id');
+        $invoiceId = $request->get('invoice_id');
+        
+        \Log::info('Due Collection Template accessed', [
+            'collection_id' => $collectionId,
+            'invoice_id' => $invoiceId,
+            'request_params' => $request->all()
+        ]);
+        
+        if (!$collectionId && !$invoiceId) {
+            // Return template with sample data for preview
+            return view('admin.invoice-templates.due-collection', [
+                'collection' => (object)[
+                    'collection_no' => 'COL-001',
+                    'collection_date' => date('d/m/Y'),
+                    'collection_time' => date('H:i'),
+                    'collection_amount' => 500,
+                    'due_before_collection' => 1000,
+                    'due_after_collection' => 500,
+                    'remarks' => 'Sample payment collection'
+                ],
+                'invoice' => (object)[
+                    'invoice_no' => 'INV-001',
+                    'invoice_date' => date('d/m/Y'),
+                    'invoice_type' => 'consultant',
+                    'total_amount' => 1000,
+                    'paid_amount' => 500
+                ],
+                'patient' => (object)[
+                    'patient_id' => 'P-001',
+                    'name' => 'John Doe',
+                    'age_years' => 25,
+                    'age_months' => 6,
+                    'age_days' => 15,
+                    'phone' => '+880-1XXX-XXXXXX',
+                    'address' => 'Dhaka, Bangladesh'
+                ],
+                'collector' => (object)[
+                    'name' => 'Admin User'
+                ]
+            ]);
+        }
+
+        try {
+            // Get collection details
+            $collection = null;
+            if ($collectionId) {
+                $collection = DB::table('payment_collections')->where('id', $collectionId)->first();
+            } elseif ($invoiceId) {
+                // Get the latest collection for this invoice
+                $collection = DB::table('payment_collections')
+                    ->where('invoice_id', $invoiceId)
+                    ->orderBy('created_at', 'desc')
+                    ->first();
+            }
+            
+            \Log::info('Collection data fetched', [
+                'collection_id' => $collectionId,
+                'invoice_id' => $invoiceId,
+                'collection_found' => $collection ? 'yes' : 'no',
+                'collection_data' => $collection
+            ]);
+            
+            if (!$collection) {
+                abort(404, 'Collection not found');
+            }
+
+            // Get invoice details
+            $invoice = DB::table('invoices')->where('id', $collection->invoice_id)->first();
+            
+            if (!$invoice) {
+                abort(404, 'Invoice not found');
+            }
+
+            // Get patient details
+            $patient = DB::table('patients')->where('id', $collection->patient_id)->first();
+            
+            // Calculate age from date of birth
+            if ($patient && $patient->dob) {
+                $age = $this->calculateAge($patient->dob);
+                $patient->age_years = $age['years'];
+                $patient->age_months = $age['months'];
+                $patient->age_days = $age['days'];
+            } else {
+                $patient->age_years = 0;
+                $patient->age_months = 0;
+                $patient->age_days = 0;
+            }
+            
+            // Get collector details
+            $collector = DB::table('users')->where('id', $collection->collected_by)->first();
+
+            return view('admin.invoice-templates.due-collection', [
+                'collection' => $collection,
+                'invoice' => $invoice,
+                'patient' => $patient,
+                'collector' => $collector
+            ]);
+
+        } catch (\Exception $e) {
+            abort(500, 'Error loading collection data: ' . $e->getMessage());
+        }
+    }
+
 
 
     /**
