@@ -85,7 +85,9 @@ class DoctorInvoice extends Component
     {
         $this->validateOnly($propertyName);
 
-        if (in_array($propertyName, ['consultation_fee', 'paid_amount'])) {
+        if ($propertyName === 'consultation_fee') {
+            $this->autoSetPaidAmount();
+        } elseif ($propertyName === 'paid_amount') {
             $this->calculateDueAmount();
         }
         

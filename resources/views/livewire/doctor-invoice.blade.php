@@ -252,8 +252,12 @@
                                                  <div class="d-flex justify-content-between align-items-center">
                                                      <div>
                                                          @if($searchType == 'Patient')
-                                                             <strong>{{ $result->patient_id }}</strong> - {{ $result->name_en }}
-                                                             <br><small class="text-muted">{{ $result->phone }}</small>
+                                                             <strong> {{ $result->name_en }} </strong> - {{ $result->patient_id }}
+                                                             =>
+                                                             @if($result->address)
+                                                             <small class="text-muted">{{ $result->address }}</small>
+                                                             @endif
+                                                             - <small class="text-muted">{{ $result->phone }}</small>
                                                          @elseif($searchType == 'Doctor')
                                                              <strong>{{ $result->code }}</strong> - {{ $result->name }}
                                                          @elseif($searchType == 'PCP')
