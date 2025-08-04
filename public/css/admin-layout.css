@@ -1122,9 +1122,7 @@ body {
     color: #17a2b8;
 }
 
-.card-header h6 {
-    color: #4e73df;
-}
+
 
 .accordion-button:not(.collapsed) {
     background-color: rgba(78, 115, 223, 0.1);

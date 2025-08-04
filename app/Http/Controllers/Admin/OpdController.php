@@ -672,24 +672,7 @@ class OpdController extends Controller
      */
     private function generateCollectionNumber()
     {
-        $prefix = 'COL';
-        $date = now()->format('ymd');
-        
-        // Get the last collection number for today
-        $lastCollection = DB::table('payment_collections')
-            ->where('collection_no', 'like', $prefix . '-' . $date . '-%')
-            ->orderBy('collection_no', 'desc')
-            ->first();
-        
-        if ($lastCollection) {
-            // Extract the sequence number and increment
-            $parts = explode('-', $lastCollection->collection_no);
-            $sequence = intval($parts[2]) + 1;
-        } else {
-            $sequence = 1;
-        }
-        
-        return $prefix . '-' . $date . '-' . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+        return \App\Helpers\PaymentCollectionHelper::generateCollectionNumber();
     }
 
     /**

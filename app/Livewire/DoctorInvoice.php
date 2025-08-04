@@ -316,7 +316,7 @@ class DoctorInvoice extends Component
             $invoiceNo = $this->generateInvoiceNumber();
 
             // Create invoice
-            $invoiceId = DB::table('invoice')->insertGetId([
+            $invoiceId = DB::table('invoices')->insertGetId([
                 'invoice_no' => $invoiceNo,
                 'patient_id' => $patientId,
                 'total_amount' => $this->consultation_fee,
@@ -400,7 +400,7 @@ class DoctorInvoice extends Component
             $invoiceNo = $this->generateInvoiceNumber();
 
             // Create invoice
-            $invoiceId = DB::table('invoice')->insertGetId([
+            $invoiceId = DB::table('invoices')->insertGetId([
                 'invoice_no' => $invoiceNo,
                 'patient_id' => $patientId,
                 'total_amount' => $this->consultation_fee,
@@ -480,7 +480,7 @@ class DoctorInvoice extends Component
             $invoiceNo = $this->generateInvoiceNumber();
 
             // Create invoice
-            $invoiceId = DB::table('invoice')->insertGetId([
+            $invoiceId = DB::table('invoices')->insertGetId([
                 'invoice_no' => $invoiceNo,
                 'patient_id' => $patientId,
                 'total_amount' => $this->consultation_fee,

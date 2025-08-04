@@ -1,0 +1,1 @@
+ <?php /**PATH C:\Users\aioli\Herd\diagnostic\resources\views/errors/500.blade.php ENDPATH**/ ?>

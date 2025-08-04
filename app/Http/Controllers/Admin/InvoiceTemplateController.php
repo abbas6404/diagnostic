@@ -143,7 +143,7 @@ class InvoiceTemplateController extends Controller
 
         try {
             // Get invoice details
-            $invoice = DB::table('invoice')->where('id', $invoiceId)->first();
+            $invoice = DB::table('invoices')->where('id', $invoiceId)->first();
             
             \Log::info('Invoice data fetched', [
                 'invoice_id' => $invoiceId,
@@ -211,7 +211,7 @@ class InvoiceTemplateController extends Controller
     public function printInvoice(Request $request)
     {
         $request->validate([
-            'invoice_id' => 'required|exists:invoice,id',
+            'invoice_id' => 'required|exists:invoices,id',
             'template' => 'required|string'
         ]);
 
@@ -247,7 +247,7 @@ class InvoiceTemplateController extends Controller
     {
         try {
             // Get invoice details
-            $invoice = DB::table('invoice')->where('id', $invoiceId)->first();
+            $invoice = DB::table('invoices')->where('id', $invoiceId)->first();
             
             if (!$invoice) {
                 return response()->json([

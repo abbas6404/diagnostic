@@ -73,25 +73,25 @@ class DoctorDueCollection extends Component
 
     public function searchDueInvoices($searchTerm)
     {
-        $invoices = DB::table('invoice')
-            ->leftJoin('patients', 'invoice.patient_id', '=', 'patients.id')
-            ->where('invoice.due_amount', '>', 0)
-            ->where('invoice.invoice_type', 'consultant')
+        $invoices = DB::table('invoices')
+            ->leftJoin('patients', 'invoices.patient_id', '=', 'patients.id')
+            ->where('invoices.due_amount', '>', 0)
+            ->where('invoices.invoice_type', 'consultant')
             ->where(function($query) use ($searchTerm) {
-                $query->where('invoice.invoice_no', 'like', "%{$searchTerm}%")
+                $query->where('invoices.invoice_no', 'like', "%{$searchTerm}%")
                       ->orWhere('patients.patient_id', 'like', "%{$searchTerm}%")
                       ->orWhere('patients.name', 'like', "%{$searchTerm}%")
                       ->orWhere('patients.phone', 'like', "%{$searchTerm}%")
                       ->orWhere('patients.address', 'like', "%{$searchTerm}%");
             })
-            ->whereNull('invoice.deleted_at')
+            ->whereNull('invoices.deleted_at')
             ->select([
-                'invoice.id as invoice_id',
-                'invoice.invoice_no',
-                'invoice.invoice_date',
-                'invoice.total_amount',
-                'invoice.paid_amount',
-                'invoice.due_amount',
+                'invoices.id as invoice_id',
+                'invoices.invoice_no',
+                'invoices.invoice_date',
+                'invoices.total_amount',
+                'invoices.paid_amount',
+                'invoices.due_amount',
                 'patients.id as patient_id',
                 'patients.name as patient_name',
                 'patients.patient_id as patient_code',
@@ -100,8 +100,8 @@ class DoctorDueCollection extends Component
                 'patients.gender',
                 'patients.dob as date_of_birth'
             ])
-            ->groupBy('invoice.id')
-            ->orderBy('invoice.invoice_date', 'desc')
+            ->groupBy('invoices.id')
+            ->orderBy('invoices.invoice_date', 'desc')
             ->limit(20)
             ->get()
             ->map(function($invoice) {
@@ -131,18 +131,18 @@ class DoctorDueCollection extends Component
 
     public function loadDefaultDueInvoices()
     {
-        $invoices = DB::table('invoice')
-            ->leftJoin('patients', 'invoice.patient_id', '=', 'patients.id')
-            ->where('invoice.due_amount', '>', 0)
-            ->where('invoice.invoice_type', 'consultant')
-            ->whereNull('invoice.deleted_at')
+        $invoices = DB::table('invoices')
+            ->leftJoin('patients', 'invoices.patient_id', '=', 'patients.id')
+            ->where('invoices.due_amount', '>', 0)
+            ->where('invoices.invoice_type', 'consultant')
+            ->whereNull('invoices.deleted_at')
             ->select([
-                'invoice.id as invoice_id',
-                'invoice.invoice_no',
-                'invoice.invoice_date',
-                'invoice.total_amount',
-                'invoice.paid_amount',
-                'invoice.due_amount',
+                'invoices.id as invoice_id',
+                'invoices.invoice_no',
+                'invoices.invoice_date',
+                'invoices.total_amount',
+                'invoices.paid_amount',
+                'invoices.due_amount',
                 'patients.id as patient_id',
                 'patients.name as patient_name',
                 'patients.patient_id as patient_code',
@@ -151,8 +151,8 @@ class DoctorDueCollection extends Component
                 'patients.gender',
                 'patients.dob as date_of_birth'
             ])
-            ->groupBy('invoice.id')
-            ->orderBy('invoice.invoice_date', 'desc')
+            ->groupBy('invoices.id')
+            ->orderBy('invoices.invoice_date', 'desc')
             ->limit(10)
             ->get()
             ->map(function($invoice) {
@@ -207,7 +207,7 @@ class DoctorDueCollection extends Component
 
     public function loadDueInvoices($patientId)
     {
-        $invoices = DB::table('invoice')
+        $invoices = DB::table('invoices')
             ->where('patient_id', $patientId)
             ->where('due_amount', '>', 0)
             ->orderBy('invoice_date', 'desc')
@@ -295,7 +295,7 @@ class DoctorDueCollection extends Component
             ]);
 
             // Update invoice paid amount
-            DB::table('invoice')
+            DB::table('invoices')
                 ->where('id', $this->selectedInvoiceId)
                 ->update([
                     'paid_amount' => DB::raw('paid_amount + ' . $this->collectionAmount),
@@ -328,24 +328,7 @@ class DoctorDueCollection extends Component
 
     private function generateCollectionNumber()
     {
-        $prefix = SystemSetting::getValue('collection_prefix', 'COL');
-        $today = now();
-        $datePrefix = $today->format('ymd');
-        
-        // Find the last collection number for today
-        $lastCollection = DB::table('payment_collections')
-            ->where('collection_no', 'like', $prefix . $datePrefix . '%')
-            ->orderBy('collection_no', 'desc')
-            ->first();
-
-        if ($lastCollection) {
-            $lastNumber = (int) substr($lastCollection->collection_no, -3);
-            $nextNumber = $lastNumber + 1;
-        } else {
-            $nextNumber = 1;
-        }
-
-        return $prefix . $datePrefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        return \App\Helpers\PaymentCollectionHelper::generateCollectionNumber();
     }
 
     public function resetForm()
