@@ -5,9 +5,7 @@
         placeholder="Search Service by Code/Name" 
         wire:model.live.debounce.300ms="search"
         autocomplete="off"
-        tabindex="13"
         id="opd-service-search-input"
-        wire:keydown.enter="handleEnterKey"
     >
     <script>
         document.addEventListener('livewire:init', () => {

@@ -13,26 +13,49 @@ class SystemSettingsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Prefix Settings
+        // Consultant Invoice Settings
         SystemSetting::setValue(
-            'consolidated_invoice_prefix',
-            'DT',
+            'consultant_invoice_prefix',
+            'CON',
             'string',
             'prefix',
-            'Prefix for doctor ticket numbers'
+            'Prefix for consultant invoice numbers'
         );
 
         SystemSetting::setValue(
-            'consolidated_invoice_start',
+            'consultant_invoice_start',
+            '1',
+            'integer',
+            'prefix',
+            'Starting number for consultant invoice sequence'
+        );
+
+        SystemSetting::setValue(
+            'consultant_invoice_format',
+            'prefix-yymmdd-number',
+            'string',
+            'prefix',
+            'Format for consultant invoice numbering'
+        );
+
+        // Doctor Ticket Prefix Setting (Keep existing)
+        SystemSetting::setValue(
+            'doctor_ticket_prefix',
+            'DT',
+            'string',
+            'prefix',
+            'Prefix for doctor ticket numbers (daily per doctor)'
+        );
+        SystemSetting::setValue(
+            'doctor_ticket_start',
             '1',
             'integer',
             'prefix',
             'Starting number for doctor ticket sequence'
         );
-
         SystemSetting::setValue(
-            'consolidated_invoice_format',
-            'prefix-yymmdd-number',
+            'doctor_ticket_format',
+            'prefix-number',
             'string',
             'prefix',
             'Format for doctor ticket numbering'
@@ -86,14 +109,28 @@ class SystemSettingsSeeder extends Seeder
             'Format for OPD numbering'
         );
 
-        // Doctor Ticket Prefix Setting
+  
+
+        // Doctor Code Prefix Settings
         SystemSetting::setValue(
-            'doctor_ticket_prefix',
-            'DT',
+            'doctor_code_prefix',
+            'DR',
             'string',
             'prefix',
-            'Prefix for doctor ticket numbers (daily per doctor)'
+            'Prefix for doctor user codes'
         );
+
+
+        // PCP Code Prefix Settings
+        SystemSetting::setValue(
+            'pcp_code_prefix',
+            'PCP',
+            'string',
+            'prefix',
+            'Prefix for PCP user codes'
+        );
+
+
 
         // Patient Prefix Settings
         SystemSetting::setValue(
@@ -194,6 +231,7 @@ class SystemSettingsSeeder extends Seeder
             'hospital',
             'Hospital/Clinic logo file path'
         );
+        
 
 
 

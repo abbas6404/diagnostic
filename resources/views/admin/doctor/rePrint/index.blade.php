@@ -45,35 +45,35 @@
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Patient Name:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" id="patient_name" readonly tabindex="2">
+                                            <input type="text" class="form-control form-control-sm" id="patient_name" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Age:</label>
                                         <div class="col-sm-8">
                                             <div class="input-group">
-                                                <input type="text" class="form-control form-control-sm" placeholder="Y" style="width: 30%;" id="age_years" readonly tabindex="3">
-                                                <input type="text" class="form-control form-control-sm" placeholder="M" style="width: 30%;" id="age_months" readonly tabindex="4">
-                                                <input type="text" class="form-control form-control-sm" placeholder="D" style="width: 30%;" id="age_days" readonly tabindex="5">
+                                                                                        <input type="text" class="form-control form-control-sm" placeholder="Y" style="width: 30%;" id="age_years" readonly>
+                                        <input type="text" class="form-control form-control-sm" placeholder="M" style="width: 30%;" id="age_months" readonly>
+                                        <input type="text" class="form-control form-control-sm" placeholder="D" style="width: 30%;" id="age_days" readonly>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Sex:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" id="gender" readonly tabindex="6">
+                                            <input type="text" class="form-control form-control-sm" id="gender" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Contact:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" id="patient_phone" readonly tabindex="7">
+                                            <input type="text" class="form-control form-control-sm" id="patient_phone" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Address:</label>
                                         <div class="col-sm-8">
-                                            <textarea class="form-control form-control-sm" rows="2" id="patient_address" readonly tabindex="8"></textarea>
+                                            <textarea class="form-control form-control-sm" rows="2" id="patient_address" readonly></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -81,25 +81,25 @@
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Invoice Date:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" id="invoice_date" readonly tabindex="9">
+                                            <input type="text" class="form-control form-control-sm" id="invoice_date" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Total Amount:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm text-end fw-bold" id="total_amount" readonly tabindex="10">
+                                            <input type="text" class="form-control form-control-sm text-end fw-bold" id="total_amount" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Paid Amount:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm text-end fw-bold text-success" id="paid_amount" readonly tabindex="11">
+                                            <input type="text" class="form-control form-control-sm text-end fw-bold text-success" id="paid_amount" readonly>
                                         </div>
                                     </div>
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Due Amount:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm text-end fw-bold text-danger" id="due_amount" readonly tabindex="12">
+                                            <input type="text" class="form-control form-control-sm text-end fw-bold text-danger" id="due_amount" readonly>
                                         </div>
                                     </div>
                                 </div>
@@ -112,10 +112,7 @@
                         <div class="card-header bg-light py-2 d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">
                                 <i class="fas fa-user-md me-1"></i>Consultant Tickets
-                                <small class="keyboard-hint ms-2">
-                                    <i class="fas fa-keyboard me-1"></i>
-                                    ↑↓ to navigate items
-                                </small>
+
                             </h6>
                             <div>
                                 <button type="button" class="btn btn-sm btn-outline-secondary" id="resetFormBtn">
@@ -158,10 +155,7 @@
                         <div class="card-header bg-primary text-white py-2">
                             <h6 class="mb-0">
                                 <i class="fas fa-search me-1"></i> <span id="search-title">Search Results</span>
-                                <small class="keyboard-hint ms-2">
-                                    <i class="fas fa-keyboard me-1"></i>
-                                    ↑↓ to navigate, Enter to select
-                                </small>
+
                             </h6>
                         </div>
                         <div class="card-body p-0" style="height: 250px; overflow-y: auto;" id="search-results-body">
@@ -177,10 +171,7 @@
                         <div class="card-header bg-primary text-white py-2">
                             <h6 class="mb-0">
                                 <i class="fas fa-file-invoice-dollar me-1"></i> Print Summary
-                                <small class="keyboard-hint ms-2">
-                                    <i class="fas fa-keyboard me-1"></i>
-                                    Enter to print
-                                </small>
+
                             </h6>
                         </div>
                         <div class="card-body">
@@ -205,7 +196,7 @@
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Print Type</label>
                                 <div class="col-sm-7">
-                                    <select class="form-select form-select-sm" id="printType" tabindex="20">
+                                    <select class="form-select form-select-sm" id="printType">
                                         <option value="full_invoice">Full Invoice</option>
                                         <option value="receipt">Receipt Only</option>
                                         <option value="consultation_report">Consultation Report</option>
@@ -215,18 +206,18 @@
                             <div class="row mb-2">
                                 <label class="col-sm-5 col-form-label">Copies</label>
                                 <div class="col-sm-7">
-                                    <input type="number" class="form-control form-control-sm" id="printCopies" value="1" min="1" max="10" tabindex="21">
+                                    <input type="number" class="form-control form-control-sm" id="printCopies" value="1" min="1" max="10">
                                 </div>
                             </div>
                             
                             <div class="d-flex justify-content-center gap-2 mt-4">
-                                <button class="btn btn-success" id="printInvoiceBtn" tabindex="22">
+                                                                    <button class="btn btn-success" id="printInvoiceBtn">
                                     <i class="fas fa-print me-1"></i> Print Invoice
                                 </button>
-                                <button class="btn btn-primary" id="resetFormBtn2" tabindex="23">
+                                                                    <button class="btn btn-primary" id="resetFormBtn2">
                                     <i class="fas fa-sync-alt me-1"></i> Reset
                                 </button>
-                                <button class="btn btn-danger" id="cancelBtn" tabindex="24">
+                                                                    <button class="btn btn-danger" id="cancelBtn">
                                     <i class="fas fa-times me-1"></i> Cancel
                                 </button>
                             </div>
@@ -271,68 +262,7 @@
         }, 300);
     });
 
-    // Keyboard navigation
-    document.addEventListener('keydown', function(e) {
-        if (searchResults.length > 0 && isSearchFocused()) {
-            handleSearchNavigation(e);
-            return;
-        }
-        
-        if (isPrintFocused()) {
-            handlePrintNavigation(e);
-            return;
-        }
-    });
 
-    function isSearchFocused() {
-        const activeElement = document.activeElement;
-        return activeElement.id === 'invoice_search' || 
-               activeElement.closest('#search-results-container');
-    }
-
-    function isPrintFocused() {
-        const activeElement = document.activeElement;
-        return activeElement.id === 'printType' || 
-               activeElement.id === 'printCopies' || 
-               activeElement.id === 'printInvoiceBtn';
-    }
-
-    function handleSearchNavigation(e) {
-        switch(e.key) {
-            case 'ArrowDown':
-                e.preventDefault();
-                navigateSearchResults('down');
-                break;
-                
-            case 'ArrowUp':
-                e.preventDefault();
-                navigateSearchResults('up');
-                break;
-                
-            case 'Enter':
-                e.preventDefault();
-                selectCurrentSearchResult();
-                break;
-                
-            case 'Escape':
-                e.preventDefault();
-                clearSearchResults();
-                document.getElementById('invoice_search').focus();
-                break;
-        }
-    }
-
-    function handlePrintNavigation(e) {
-        switch(e.key) {
-            case 'Enter':
-                e.preventDefault();
-                const printBtn = document.getElementById('printInvoiceBtn');
-                if (printBtn && !printBtn.disabled) {
-                    printBtn.click();
-                }
-                break;
-        }
-    }
 
     function loadDefaultInvoices() {
         fetch('/admin/doctor/reprint/default-invoices')

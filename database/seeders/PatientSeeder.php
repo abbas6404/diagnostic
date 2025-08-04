@@ -15,7 +15,7 @@ class PatientSeeder extends Seeder
     {
         DB::table('patients')->insert([
             'id' => 1,
-            'patient_id' => '250722001',
+            'patient_id' => 'P250722001',
             'reg_date' => '2025-01-01',
             'name_en' => 'Ariyan Abdullah',
             'name_bn' => 'আরিয়ান আব্দুল্লাহ',
@@ -36,7 +36,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 2,
-            'patient_id' => '250722002',
+            'patient_id' => 'P250722002',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rakibul Islam',
             'name_bn' => 'রাকিবুল ইসলাম',
@@ -53,7 +53,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 3,
-            'patient_id' => '250722003',
+            'patient_id' => 'P250722003',
             'reg_date' => '2025-01-01',
             'name_en' => 'Arafat Hossain',
             'name_bn' => 'আরফত হোসেন',
@@ -70,7 +70,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 4,
-            'patient_id' => '250722004',
+            'patient_id' => 'P250722004',
             'reg_date' => '2025-01-01', 
             'name_en' => 'Abdur Rahim',
             'name_bn' => 'আবদুর রহিম',
@@ -81,7 +81,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([ 
             'id' => 5,
-            'patient_id' => '250722005',
+            'patient_id' => 'P250722005',
             'reg_date' => '2025-01-01',
             'name_en' => 'Abbas Hossain',
             'name_bn' => 'আবাস হোসেন',
@@ -92,7 +92,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 6,
-            'patient_id' => '250722006',
+            'patient_id' => 'P250722006',
             'reg_date' => '2025-01-01',
             'name_en' => 'Sojol Hossain',
             'name_bn' => 'সোজল হোসেন',
@@ -103,7 +103,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 7,
-            'patient_id' => '240522001',
+            'patient_id' => 'P240522001',
             'reg_date' => '2025-01-01',
             'name_en' => 'Raju Hossain',
             'name_bn' => 'রাজু হোসেন',
@@ -115,7 +115,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 8,
-            'patient_id' => '230722001',
+            'patient_id' => 'P230722001',
             'reg_date' => '2025-01-01',
             'dob' => '1999-01-01',
             'name_en' => 'Raju Hossain',
@@ -126,7 +126,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 9,
-            'patient_id' => '220722001',
+            'patient_id' => 'P220722001',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rajaul Hossain',
             'name_bn' => 'রাজাল হোসেন',
@@ -137,7 +137,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 10,
-            'patient_id' => '210722089',
+            'patient_id' => 'P210722089',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rajaul Hossain',
             'dob' => '2001-01-01',
@@ -148,7 +148,7 @@ class PatientSeeder extends Seeder
         ]);
         DB::table('patients')->insert([
             'id' => 11,
-            'patient_id' => '230722005',
+            'patient_id' => 'P230722005',
             'dob' => '2002-01-01',
             'reg_date' => '2025-01-01',
             'name_en' => 'Rajaul Hossain',

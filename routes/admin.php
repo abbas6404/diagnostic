@@ -147,7 +147,7 @@ Route::prefix('doctor')->group(function () {
     Route::get('/invoice', [DoctorController::class, 'invoice'])->name('doctor.invoice');
     Route::post('/invoice/store', [DoctorController::class, 'storeInvoice'])->name('doctor.invoice.store');
     Route::get('/invoice/doctor-ticket-count', [DoctorController::class, 'getDoctorTicketCount'])->name('doctor.invoice.ticket-count');
-    
+ 
     // Due Collection
     Route::get('/duecollection', [DoctorController::class, 'dueCollection'])->name('doctor.duecollection');
     Route::post('/duecollection/store', [DoctorController::class, 'storePayment'])->name('doctor.duecollection.store');
@@ -163,8 +163,7 @@ Route::prefix('doctor')->group(function () {
     Route::get('/reprint', [DoctorController::class, 'rePrint'])->name('doctor.reprint');
     Route::get('/reprint/default-invoices', [DoctorController::class, 'getDefaultInvoicesForReprint'])->name('doctor.reprint.default');
     Route::get('/reprint/search', [DoctorController::class, 'searchInvoicesForReprint'])->name('doctor.reprint.search');
-    Route::get('/reprint/invoice/{id}/details', [DoctorController::class, 'getInvoiceDetailsForReprint'])->name('doctor.reprint.details');
-    Route::post('/reprint/print', [DoctorController::class, 'printInvoice'])->name('doctor.reprint.print');
+  
 });
 
 // AJAX Search endpoints are no longer needed as we're using Livewire components
@@ -258,6 +257,34 @@ Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'setting
     Route::get('/', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
     Route::post('/general', [App\Http\Controllers\Admin\SettingsController::class, 'updateGeneral'])->name('settings.update.general');
     Route::post('/security', [App\Http\Controllers\Admin\SettingsController::class, 'updateSecurity'])->name('settings.update.security');
+});
+
+// Invoice Templates routes
+Route::group(['prefix' => 'invoice-templates'], function() {
+    Route::get('/', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'index'])->name('admin.invoice-templates.index');
+    
+    Route::get('/default', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDefault'])->name('admin.invoice-templates.default');
+    
+    Route::get('/compact', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showCompact'])->name('admin.invoice-templates.compact');
+    
+    Route::get('/professional', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showProfessional'])->name('admin.invoice-templates.professional');
+    
+    Route::get('/receipt', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showReceipt'])->name('admin.invoice-templates.receipt');
+    
+    Route::get('/laboratory', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showLaboratory'])->name('admin.invoice-templates.laboratory');
+    
+    Route::get('/test', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showTest'])->name('admin.invoice-templates.test');
+    
+    Route::get('/doctor-consultant', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDoctorConsultant'])->name('admin.invoice-templates.doctor-consultant');
+
+    // API routes for invoice data
+    Route::get('/invoice-data/{invoiceId}', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'getInvoiceData'])->name('admin.invoice-templates.invoice-data');
+    
+    Route::post('/print', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'printInvoice'])->name('admin.invoice-templates.print');
+});
+
+// Settings routes - protected by permissions
+Route::group(['middleware' => 'permission:manage settings', 'prefix' => 'settings'], function() {
     Route::post('/email', [App\Http\Controllers\Admin\SettingsController::class, 'updateEmail'])->name('settings.update.email');
     Route::post('/email/test', [App\Http\Controllers\Admin\SettingsController::class, 'sendTestEmail'])->name('settings.email.test');
 });

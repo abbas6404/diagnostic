@@ -1021,19 +1021,19 @@ window.savePayment = function() {
     
     // Validate collection amount
     if (collectionAmount <= 0) {
-        Livewire.dispatch('showError', { message: 'Please enter a valid collection amount' });
+        Livewire.dispatch('show-error', { message: 'Please enter a valid collection amount' });
         return;
     }
     
     if (collectionAmount > dueAmount) {
-        Livewire.dispatch('showError', { message: 'Collection amount cannot exceed due amount' });
+        Livewire.dispatch('show-error', { message: 'Collection amount cannot exceed due amount' });
         return;
     }
     
     // Get selected invoice ID
     const selectedInvoiceId = window.selectedInvoiceId;
     if (!selectedInvoiceId) {
-        Livewire.dispatch('showError', { message: 'Please select an invoice first' });
+        Livewire.dispatch('show-error', { message: 'Please select an invoice first' });
         return;
     }
     
@@ -1062,9 +1062,10 @@ window.savePayment = function() {
     .then(data => {
         if (data.success) {
             // Show success toast with payment details
-            Livewire.dispatch('showPaymentSuccess', { 
+            Livewire.dispatch('show-payment-success', { 
                 message: 'Payment collected successfully!',
-                invoiceNo: data.collection_no
+                collectionNo: data.collection_no,
+                amount: collectionAmount
             });
             
             // Update the UI
@@ -1083,7 +1084,7 @@ window.savePayment = function() {
             
         } else {
             // Show error toast
-            Livewire.dispatch('showError', { message: 'Error saving payment: ' + data.message });
+            Livewire.dispatch('show-error', { message: 'Error saving payment: ' + data.message });
         }
         
         // Re-enable save button
@@ -1093,7 +1094,7 @@ window.savePayment = function() {
     .catch(error => {
         console.error('Error:', error);
         // Show error toast
-        Livewire.dispatch('showError', { message: 'Error saving payment. Please try again.' });
+        Livewire.dispatch('show-error', { message: 'Error saving payment. Please try again.' });
         
         // Re-enable save button
         saveBtn.disabled = false;
@@ -1131,7 +1132,7 @@ function loadDueInvoices() {
 window.viewPaymentHistory = function() {
     const selectedInvoiceId = window.selectedInvoiceId;
     if (!selectedInvoiceId) {
-        Livewire.dispatch('showError', { message: 'Please select an invoice first' });
+        Livewire.dispatch('show-error', { message: 'Please select an invoice first' });
         return;
     }
     
@@ -1145,12 +1146,12 @@ window.viewPaymentHistory = function() {
                 const modal = new bootstrap.Modal(document.getElementById('paymentHistoryModal'));
                 modal.show();
             } else {
-                Livewire.dispatch('showError', { message: 'Error loading payment history: ' + data.message });
+                Livewire.dispatch('show-error', { message: 'Error loading payment history: ' + data.message });
             }
         })
         .catch(error => {
             console.error('Error:', error);
-            Livewire.dispatch('showError', { message: 'Error loading payment history. Please try again.' });
+            Livewire.dispatch('show-error', { message: 'Error loading payment history. Please try again.' });
         });
 }
 

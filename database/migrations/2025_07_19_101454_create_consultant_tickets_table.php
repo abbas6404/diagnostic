@@ -17,6 +17,10 @@ return new class extends Migration
             $table->string('ticket_status')->nullable()->index(); //Pending,Completed,Cancelled
             $table->string('ticket_date')->nullable()->index(); //Ticket Date
             $table->string('ticket_time')->nullable()->index(); //Ticket Time
+            $table->decimal('consultation_fee', 10, 2)->nullable();
+            $table->decimal('paid_amount', 10, 2)->nullable();
+            $table->decimal('due_amount', 10, 2)->nullable();
+            $table->text('remarks')->nullable();
           
             $table->unsignedBigInteger('invoice_id')->nullable()->index(); //Invoice ID
             $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');

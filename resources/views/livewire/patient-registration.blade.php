@@ -73,7 +73,7 @@
                                         <label for="phone" class="col-4 col-form-label">Contact: <span class="text-danger">*</span></label>
                                         <div class="col-8">
                                                                                          <input type="text" class="form-control" id="phone" wire:model="phone" 
-                                                    placeholder="Contact No" value="+880" required>
+                                                    placeholder="Contact No" value="+88" required>
                                             @error('phone') <span class="text-danger">{{ $message }}</span> @enderror
                                         </div>
                                     </div>

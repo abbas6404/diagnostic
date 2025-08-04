@@ -1,6 +1,19 @@
 // Enhanced sidebar toggle functionality
 console.log('Admin layout JS loaded successfully!');
 
+// Global SweetAlert2 configuration to prevent auto-closing
+if (typeof Swal !== 'undefined') {
+    // Configure global defaults to prevent auto-closing
+    Swal.mixin({
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        timer: undefined,
+        timerProgressBar: false,
+        backdrop: true
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing admin layout...');
     
@@ -117,8 +130,11 @@ document.addEventListener('DOMContentLoaded', function() {
 document.addEventListener('livewire:init', () => {
     console.log('Livewire initialized, setting up notifications...');
     
-    Livewire.on('show-success', (message) => {
-        console.log('Success event received:', message);
+    Livewire.on('show-success', (data) => {
+        console.log('Success event received:', data);
+        // Extract message from object or use data directly if it's a string
+        const message = typeof data === 'object' && data.message ? data.message : (typeof data === 'string' ? data : 'Operation completed successfully!');
+        
         if (typeof Swal !== 'undefined') {
             console.log('SweetAlert2 is available, showing notification...');
             const Toast = Swal.mixin({
@@ -139,7 +155,7 @@ document.addEventListener('livewire:init', () => {
             
             Toast.fire({
                 icon: 'success',
-                title: message || 'Operation completed successfully!',
+                title: message,
                 customClass: {
                     title: 'swal2-title-custom',
                     popup: 'swal2-popup-custom'
@@ -147,14 +163,149 @@ document.addEventListener('livewire:init', () => {
             });
         } else {
             console.log('SweetAlert2 not available, using alert...');
-            alert(message || 'Operation completed successfully!');
+            alert(message);
         }
     });
     
-    Livewire.on('show-error', (message) => {
-        console.log('Error event received:', message);
+    Livewire.on('show-error', (data) => {
+        console.log('Error event received:', data);
+        // Extract message from object or use data directly if it's a string
+        const message = typeof data === 'object' && data.message ? data.message : (typeof data === 'string' ? data : 'An error occurred!');
+        
         if (typeof Swal !== 'undefined') {
             console.log('SweetAlert2 is available, showing error notification...');
+            
+            // Force close any existing dialogs first
+            Swal.close();
+            
+            // Create a completely isolated error dialog
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: message,
+                toast: false,
+                position: 'center',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                showCancelButton: false,
+                backdrop: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                timer: undefined,
+                timerProgressBar: false,
+                width: '450px',
+                padding: '20px',
+                customClass: {
+                    title: 'swal2-title-custom',
+                    popup: 'swal2-popup-custom'
+                },
+                didOpen: () => {
+                    console.log('Error dialog opened');
+                },
+                willClose: () => {
+                    console.log('Error dialog will close');
+                }
+            }).then((result) => {
+                // Only close when user clicks OK button
+                if (result.isConfirmed) {
+                    console.log('Error dialog closed by user');
+                }
+            });
+        } else {
+            console.log('SweetAlert2 not available, using alert...');
+            alert('Error: ' + message);
+        }
+    });
+
+    // Warning notification handler
+    Livewire.on('show-warning', (data) => {
+        console.log('Warning event received:', data);
+        // Extract message from object or use data directly if it's a string
+        const message = typeof data === 'object' && data.message ? data.message : (typeof data === 'string' ? data : 'Please confirm your action!');
+        
+        if (typeof Swal !== 'undefined') {
+            console.log('SweetAlert2 is available, showing warning notification...');
+            
+            // Force close any existing dialogs first
+            Swal.close();
+            
+            Swal.fire({
+                icon: 'warning',
+                title: 'Warning',
+                text: message,
+                toast: false,
+                position: 'center',
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                showCancelButton: false,
+                backdrop: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                timer: undefined,
+                timerProgressBar: false,
+                width: '400px',
+                padding: '20px',
+                customClass: {
+                    title: 'swal2-title-custom',
+                    popup: 'swal2-popup-custom'
+                }
+            });
+        } else {
+            console.log('SweetAlert2 not available, using alert...');
+            alert('Warning: ' + message);
+        }
+    });
+
+    // Invoice success notification handler
+    Livewire.on('show-invoice-success', (data) => {
+        console.log('Invoice success event received:', data);
+        if (typeof Swal !== 'undefined') {
+            console.log('SweetAlert2 is available, showing invoice success notification...');
+            const Toast = Swal.mixin({
+                toast: false,
+                position: 'center',
+                showConfirmButton: true,
+                confirmButtonText: 'Print Invoice',
+                showCancelButton: true,
+                cancelButtonText: 'Close',
+                backdrop: true,
+                allowOutsideClick: false,
+                width: '500px',
+                padding: '20px'
+            });
+            
+            Toast.fire({
+                icon: 'success',
+                title: 'Invoice Created Successfully!',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Message:</strong> ${data.message || 'Invoice created successfully!'}</p>
+                        <p><strong>Invoice No:</strong> ${data.invoiceNo || 'N/A'}</p>
+                        <p><strong>Ticket No:</strong> ${data.ticketNo || 'N/A'}</p>
+                    </div>
+                `,
+                customClass: {
+                    title: 'swal2-title-custom',
+                    popup: 'swal2-popup-custom'
+                }
+            }).then((result) => {
+                if (result.isConfirmed && data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+            });
+        } else {
+            console.log('SweetAlert2 not available, using alert...');
+            alert('Invoice Success: ' + (data.message || 'Invoice created successfully!'));
+        }
+    });
+
+    // Payment success notification handler
+    Livewire.on('show-payment-success', (data) => {
+        console.log('Payment success event received:', data);
+        if (typeof Swal !== 'undefined') {
+            console.log('SweetAlert2 is available, showing payment success notification...');
             const Toast = Swal.mixin({
                 toast: false,
                 position: 'center',
@@ -162,14 +313,20 @@ document.addEventListener('livewire:init', () => {
                 confirmButtonText: 'OK',
                 backdrop: true,
                 allowOutsideClick: false,
-                width: '400px',
+                width: '500px',
                 padding: '20px'
             });
             
             Toast.fire({
-                icon: 'error',
-                title: 'Error',
-                text: message || 'An error occurred!',
+                icon: 'success',
+                title: 'Payment Collected Successfully!',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Message:</strong> ${data.message || 'Payment collected successfully!'}</p>
+                        <p><strong>Collection No:</strong> ${data.collectionNo || 'N/A'}</p>
+                        <p><strong>Amount:</strong> ${data.amount || 'N/A'}</p>
+                    </div>
+                `,
                 customClass: {
                     title: 'swal2-title-custom',
                     popup: 'swal2-popup-custom'
@@ -177,7 +334,7 @@ document.addEventListener('livewire:init', () => {
             });
         } else {
             console.log('SweetAlert2 not available, using alert...');
-            alert('Error: ' + message);
+            alert('Payment Success: ' + (data.message || 'Payment collected successfully!'));
         }
     });
 }); 

@@ -58,7 +58,7 @@ class PatientRegistration extends Component
     {
         $this->reg_date = date('Y-m-d');
         $this->patient_id = $this->generatePatientId();
-        $this->phone = '+880'; // Default phone value
+        $this->phone = '+88'; // Default phone value
         
         // Load 20 most recent patients by default
         $this->searchResults = Patient::orderBy('created_at', 'desc')

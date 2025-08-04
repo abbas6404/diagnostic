@@ -332,14 +332,7 @@
                         // Scroll to the first row if needed
                         firstRow.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                         
-                        // Add keyboard event listener for Enter key
-                        document.addEventListener('keydown', function enterKeyHandler(e) {
-                            if (e.key === 'Enter' && document.querySelector('.search-item.selected')) {
-                                e.preventDefault();
-                                document.querySelector('.search-item.selected').click();
-                                document.removeEventListener('keydown', enterKeyHandler);
-                            }
-                        });
+
                     } else {
                         // Fallback: if ID-based selection fails, try class-based selection
                         const firstResult = document.querySelector('.first-result');
