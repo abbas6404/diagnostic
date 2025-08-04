@@ -128,7 +128,68 @@ class Patient extends Model
             return null;
         }
         
-        return $this->dob->age;
+        // Ensure DOB is not in the future
+        if ($this->dob->isFuture()) {
+            return 0;
+        }
+        
+        // Calculate age and ensure it's non-negative
+        $age = $this->dob->age;
+        return max(0, $age);
+    }
+
+    /**
+     * Get the age in years.
+     */
+    public function getAgeYearAttribute()
+    {
+        if (!$this->dob) {
+            return 0;
+        }
+        
+        // Ensure DOB is not in the future
+        if ($this->dob->isFuture()) {
+            return 0;
+        }
+        
+        $years = now()->diffInYears($this->dob);
+        return max(0, $years);
+    }
+
+    /**
+     * Get the age in months.
+     */
+    public function getAgeMonthAttribute()
+    {
+        if (!$this->dob) {
+            return 0;
+        }
+        
+        // Ensure DOB is not in the future
+        if ($this->dob->isFuture()) {
+            return 0;
+        }
+        
+        $months = now()->diffInMonths($this->dob) % 12;
+        return max(0, $months);
+    }
+
+    /**
+     * Get the age in days.
+     */
+    public function getAgeDayAttribute()
+    {
+        if (!$this->dob) {
+            return 0;
+        }
+        
+        // Ensure DOB is not in the future
+        if ($this->dob->isFuture()) {
+            return 0;
+        }
+        
+        $days = now()->diffInDays($this->dob) % 30;
+        return max(0, $days);
     }
 
     /**

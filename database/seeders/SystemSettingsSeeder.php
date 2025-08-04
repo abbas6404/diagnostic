@@ -95,6 +95,33 @@ class SystemSettingsSeeder extends Seeder
             'Prefix for doctor ticket numbers (daily per doctor)'
         );
 
+        // Patient Prefix Settings
+        SystemSetting::setValue(
+            'patient_prefix',
+            'P',
+            'string',
+            'prefix',
+            'Prefix for patient ID numbers'
+        );
+
+        SystemSetting::setValue(
+            'patient_start',
+            '1',
+            'integer',
+            'prefix',
+            'Starting number for patient sequence'
+        );
+
+        SystemSetting::setValue(
+            'patient_format',
+            'prefix-yymmdd-number',
+            'string',
+            'prefix',
+            'Format for patient ID numbering'
+        );
+
+
+
         SystemSetting::setValue(
             'app_version',
             '1.0.0',
@@ -168,46 +195,9 @@ class SystemSettingsSeeder extends Seeder
             'Hospital/Clinic logo file path'
         );
 
-        // Invoice Template Assignment Settings
-        SystemSetting::setValue(
-            'default_diagnostic_template_id',
-            '1',
-            'integer',
-            'invoice_template',
-            'Default template ID for diagnostic invoices'
-        );
 
-        SystemSetting::setValue(
-            'default_opd_template_id',
-            '2',
-            'integer',
-            'invoice_template',
-            'Default template ID for OPD invoices'
-        );
 
-        SystemSetting::setValue(
-            'default_consultant_template_id',
-            '3',
-            'integer',
-            'invoice_template',
-            'Default template ID for consultant invoices'
-        );
 
-        SystemSetting::setValue(
-            'default_lab_report_template_id',
-            '4',
-            'integer',
-            'invoice_template',
-            'Default template ID for lab report invoices'
-        );
-
-        SystemSetting::setValue(
-            'default_general_template_id',
-            '5',
-            'integer',
-            'invoice_template',
-            'Default template ID for general invoices'
-        );
 
     }
 }

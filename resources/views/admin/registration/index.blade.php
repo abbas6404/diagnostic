@@ -66,7 +66,7 @@
 
             <!-- Patients Table -->
             <div class="table-responsive">
-                <table class="table table-hover table-bordered">
+                <table class="table table-hover table-bordered compact-table">
                     <thead class="table-light">
                         <tr>
                             <th style="width: 50px;">#</th>
@@ -111,15 +111,15 @@
                                     @if(isset($isArchived) && $isArchived)
                                         <form action="{{ route('admin.patients.restore', $patient->id) }}" method="POST" class="d-inline">
                                             @csrf
-                                            <button type="submit" class="btn btn-success" title="Restore Patient"><i class="fas fa-trash-restore"></i></button>
+                                            <button type="submit" class="btn btn-success btn-sm" title="Restore Patient"><i class="fas fa-trash-restore"></i></button>
                                         </form>
                                     @else
-                                        <a href="{{ route('admin.patients.show', $patient->id) }}" class="btn btn-info" title="View"><i class="fas fa-eye"></i></a>
-                                        <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-primary" title="Edit"><i class="fas fa-edit"></i></a>
+                                        <a href="{{ route('admin.patients.show', $patient->id) }}" class="btn btn-info btn-sm" title="View"><i class="fas fa-eye"></i></a>
+                                        <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-primary btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
                                         <form action="{{ route('admin.patients.destroy', $patient->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to archive this patient? The record will be soft deleted.')">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger" style="border-radius: 0 5px 5px 0;" title="Archive (Soft Delete)"><i class="fas fa-archive"></i></button>
+                                            <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 0 5px 5px 0;" title="Archive (Soft Delete)"><i class="fas fa-archive"></i></button>
                                         </form>
                                     @endif
                                 </div>
@@ -127,7 +127,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="10" class="text-center py-4">No patients found</td>
+                            <td colspan="10" class="text-center py-2">No patients found</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -158,4 +158,51 @@
         });
     });
 </script>
+@endsection
+
+@section('styles')
+<style>
+    .compact-table {
+        font-size: 0.875rem;
+    }
+    
+    .compact-table th,
+    .compact-table td {
+        padding: 0.5rem 0.75rem;
+        vertical-align: middle;
+    }
+    .compact-table td {
+        padding:0rem 0.75rem;
+    }
+    
+    .compact-table thead th {
+        padding: 0.75rem 0.75rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .compact-table tbody tr {
+        height: auto;
+        min-height: 40px;
+    }
+    
+    .compact-table .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    .compact-table .btn-group .btn i {
+        font-size: 0.75rem;
+    }
+    
+    /* Reduce spacing for action buttons */
+    .compact-table .btn-group {
+        gap: 2px;
+    }
+    
+    /* Make table more dense */
+    .compact-table tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+</style>
 @endsection 

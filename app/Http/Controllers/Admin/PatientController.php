@@ -111,14 +111,25 @@ class PatientController extends Controller
         
         // Calculate DOB from age if age is provided and DOB is not
         if (empty($validated['dob']) && ($request->filled('age_year') || $request->filled('age_month') || $request->filled('age_day'))) {
-            $years = (int)$request->input('age_year', 0);
-            $months = (int)$request->input('age_month', 0);
-            $days = (int)$request->input('age_day', 0);
+            $years = max(0, (int)$request->input('age_year', 0));
+            $months = max(0, (int)$request->input('age_month', 0));
+            $days = max(0, (int)$request->input('age_day', 0));
+            
+            // Ensure reasonable age limits
+            if ($years > 150) $years = 150;
+            if ($months > 12) $months = 12;
+            if ($days > 31) $days = 31;
             
             $dob = now();
             $dob->subYears($years);
             $dob->subMonths($months);
             $dob->subDays($days);
+            
+            // Ensure calculated DOB is not in the future
+            if ($dob->isFuture()) {
+                return back()->withInput()
+                    ->with('error', 'Invalid age values. Please check the age or date of birth.');
+            }
             
             $validated['dob'] = $dob->format('Y-m-d');
         }
@@ -253,14 +264,25 @@ class PatientController extends Controller
         
         // Calculate DOB from age if age is provided and DOB is not
         if (empty($validated['dob']) && ($request->filled('age_year') || $request->filled('age_month') || $request->filled('age_day'))) {
-            $years = (int)$request->input('age_year', 0);
-            $months = (int)$request->input('age_month', 0);
-            $days = (int)$request->input('age_day', 0);
+            $years = max(0, (int)$request->input('age_year', 0));
+            $months = max(0, (int)$request->input('age_month', 0));
+            $days = max(0, (int)$request->input('age_day', 0));
+            
+            // Ensure reasonable age limits
+            if ($years > 150) $years = 150;
+            if ($months > 12) $months = 12;
+            if ($days > 31) $days = 31;
             
             $dob = now();
             $dob->subYears($years);
             $dob->subMonths($months);
             $dob->subDays($days);
+            
+            // Ensure calculated DOB is not in the future
+            if ($dob->isFuture()) {
+                return back()->withInput()
+                    ->with('error', 'Invalid age values. Please check the age or date of birth.');
+            }
             
             $validated['dob'] = $dob->format('Y-m-d');
         }

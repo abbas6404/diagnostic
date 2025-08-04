@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Patient;
+use App\Models\SystemSetting;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Str;
@@ -68,72 +69,194 @@ class PatientRegistration extends Component
 
     public function generatePatientId()
     {
-        $prefix = 'P';
+        // Get system settings for patient ID generation
+        $prefix = SystemSetting::getValue('patient_prefix', 'P');
+        $startNumber = (int) SystemSetting::getValue('patient_start', '1');
+        $format = SystemSetting::getValue('patient_format', 'prefix-yymmdd-number');
+        
+        // Default ID length since the setting was removed
+        $idLength = 3;
+        
         $year = date('Y');
         $month = date('m');
+        $day = date('d');
+        $yy = date('y'); // 2-digit year
+        $mm = date('m'); // 2-digit month
+        $dd = date('d'); // 2-digit day
         
-        // Get the last patient ID for this month
-        $lastPatient = Patient::where('patient_id', 'like', $prefix . $year . $month . '%')
-            ->orderBy('patient_id', 'desc')
-            ->first();
+        // Determine reset period based on format
+        $resetPeriod = $this->getResetPeriod($format);
+        $lastPatient = $this->getLastPatientByPeriod($prefix, $resetPeriod);
         
         if ($lastPatient) {
-            $lastNumber = intval(substr($lastPatient->patient_id, -4));
-            $newNumber = $lastNumber + 1;
+            // Extract the number part from the last patient ID
+            $lastPatientId = $lastPatient->patient_id;
+            
+            // Find the last number in the ID (after the date part)
+            if (preg_match('/(\d{' . $idLength . '})$/', $lastPatientId, $matches)) {
+                $lastNumber = intval($matches[1]);
+                $newNumber = $lastNumber + 1;
+            } else {
+                $newNumber = $startNumber;
+            }
         } else {
-            $newNumber = 1;
+            // First patient of the period
+            $newNumber = $startNumber;
         }
         
-        return $prefix . $year . $month . str_pad($newNumber, 4, '0', STR_PAD_LEFT);
+        $paddedNumber = str_pad($newNumber, $idLength, '0', STR_PAD_LEFT);
+        
+        // Handle all format variations
+        switch ($format) {
+            case 'prefix-yymmdd-number':
+                return $prefix . '-' . $yy . $mm . $dd . '-' . $paddedNumber;
+                
+            case 'prefixyymmddnumber':
+                return $prefix . $yy . $mm . $dd . $paddedNumber;
+                
+            case 'prefix-yymm-number':
+                return $prefix . '-' . $yy . $mm . '-' . $paddedNumber;
+                
+            case 'prefixyymmnumber':
+                return $prefix . $yy . $mm . $paddedNumber;
+                
+            case 'prefix-yy-number':
+                return $prefix . '-' . $yy . '-' . $paddedNumber;
+                
+            case 'prefixyynumber':
+                return $prefix . $yy . $paddedNumber;
+                
+            case 'prefix-number':
+                return $prefix . '-' . $paddedNumber;
+                
+            case 'prefixnumber':
+                return $prefix . $paddedNumber;
+                
+            default:
+                // Default format (prefix-yymmdd-number)
+                return $prefix . '-' . $yy . $mm . $dd . '-' . $paddedNumber;
+        }
+    }
+    
+    /**
+     * Get the reset period based on format
+     */
+    private function getResetPeriod($format)
+    {
+        switch ($format) {
+            case 'prefix-yymmdd-number':
+            case 'prefixyymmddnumber':
+                return 'daily'; // Reset every day
+                
+            case 'prefix-yymm-number':
+            case 'prefixyymmnumber':
+                return 'monthly'; // Reset every month
+                
+            case 'prefix-yy-number':
+            case 'prefixyynumber':
+                return 'yearly'; // Reset every year
+                
+            case 'prefix-number':
+            case 'prefixnumber':
+                return 'never'; // Never reset, continuous
+                
+            default:
+                return 'daily';
+        }
+    }
+    
+    /**
+     * Get the last patient based on reset period
+     */
+    private function getLastPatientByPeriod($prefix, $resetPeriod)
+    {
+        $query = Patient::where('patient_id', 'like', $prefix . '%');
+        
+        switch ($resetPeriod) {
+            case 'daily':
+                $query->whereDate('created_at', date('Y-m-d'));
+                break;
+                
+            case 'monthly':
+                $query->whereYear('created_at', date('Y'))
+                      ->whereMonth('created_at', date('m'));
+                break;
+                
+            case 'yearly':
+                $query->whereYear('created_at', date('Y'));
+                break;
+                
+            case 'never':
+                // No date filter - continuous numbering
+                break;
+        }
+        
+        return $query->orderBy('patient_id', 'desc')->first();
     }
 
     public function updatedDob()
     {
+        // Calculate age from DOB when DOB changes
         if ($this->dob) {
-            $this->calculateAge();
+            $dob = new \DateTime($this->dob);
+            $now = new \DateTime();
+            $diff = $now->diff($dob);
+            
+            $this->age_year = $diff->y;
+            $this->age_month = $diff->m;
+            $this->age_day = $diff->d;
+        } else {
+            // Clear age fields if DOB is cleared
+            $this->age_year = 0;
+            $this->age_month = 0;
+            $this->age_day = 0;
         }
+        
+        // Dispatch event for JavaScript
+        $this->dispatch('dob-changed');
     }
 
     public function updatedAgeYear()
     {
-        $this->calculateDob();
+        // Calculate DOB from age when age year changes
+        $this->calculateDobFromAge();
     }
 
     public function updatedAgeMonth()
     {
-        $this->calculateDob();
+        // Calculate DOB from age when age month changes
+        $this->calculateDobFromAge();
     }
 
     public function updatedAgeDay()
     {
-        $this->calculateDob();
+        // Calculate DOB from age when age day changes
+        $this->calculateDobFromAge();
     }
 
-    public function calculateAge()
+    public function calculateAgeFromDob()
     {
         if ($this->dob) {
-            $dob = Carbon::parse($this->dob);
-            $today = Carbon::now();
+            $dob = new \DateTime($this->dob);
+            $now = new \DateTime();
+            $diff = $now->diff($dob);
             
-            $years = $today->diffInYears($dob);
-            $months = $today->diffInMonths($dob) % 12;
-            $days = $today->diffInDays($dob) % 30;
-            
-            $this->age_year = $years;
-            $this->age_month = $months;
-            $this->age_day = $days;
+            $this->age_year = $diff->y;
+            $this->age_month = $diff->m;
+            $this->age_day = $diff->d;
         }
     }
 
-    public function calculateDob()
+    public function calculateDobFromAge()
     {
-        if ($this->age_year > 0 || $this->age_month > 0 || $this->age_day > 0) {
-            $today = Carbon::now();
-            $dob = $today->subYears($this->age_year ?? 0)
-                         ->subMonths($this->age_month ?? 0)
-                         ->subDays($this->age_day ?? 0);
+        // Only calculate if original_dob is not checked
+        if (!$this->original_dob && ((int)$this->age_year > 0 || (int)$this->age_month > 0 || (int)$this->age_day > 0)) {
+            $now = new \DateTime();
+            // Ensure age components are cast to int to prevent malformed DateInterval string
+            $intervalString = 'P' . (int)$this->age_year . 'Y' . (int)$this->age_month . 'M' . (int)$this->age_day . 'D';
+            $now->sub(new \DateInterval($intervalString));
             
-            $this->dob = $dob->format('Y-m-d');
+            $this->dob = $now->format('Y-m-d');
         }
     }
 
@@ -205,11 +328,23 @@ class PatientRegistration extends Component
         
         // Calculate age from DOB if available
         if ($patient->dob) {
-            $this->calculateAge();
+            $dob = new \DateTime($patient->dob);
+            $now = new \DateTime();
+            $diff = $now->diff($dob);
+            
+            $this->age_year = $diff->y;
+            $this->age_month = $diff->m;
+            $this->age_day = $diff->d;
+        } else {
+            // Reset age fields to 0 if no DOB
+            $this->age_year = 0;
+            $this->age_month = 0;
+            $this->age_day = 0;
         }
         
         $this->gender = $patient->gender;
         $this->blood_group = $patient->blood_group;
+        $this->reg_fee = $patient->reg_fee ?? 0;
     }
 
     public function save()
@@ -233,7 +368,10 @@ class PatientRegistration extends Component
             $this->dispatch('show-success', 'Patient registered successfully! Patient ID: ' . $this->patient_id);
             
             // Reset form
-            $this->reset(['name_en', 'phone', 'address', 'dob', 'age_year', 'age_month', 'age_day', 'gender', 'blood_group', 'reg_fee']);
+            $this->reset(['name_en', 'phone', 'address', 'dob', 'gender', 'blood_group', 'reg_fee']);
+            $this->age_year = 0;
+            $this->age_month = 0;
+            $this->age_day = 0;
             $this->patient_id = $this->generatePatientId();
             
             // Reload recent patients

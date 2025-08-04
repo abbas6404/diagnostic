@@ -104,18 +104,21 @@
                                         <div class="col-8">
                                             <div class="row g-1">
                                                 <div class="col-4">
-                                                                                                         <input type="number" class="form-control text-center" id="age_year" 
-                                                            wire:model="age_year" placeholder="Y" min="0" max="150">
+                                                    <label for="age_year" class="form-label small text-muted">Years</label>
+                                                    <input type="number" class="form-control text-center" id="age_year" 
+                                                           wire:model="age_year" placeholder="Y" min="0" max="150">
                                                     @error('age_year') <span class="text-danger">{{ $message }}</span> @enderror
                                                 </div>
                                                 <div class="col-4">
-                                                                                                         <input type="number" class="form-control text-center" id="age_month" 
-                                                            wire:model="age_month" placeholder="M" min="0" max="12">
+                                                    <label for="age_month" class="form-label small text-muted">Months</label>
+                                                    <input type="number" class="form-control text-center" id="age_month" 
+                                                           wire:model="age_month" placeholder="M" min="0" max="12">
                                                     @error('age_month') <span class="text-danger">{{ $message }}</span> @enderror
                                                 </div>
                                                 <div class="col-4">
-                                                                                                         <input type="number" class="form-control text-center" id="age_day" 
-                                                            wire:model="age_day" placeholder="D" min="0" max="31">
+                                                    <label for="age_day" class="form-label small text-muted">Days</label>
+                                                    <input type="number" class="form-control text-center" id="age_day" 
+                                                           wire:model="age_day" placeholder="D" min="0" max="31">
                                                     @error('age_day') <span class="text-danger">{{ $message }}</span> @enderror
                                                 </div>
                                             </div>
@@ -170,7 +173,7 @@
                              @if($showSearchResults)
                                  <div class="card border mb-3" id="search-results-container">
                                      <div class="card-header bg-primary text-white py-2">
-                                         <h6 class="mb-0"><i class="fas fa-search me-1"></i> Search Results</h6>
+                                         <h6 class="mb-0 text-light"><i class="fas fa-search me-1"></i> Search Results</h6>
                                      </div>
                                      <div class="card-body p-0" style="height: 400px; overflow-y: auto;" id="search-results-body">
                                          @if(count($searchResults) > 0)
@@ -366,4 +369,74 @@
                        
 
 
-</div> 
+</div>
+
+@push('scripts')
+<script>
+    document.addEventListener('livewire:init', () => {
+        // Calculate age from DOB when DOB changes
+        Livewire.on('dob-changed', () => {
+            const dobInput = document.getElementById('dob');
+            if (dobInput && dobInput.value) {
+                const dob = new Date(dobInput.value);
+                const today = new Date();
+                const age = today.getFullYear() - dob.getFullYear();
+                const m = today.getMonth() - dob.getMonth();
+                const d = today.getDate() - dob.getDate();
+                
+                let years = age;
+                let months = m;
+                let days = d;
+                
+                if (m < 0 || (m === 0 && d < 0)) {
+                    years--;
+                    months += 12;
+                }
+                
+                if (d < 0) {
+                    months--;
+                    const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                    days += lastMonth.getDate();
+                }
+                
+                if (months < 0) {
+                    months += 12;
+                    years--;
+                }
+                
+                document.getElementById('age_year').value = years;
+                document.getElementById('age_month').value = months;
+                document.getElementById('age_day').value = days;
+            }
+        });
+        
+        // Calculate DOB from age when age fields change
+        ['age_year', 'age_month', 'age_day'].forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                field.addEventListener('change', () => {
+                    const originalDobCheckbox = document.getElementById('original_dob');
+                    if (originalDobCheckbox && !originalDobCheckbox.checked) {
+                        const years = parseInt(document.getElementById('age_year').value) || 0;
+                        const months = parseInt(document.getElementById('age_month').value) || 0;
+                        const days = parseInt(document.getElementById('age_day').value) || 0;
+                        
+                        if (years > 0 || months > 0 || days > 0) {
+                            const today = new Date();
+                            today.setFullYear(today.getFullYear() - years);
+                            today.setMonth(today.getMonth() - months);
+                            today.setDate(today.getDate() - days);
+                            
+                            const yyyy = today.getFullYear();
+                            const mm = String(today.getMonth() + 1).padStart(2, '0');
+                            const dd = String(today.getDate()).padStart(2, '0');
+                            
+                            document.getElementById('dob').value = yyyy + '-' + mm + '-' + dd;
+                        }
+                    }
+                });
+            }
+        });
+    });
+</script>
+@endpush 
