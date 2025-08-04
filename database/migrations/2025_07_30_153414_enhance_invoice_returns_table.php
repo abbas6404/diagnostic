@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('return_no')->unique()->index(); // RET-yymmdd-001
             $table->unsignedBigInteger('invoice_id')->index();
-            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->unsignedBigInteger('patient_id')->index();
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->enum('return_type', ['full', 'partial', 'item_specific'])->default('full')->index();

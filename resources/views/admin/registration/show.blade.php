@@ -27,11 +27,10 @@
                         <div class="col-md-12">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="patient-avatar bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 80px; height: 80px; border-radius: 50%; font-size: 32px; font-weight: bold;">
-                                    {{ strtoupper(substr($patient->name_en, 0, 1)) }}
+                                    {{ strtoupper(substr($patient->name, 0, 1)) }}
                                 </div>
                                 <div>
-                                    <h4 class="mb-0">{{ $patient->name_en }}</h4>
-                                    <p class="text-muted mb-0">{{ $patient->name_bn }}</p>
+                                    <h4 class="mb-0">{{ $patient->name }}</h4>
                                     <div class="d-flex align-items-center mt-1">
                                         <span class="badge bg-primary me-2">{{ $patient->patient_id }}</span>
                                         <span class="badge bg-secondary">{{ $patient->patient_type ?? 'General' }}</span>
@@ -106,7 +105,7 @@
                                     <table class="table table-borderless">
                                         <tr>
                                             <th style="width: 40%">Father/Husband</th>
-                                            <td>{{ $patient->father_husband_name_en ?? 'N/A' }}</td>
+                                            <td>{{ $patient->father_husband_name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <th>Phone</th>

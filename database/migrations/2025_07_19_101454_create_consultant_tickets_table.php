@@ -23,7 +23,7 @@ return new class extends Migration
             $table->text('remarks')->nullable();
           
             $table->unsignedBigInteger('invoice_id')->nullable()->index(); //Invoice ID
-            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->unsignedBigInteger('referred_by')->nullable()->index(); //PCP
             $table->foreign('referred_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('patient_id')->index();

@@ -347,7 +347,7 @@
                                         <td>{{ $invoices->firstItem() + $index }}</td>
                                         <td>{{ \Carbon\Carbon::parse($invoice->invoice_date)->format('d/m/Y') }}</td>
                                         <td><strong>{{ $invoice->invoice_no }}</strong></td>
-                                        <td>{{ $invoice->patient->name_en ?? 'N/A' }}</td>
+                                        <td>{{ $invoice->patient->name ?? 'N/A' }}</td>
                                         <td>
                                             @php
                                                 $departments = $invoice->labTestOrders->pluck('labTest.department.name')->unique()->filter();

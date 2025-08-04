@@ -6,13 +6,13 @@
                     <h5 class="card-title mb-0 text-primary">
                         <i class="fas fa-user-plus me-2"></i> Patient's Registration
                     </h5>
-                    <a href="{{ route('admin.patients.index') }}" class="btn btn-outline-primary">
+                    <a href="<?php echo e(route('admin.patients.index')); ?>" class="btn btn-outline-primary">
                         <i class="fas fa-th-list me-1"></i> Patient List
                     </a>
                 </div>
             </div>
             <div class="card-body">
-                @if($isPatientSelected)
+                <!--[if BLOCK]><![endif]--><?php if($isPatientSelected): ?>
                     <div class="alert alert-info alert-dismissible fade show" role="alert">
                         <i class="fas fa-info-circle me-2"></i>
                         <strong>Patient Selected:</strong> A patient has been selected from search results. 
@@ -20,7 +20,7 @@
                         Click "Reset Form" to register a new patient.
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
-                @endif
+                <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                 
                 <form wire:submit.prevent="save">
                     <div class="row">
@@ -48,7 +48,14 @@
                                         <label for="reg_date" class="col-4 col-form-label">Reg. Date:</label>
                                         <div class="col-8">
                                                                                          <input type="date" class="form-control" id="reg_date" wire:model="reg_date">
-                                            @error('reg_date') <span class="text-danger">{{ $message }}</span> @enderror
+                                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['reg_date'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                         </div>
                                     </div>
                                 </div>
@@ -60,7 +67,14 @@
                                         <div class="col-10">
                                                                                          <input type="text" class="form-control" id="name" wire:model="name" 
                                                     placeholder="Name (English)" required>
-                                            @error('name') <span class="text-danger">{{ $message }}</span> @enderror
+                                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['name'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                         </div>
                                     </div>
                                 </div>
@@ -72,7 +86,14 @@
                                         <div class="col-10">
                                                                                          <input type="text" class="form-control" id="address" wire:model="address" 
                                                     placeholder="Present Address">
-                                            @error('address') <span class="text-danger">{{ $message }}</span> @enderror
+                                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['address'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                         </div>
                                     </div>
                                 </div>
@@ -84,7 +105,14 @@
                                         <div class="col-8">
                                                                                          <input type="text" class="form-control" id="phone" wire:model="phone" 
                                                     placeholder="Contact No" value="+88" required>
-                                            @error('phone') <span class="text-danger">{{ $message }}</span> @enderror
+                                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                         </div>
                                     </div>
                                 </div>
@@ -103,7 +131,14 @@
                                         </div>
                                         <div class="col-8">
                                                                                          <input type="date" class="form-control" id="dob" wire:model="dob">
-                                            @error('dob') <span class="text-danger">{{ $message }}</span> @enderror
+                                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['dob'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                         </div>
                                     </div>
                                 </div>
@@ -117,19 +152,40 @@
                                                     <label for="age_year" class="form-label small text-muted">Years</label>
                                                     <input type="number" class="form-control text-center" id="age_year" 
                                                            wire:model="age_year" placeholder="Y" min="0" max="150">
-                                                    @error('age_year') <span class="text-danger">{{ $message }}</span> @enderror
+                                                    <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['age_year'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                                 </div>
                                                 <div class="col-4">
                                                     <label for="age_month" class="form-label small text-muted">Months</label>
                                                     <input type="number" class="form-control text-center" id="age_month" 
                                                            wire:model="age_month" placeholder="M" min="0" max="12">
-                                                    @error('age_month') <span class="text-danger">{{ $message }}</span> @enderror
+                                                    <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['age_month'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                                 </div>
                                                 <div class="col-4">
                                                     <label for="age_day" class="form-label small text-muted">Days</label>
                                                     <input type="number" class="form-control text-center" id="age_day" 
                                                            wire:model="age_day" placeholder="D" min="0" max="31">
-                                                    @error('age_day') <span class="text-danger">{{ $message }}</span> @enderror
+                                                    <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['age_day'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                                 </div>
                                             </div>
                                         </div>
@@ -142,10 +198,18 @@
                                          <label for="gender" class="col-4 col-form-label">Sex: </label>
                                                                                    <div class="col-8">
                                               <button type="button" wire:click="toggleSexOptions" class="form-control text-start" style="height: 38px; border: 1px solid #ced4da; background-color: #f8f9fa; color: #495057;">
-                                                  {{ $gender ?: 'Click to select sex' }}
+                                                  <?php echo e($gender ?: 'Click to select sex'); ?>
+
                                               </button>
                                               <input type="hidden" id="gender" wire:model="gender">
-                                              @error('gender') <span class="text-danger">{{ $message }}</span> @enderror
+                                              <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['gender'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                           </div>
                                      </div>
                                  </div>
@@ -155,10 +219,18 @@
                                          <label for="blood_group" class="col-4 col-form-label">Blood: </label>
                                                                                                                                                                        <div class="col-8">
                                               <button type="button" wire:click="toggleBloodGroups" class="form-control text-start" style="height: 38px; border: 1px solid #ced4da; background-color: #f8f9fa; color: #495057;">
-                                                  {{ $blood_group ?: 'Click to select blood group' }}
+                                                  <?php echo e($blood_group ?: 'Click to select blood group'); ?>
+
                                               </button>
                                               <input type="hidden" id="blood_group" wire:model="blood_group">
-                                              @error('blood_group') <span class="text-danger">{{ $message }}</span> @enderror
+                                              <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['blood_group'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                           </div>
                                      </div>
                                  </div>
@@ -170,7 +242,14 @@
                                         <div class="col-8">
                                                                                          <input type="number" class="form-control" id="reg_fee" wire:model="reg_fee" 
                                                     value="0">
-                                            @error('reg_fee') <span class="text-danger">{{ $message }}</span> @enderror
+                                            <!--[if BLOCK]><![endif]--><?php $__errorArgs = ['reg_fee'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-danger"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><!--[if ENDBLOCK]><![endif]-->
                                         </div>
                                     </div>
                                 </div>
@@ -180,45 +259,45 @@
                                                  <!-- Right Column - Search Results & Blood Groups -->
                          <div class="col-lg-5">
                              <!-- Search Results Area -->
-                             @if($showSearchResults)
+                             <!--[if BLOCK]><![endif]--><?php if($showSearchResults): ?>
                                  <div class="card border mb-3" id="search-results-container">
                                      <div class="card-header bg-primary text-white py-2">
                                          <h6 class="mb-0 text-light"><i class="fas fa-search me-1"></i> Search Results</h6>
                                      </div>
                                      <div class="card-body p-0" style="height: 400px; overflow-y: auto;" id="search-results-body">
-                                         @if(count($searchResults) > 0)
+                                         <!--[if BLOCK]><![endif]--><?php if(count($searchResults) > 0): ?>
                                              <div class="list-group list-group-flush">
-                                                 @foreach($searchResults as $patient)
+                                                 <!--[if BLOCK]><![endif]--><?php $__currentLoopData = $searchResults; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $patient): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                      <div class="list-group-item list-group-item-action search-item" 
-                                                          wire:click="selectPatient({{ $patient->id }})" 
+                                                          wire:click="selectPatient(<?php echo e($patient->id); ?>)" 
                                                           style="cursor: pointer;">
                                                          <div class="d-flex justify-content-between align-items-start">
                                                              <div>
-                                                                 <h6 class="mb-1">{{ $patient->name ?? 'Unknown' }}</h6>
-                                                                 <small class="text-muted">{{ $patient->phone }}</small>
+                                                                 <h6 class="mb-1"><?php echo e($patient->name ?? 'Unknown'); ?></h6>
+                                                                 <small class="text-muted"><?php echo e($patient->phone); ?></small>
                                                              </div>
                                                              <div class="text-end">
-                                                                 <small class="text-primary">{{ $patient->patient_id }}</small>
-                                                                 @if($patient->address)
-                                                                     <small class="text-muted d-block">{{ $patient->address }}</small>
-                                                                 @endif
+                                                                 <small class="text-primary"><?php echo e($patient->patient_id); ?></small>
+                                                                 <!--[if BLOCK]><![endif]--><?php if($patient->address): ?>
+                                                                     <small class="text-muted d-block"><?php echo e($patient->address); ?></small>
+                                                                 <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                                              </div>
                                                          </div>
                                                      </div>
-                                                 @endforeach
+                                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><!--[if ENDBLOCK]><![endif]-->
                                              </div>
-                                         @else
+                                         <?php else: ?>
                                              <div class="text-center py-4">
                                                  <i class="fas fa-search text-muted fa-2x mb-2"></i>
                                                  <p class="text-muted">No patients found</p>
                                              </div>
-                                         @endif
+                                         <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                                      </div>
                                  </div>
-                             @endif
+                             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                              
                                                            <!-- Blood Groups Area -->
-                              @if($showBloodGroups)
+                              <!--[if BLOCK]><![endif]--><?php if($showBloodGroups): ?>
                                   <div class="card border mb-3" id="blood-groups-container">
                                       <div class="card-header bg-success text-white py-2">
                                           <h6 class="mb-0"><i class="fas fa-tint me-1"></i> Blood Groups</h6>
@@ -292,10 +371,10 @@
                                           </div>
                                       </div>
                                   </div>
-                              @endif
+                              <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                               
                               <!-- Sex Options Area -->
-                              @if($showSexOptions)
+                              <!--[if BLOCK]><![endif]--><?php if($showSexOptions): ?>
                                   <div class="card border mb-3" id="sex-options-container">
                                       <div class="card-header bg-info text-white py-2">
                                           <h6 class="mb-0"><i class="fas fa-venus-mars me-1"></i> Sex Options</h6>
@@ -329,10 +408,10 @@
                                           </div>
                                       </div>
                                   </div>
-                              @endif
+                              <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                              
                                                            <!-- Default State -->
-                              @if(!$showSearchResults && !$showBloodGroups && !$showSexOptions)
+                              <!--[if BLOCK]><![endif]--><?php if(!$showSearchResults && !$showBloodGroups && !$showSexOptions): ?>
                                  <div class="card border mb-3">
                                      <div class="card-header bg-info text-white py-2">
                                          <h6 class="mb-0"><i class="fas fa-info-circle me-1"></i> Information</h6>
@@ -342,7 +421,7 @@
                                                                                    <p class="text-muted">Showing 20 most recent patients. Search for specific patients or focus on blood group/sex fields</p>
                                      </div>
                                  </div>
-                             @endif
+                             <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
                          </div>
                     </div>
 
@@ -351,9 +430,10 @@
                                                            
                                                            <button type="button" wire:click="save" 
                                                                    class="btn btn-success px-4 me-2"
-                                                                   {{ $isPatientSelected ? 'disabled' : '' }}>
+                                                                   <?php echo e($isPatientSelected ? 'disabled' : ''); ?>>
                                  <i class="fas fa-save me-1"></i> 
-                                 {{ $isPatientSelected ? 'Save (Disabled - Patient Selected)' : 'Save' }}
+                                 <?php echo e($isPatientSelected ? 'Save (Disabled - Patient Selected)' : 'Save'); ?>
+
                              </button>
                                                            
                                                            <button type="button" wire:click="resetForm" 
@@ -361,7 +441,7 @@
                                  <i class="fas fa-redo me-1"></i> Reset Form
                              </button>
                                                            
-                                                           <a href="{{ route('admin.patients.index') }}" class="btn btn-secondary px-4">
+                                                           <a href="<?php echo e(route('admin.patients.index')); ?>" class="btn btn-secondary px-4">
                                  <i class="fas fa-times me-1"></i> Exit
                              </a>
                          </div>
@@ -371,26 +451,28 @@
         </div>
     </div>
 
-    @if(session()->has('success'))
+    <!--[if BLOCK]><![endif]--><?php if(session()->has('success')): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
+            <?php echo e(session('success')); ?>
+
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
-    @endif
+    <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
 
-         @if(session()->has('error'))
+         <?php if(session()->has('error')): ?>
          <div class="alert alert-danger alert-dismissible fade show" role="alert">
-             {{ session('error') }}
+             <?php echo e(session('error')); ?>
+
              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
          </div>
-     @endif
+     <?php endif; ?><!--[if ENDBLOCK]><![endif]-->
      
                        
 
 
 </div>
 
-@push('scripts')
+<?php $__env->startPush('scripts'); ?>
 <script>
     document.addEventListener('livewire:init', () => {
         // Calculate age from DOB when DOB changes
@@ -458,4 +540,4 @@
         });
     });
 </script>
-@endpush 
+<?php $__env->stopPush(); ?> <?php /**PATH C:\Users\aioli\Herd\diagnostic\resources\views/livewire/patient-registration.blade.php ENDPATH**/ ?>

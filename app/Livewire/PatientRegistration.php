@@ -6,8 +6,9 @@ use App\Models\Patient;
 use App\Models\SystemSetting;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Str;
 use Carbon\Carbon;
+use App\Helpers\PatientIdHelper;
+use Illuminate\Support\Facades\Auth;
 
 class PatientRegistration extends Component
 {
@@ -16,34 +17,39 @@ class PatientRegistration extends Component
     // Form fields
     public $reg_date;
     public $patient_id;
-    public $name_en;
+    public $name;
+    public $father_husband_name;
     public $address;
     public $phone;
-    public $original_dob = false;
+    public $email;
     public $dob;
     public $age_year;
     public $age_month;
     public $age_day;
     public $gender;
     public $blood_group;
+    public $religion;
+    public $occupation;
     public $reg_fee = 0;
-    public $patient_id_hidden;
+    public $nationality;
+    public $patient_type;
 
     // Search functionality
     public $searchQuery = '';
     public $searchResults = [];
     public $showSearchResults = false;
+    public $isPatientSelected = false;
     
-    // Blood group functionality
+    // UI state
     public $showBloodGroups = false;
-    
-    // Sex functionality
     public $showSexOptions = false;
 
     protected $rules = [
         'reg_date' => 'required|date',
-        'name_en' => 'required|string|max:255',
+        'name' => 'required|string|max:255',
+        'father_husband_name' => 'nullable|string|max:255',
         'phone' => 'required|string|max:20',
+        'email' => 'nullable|email|max:255',
         'address' => 'nullable|string|max:500',
         'dob' => 'nullable|date',
         'age_year' => 'nullable|integer|min:0|max:150',
@@ -51,152 +57,45 @@ class PatientRegistration extends Component
         'age_day' => 'nullable|integer|min:0|max:31',
         'gender' => 'nullable|string|in:Male,Female,Other',
         'blood_group' => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
+        'religion' => 'nullable|string|max:100',
+        'occupation' => 'nullable|string|max:100',
         'reg_fee' => 'nullable|numeric|min:0',
+        'nationality' => 'nullable|string|max:100',
+        'patient_type' => 'nullable|string|max:50',
+    ];
+
+    protected $messages = [
+        'name.required' => 'Patient name is required.',
+        'phone.required' => 'Phone number is required.',
+        'reg_date.required' => 'Registration date is required.',
+        'reg_date.date' => 'Please enter a valid date.',
+        'dob.date' => 'Please enter a valid date of birth.',
+        'age_year.integer' => 'Age year must be a number.',
+        'age_month.integer' => 'Age month must be a number.',
+        'age_day.integer' => 'Age day must be a number.',
+        'reg_fee.numeric' => 'Registration fee must be a number.',
+        'email.email' => 'Please enter a valid email address.',
     ];
 
     public function mount()
     {
         $this->reg_date = date('Y-m-d');
-        $this->patient_id = $this->generatePatientId();
-        $this->phone = '+88'; // Default phone value
+        $this->patient_id = PatientIdHelper::generatePatientIdConsistent();
+        $this->phone = '+88';
         
-        // Load 20 most recent patients by default
+        $this->loadRecentPatients();
+    }
+
+    public function loadRecentPatients()
+    {
         $this->searchResults = Patient::orderBy('created_at', 'desc')
             ->limit(20)
             ->get();
         $this->showSearchResults = true;
     }
 
-    public function generatePatientId()
-    {
-        // Get system settings for patient ID generation
-        $prefix = SystemSetting::getValue('patient_prefix', 'P');
-        $startNumber = (int) SystemSetting::getValue('patient_start', '1');
-        $format = SystemSetting::getValue('patient_format', 'prefix-yymmdd-number');
-        
-        // Default ID length since the setting was removed
-        $idLength = 3;
-        
-        $year = date('Y');
-        $month = date('m');
-        $day = date('d');
-        $yy = date('y'); // 2-digit year
-        $mm = date('m'); // 2-digit month
-        $dd = date('d'); // 2-digit day
-        
-        // Determine reset period based on format
-        $resetPeriod = $this->getResetPeriod($format);
-        $lastPatient = $this->getLastPatientByPeriod($prefix, $resetPeriod);
-        
-        if ($lastPatient) {
-            // Extract the number part from the last patient ID
-            $lastPatientId = $lastPatient->patient_id;
-            
-            // Find the last number in the ID (after the date part)
-            if (preg_match('/(\d{' . $idLength . '})$/', $lastPatientId, $matches)) {
-                $lastNumber = intval($matches[1]);
-                $newNumber = $lastNumber + 1;
-            } else {
-                $newNumber = $startNumber;
-            }
-        } else {
-            // First patient of the period
-            $newNumber = $startNumber;
-        }
-        
-        $paddedNumber = str_pad($newNumber, $idLength, '0', STR_PAD_LEFT);
-        
-        // Handle all format variations
-        switch ($format) {
-            case 'prefix-yymmdd-number':
-                return $prefix . '-' . $yy . $mm . $dd . '-' . $paddedNumber;
-                
-            case 'prefixyymmddnumber':
-                return $prefix . $yy . $mm . $dd . $paddedNumber;
-                
-            case 'prefix-yymm-number':
-                return $prefix . '-' . $yy . $mm . '-' . $paddedNumber;
-                
-            case 'prefixyymmnumber':
-                return $prefix . $yy . $mm . $paddedNumber;
-                
-            case 'prefix-yy-number':
-                return $prefix . '-' . $yy . '-' . $paddedNumber;
-                
-            case 'prefixyynumber':
-                return $prefix . $yy . $paddedNumber;
-                
-            case 'prefix-number':
-                return $prefix . '-' . $paddedNumber;
-                
-            case 'prefixnumber':
-                return $prefix . $paddedNumber;
-                
-            default:
-                // Default format (prefix-yymmdd-number)
-                return $prefix . '-' . $yy . $mm . $dd . '-' . $paddedNumber;
-        }
-    }
-    
-    /**
-     * Get the reset period based on format
-     */
-    private function getResetPeriod($format)
-    {
-        switch ($format) {
-            case 'prefix-yymmdd-number':
-            case 'prefixyymmddnumber':
-                return 'daily'; // Reset every day
-                
-            case 'prefix-yymm-number':
-            case 'prefixyymmnumber':
-                return 'monthly'; // Reset every month
-                
-            case 'prefix-yy-number':
-            case 'prefixyynumber':
-                return 'yearly'; // Reset every year
-                
-            case 'prefix-number':
-            case 'prefixnumber':
-                return 'never'; // Never reset, continuous
-                
-            default:
-                return 'daily';
-        }
-    }
-    
-    /**
-     * Get the last patient based on reset period
-     */
-    private function getLastPatientByPeriod($prefix, $resetPeriod)
-    {
-        $query = Patient::where('patient_id', 'like', $prefix . '%');
-        
-        switch ($resetPeriod) {
-            case 'daily':
-                $query->whereDate('created_at', date('Y-m-d'));
-                break;
-                
-            case 'monthly':
-                $query->whereYear('created_at', date('Y'))
-                      ->whereMonth('created_at', date('m'));
-                break;
-                
-            case 'yearly':
-                $query->whereYear('created_at', date('Y'));
-                break;
-                
-            case 'never':
-                // No date filter - continuous numbering
-                break;
-        }
-        
-        return $query->orderBy('patient_id', 'desc')->first();
-    }
-
     public function updatedDob()
     {
-        // Calculate age from DOB when DOB changes
         if ($this->dob) {
             $dob = new \DateTime($this->dob);
             $now = new \DateTime();
@@ -206,53 +105,33 @@ class PatientRegistration extends Component
             $this->age_month = $diff->m;
             $this->age_day = $diff->d;
         } else {
-            // Clear age fields if DOB is cleared
             $this->age_year = 0;
             $this->age_month = 0;
             $this->age_day = 0;
         }
         
-        // Dispatch event for JavaScript
         $this->dispatch('dob-changed');
     }
 
     public function updatedAgeYear()
     {
-        // Calculate DOB from age when age year changes
         $this->calculateDobFromAge();
     }
 
     public function updatedAgeMonth()
     {
-        // Calculate DOB from age when age month changes
         $this->calculateDobFromAge();
     }
 
     public function updatedAgeDay()
     {
-        // Calculate DOB from age when age day changes
         $this->calculateDobFromAge();
-    }
-
-    public function calculateAgeFromDob()
-    {
-        if ($this->dob) {
-            $dob = new \DateTime($this->dob);
-            $now = new \DateTime();
-            $diff = $now->diff($dob);
-            
-            $this->age_year = $diff->y;
-            $this->age_month = $diff->m;
-            $this->age_day = $diff->d;
-        }
     }
 
     public function calculateDobFromAge()
     {
-        // Only calculate if original_dob is not checked
-        if (!$this->original_dob && ((int)$this->age_year > 0 || (int)$this->age_month > 0 || (int)$this->age_day > 0)) {
+        if ((int)$this->age_year > 0 || (int)$this->age_month > 0 || (int)$this->age_day > 0) {
             $now = new \DateTime();
-            // Ensure age components are cast to int to prevent malformed DateInterval string
             $intervalString = 'P' . (int)$this->age_year . 'Y' . (int)$this->age_month . 'M' . (int)$this->age_day . 'D';
             $now->sub(new \DateInterval($intervalString));
             
@@ -263,8 +142,8 @@ class PatientRegistration extends Component
     public function searchPatients()
     {
         if (strlen($this->searchQuery) >= 2) {
-            $this->searchResults = Patient::where('name_en', 'like', '%' . $this->searchQuery . '%')
-                ->orWhere('name_bn', 'like', '%' . $this->searchQuery . '%')
+            $this->searchResults = Patient::where('name', 'like', '%' . $this->searchQuery . '%')
+                ->orWhere('father_husband_name', 'like', '%' . $this->searchQuery . '%')
                 ->orWhere('phone', 'like', '%' . $this->searchQuery . '%')
                 ->orWhere('patient_id', 'like', '%' . $this->searchQuery . '%')
                 ->limit(10)
@@ -274,11 +153,7 @@ class PatientRegistration extends Component
             $this->showBloodGroups = false;
             $this->showSexOptions = false;
         } else {
-            // Show 20 most recent patient registrations by default
-            $this->searchResults = Patient::orderBy('created_at', 'desc')
-                ->limit(20)
-                ->get();
-            $this->showSearchResults = true;
+            $this->loadRecentPatients();
         }
     }
     
@@ -315,18 +190,19 @@ class PatientRegistration extends Component
             $this->fillPatientData($patient);
             $this->showSearchResults = false;
             $this->searchQuery = '';
+            $this->isPatientSelected = true;
         }
     }
 
     public function fillPatientData($patient)
     {
-        $this->patient_id_hidden = $patient->id;
-        $this->name_en = $patient->name_en;
+        $this->name = $patient->name;
+        $this->father_husband_name = $patient->father_husband_name;
         $this->phone = $patient->phone;
+        $this->email = $patient->email;
         $this->address = $patient->address;
         $this->dob = $patient->dob;
         
-        // Calculate age from DOB if available
         if ($patient->dob) {
             $dob = new \DateTime($patient->dob);
             $now = new \DateTime();
@@ -336,7 +212,6 @@ class PatientRegistration extends Component
             $this->age_month = $diff->m;
             $this->age_day = $diff->d;
         } else {
-            // Reset age fields to 0 if no DOB
             $this->age_year = 0;
             $this->age_month = 0;
             $this->age_day = 0;
@@ -344,49 +219,71 @@ class PatientRegistration extends Component
         
         $this->gender = $patient->gender;
         $this->blood_group = $patient->blood_group;
+        $this->religion = $patient->religion;
+        $this->occupation = $patient->occupation;
         $this->reg_fee = $patient->reg_fee ?? 0;
+        $this->nationality = $patient->nationality;
+        $this->patient_type = $patient->patient_type;
     }
 
     public function save()
     {
+        if ($this->isPatientSelected) {
+            $this->dispatch('show-warning', 'A patient is already selected. Please reset the form to create a new patient.');
+            return;
+        }
+
         $this->validate();
 
         try {
+            $this->patient_id = PatientIdHelper::generatePatientIdConsistent();
+            
             $patient = Patient::create([
                 'patient_id' => $this->patient_id,
-                'name_en' => $this->name_en,
+                'name' => $this->name,
+                'father_husband_name' => $this->father_husband_name,
                 'phone' => $this->phone,
+                'email' => $this->email,
                 'address' => $this->address,
                 'dob' => $this->dob,
                 'gender' => $this->gender,
                 'blood_group' => $this->blood_group,
+                'religion' => $this->religion,
+                'occupation' => $this->occupation,
                 'reg_fee' => $this->reg_fee,
                 'reg_date' => $this->reg_date,
+                'nationality' => $this->nationality,
+                'patient_type' => $this->patient_type,
+                'created_by' => Auth::id(),
+                'updated_by' => Auth::id(),
             ]);
 
-            // Show success notification using dispatch
             $this->dispatch('show-success', 'Patient registered successfully! Patient ID: ' . $this->patient_id);
+            $this->resetForm();
             
-            // Reset form
-            $this->reset(['name_en', 'phone', 'address', 'dob', 'gender', 'blood_group', 'reg_fee']);
-            $this->age_year = 0;
-            $this->age_month = 0;
-            $this->age_day = 0;
-            $this->patient_id = $this->generatePatientId();
-            
-            // Reload recent patients
-            $this->searchResults = Patient::orderBy('created_at', 'desc')
-                ->limit(20)
-                ->get();
-            $this->showSearchResults = true;
-            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $errorMessages = [];
+            foreach ($e->errors() as $field => $errors) {
+                $errorMessages[] = $field . ': ' . implode(', ', $errors);
+            }
+            $this->dispatch('show-error', 'Validation failed: ' . implode('; ', $errorMessages));
         } catch (\Exception $e) {
             $this->dispatch('show-error', 'Error registering patient: ' . $e->getMessage());
         }
     }
 
+    public function resetForm()
+    {
+        $this->reset(['name', 'father_husband_name', 'phone', 'email', 'address', 'dob', 'gender', 'blood_group', 'religion', 'occupation', 'reg_fee', 'nationality', 'patient_type']);
+        $this->age_year = 0;
+        $this->age_month = 0;
+        $this->age_day = 0;
+        $this->patient_id = PatientIdHelper::generatePatientIdConsistent();
+        $this->isPatientSelected = false;
+        
+        $this->loadRecentPatients();
+    }
 
-    
     public function render()
     {
         return view('livewire.patient-registration');

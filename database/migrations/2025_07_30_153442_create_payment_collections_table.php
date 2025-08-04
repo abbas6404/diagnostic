@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('collection_no')->unique()->index(); // COL-yymmdd-001
             $table->unsignedBigInteger('invoice_id')->index();
-            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->unsignedBigInteger('patient_id')->index();
             $table->foreign('patient_id')->references('id')->on('patients')->onDelete('cascade');
             $table->decimal('collection_amount', 10, 2)->default(0);

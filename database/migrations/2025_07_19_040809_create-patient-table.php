@@ -15,11 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('patient_id')->unique()->index();
             $table->date('reg_date');
-            $table->string('name_en')->nullable()->index();
-            $table->string('name_bn')->nullable()->index();
-            $table->string('father_husband_name_en')->nullable()->index();
+            $table->string('name')->nullable()->index();
+            $table->string('father_husband_name')->nullable()->index();
             $table->string('address')->nullable();
-            $table->unsignedBigInteger('location_id')->nullable()->index();
             $table->string('phone')->nullable()->index();
             $table->string('email')->nullable()->index();
             $table->date('dob')->nullable();

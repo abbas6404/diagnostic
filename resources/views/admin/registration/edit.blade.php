@@ -58,10 +58,10 @@
                             <!-- Row 2 -->
                             <div class="col-md-12">
                                 <div class="row align-items-center">
-                                    <label for="name_en" class="col-2 col-form-label">Name(Eng): <span class="text-danger">*</span></label>
+                                    <label for="name" class="col-2 col-form-label">Name: <span class="text-danger">*</span></label>
                                     <div class="col-10">
-                                        <input type="text" class="form-control @error('name_en') is-invalid @enderror" id="name_en" name="name_en" value="{{ old('name_en', $patient->name_en) }}" placeholder="Name (English)" required>
-                                        @error('name_en')
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $patient->name) }}" placeholder="Name" required>
+                                        @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
@@ -279,10 +279,10 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center mb-3">
                                     <div class="patient-avatar bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px; border-radius: 50%; font-size: 24px; font-weight: bold;">
-                                        {{ strtoupper(substr($patient->name_en, 0, 1)) }}
+                                        {{ strtoupper(substr($patient->name, 0, 1)) }}
                                     </div>
                                     <div>
-                                        <h6 class="mb-0">{{ $patient->name_en }}</h6>
+                                        <h6 class="mb-0">{{ $patient->name }}</h6>
                                         <p class="text-muted mb-0">{{ $patient->patient_id }}</p>
                                     </div>
                                 </div>

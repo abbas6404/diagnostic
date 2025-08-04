@@ -122,7 +122,7 @@ class InvoiceTemplateController extends Controller
                 ],
                 'patient' => (object)[
                     'patient_id' => 'P-001',
-                    'name_en' => 'John Doe',
+                    'name' => 'John Doe',
                     'age_years' => 25,
                     'age_months' => 6,
                     'age_days' => 15,

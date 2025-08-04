@@ -1,42 +1,45 @@
-@extends('admin.layouts.app')
 
-@section('title', isset($isArchived) && $isArchived ? 'Archived Patients' : 'Patient List')
 
-@section('content')
+<?php $__env->startSection('title', isset($isArchived) && $isArchived ? 'Archived Patients' : 'Patient List'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="container-fluid">
     <div class="card shadow">
         <div class="card-header bg-white py-3">
             <div class="d-flex justify-content-between align-items-center">
                 <h5 class="card-title mb-0 text-primary">
-                    <i class="fas fa-users me-2"></i> {{ isset($isArchived) && $isArchived ? 'Archived Patients' : 'Patient List' }}
+                    <i class="fas fa-users me-2"></i> <?php echo e(isset($isArchived) && $isArchived ? 'Archived Patients' : 'Patient List'); ?>
+
                 </h5>
-                <a href="{{ route('admin.patients.create') }}" class="btn btn-primary">
+                <a href="<?php echo e(route('admin.patients.create')); ?>" class="btn btn-primary">
                     <i class="fas fa-plus-circle me-1"></i> New Patient
                 </a>
             </div>
         </div>
         <div class="card-body">
-            @if(session('success'))
+            <?php if(session('success')): ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            @endif
+                <?php echo e(session('success')); ?>
 
-            @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            @endif
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <?php echo e(session('error')); ?>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            <?php endif; ?>
             
             <!-- Search and Filter Section -->
             <div class="row mb-4">
                 <div class="col-md-12">
-                    <form action="{{ route('admin.patients.index') }}" method="GET">
+                    <form action="<?php echo e(route('admin.patients.index')); ?>" method="GET">
                         <div class="d-flex gap-2">
                             <div class="input-group flex-grow-1">
-                                <input type="text" class="form-control" name="search" value="{{ request('search') }}" placeholder="Search patients by name, ID, phone or address...">
+                                <input type="text" class="form-control" name="search" value="<?php echo e(request('search')); ?>" placeholder="Search patients by name, ID, phone or address...">
                                 <button class="btn btn-primary" type="submit">
                                     <i class="fas fa-search"></i> Search
                                 </button>
@@ -44,8 +47,8 @@
                             
                             <div class="input-group" style="width: auto;">
                                 <select class="form-select" name="status" onchange="this.form.submit()">
-                                    <option value="active" {{ request('status') != 'archived' ? 'selected' : '' }}>Active Patients</option>
-                                    <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>Archived Patients</option>
+                                    <option value="active" <?php echo e(request('status') != 'archived' ? 'selected' : ''); ?>>Active Patients</option>
+                                    <option value="archived" <?php echo e(request('status') == 'archived' ? 'selected' : ''); ?>>Archived Patients</option>
                                 </select>
                             </div>
                             
@@ -82,16 +85,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($patients as $index => $patient)
+                        <?php $__empty_1 = true; $__currentLoopData = $patients; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $patient): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr>
-                            <td>{{ $index + $patients->firstItem() }}</td>
-                            <td>{{ $patient->patient_id }}</td>
-                            <td>{{ $patient->name }}</td>
-                            <td>{{ $patient->phone }}</td>
-                            <td>{{ $patient->address }}</td>
-                            <td>{{ $patient->gender }}</td>
+                            <td><?php echo e($index + $patients->firstItem()); ?></td>
+                            <td><?php echo e($patient->patient_id); ?></td>
+                            <td><?php echo e($patient->name); ?></td>
+                            <td><?php echo e($patient->phone); ?></td>
+                            <td><?php echo e($patient->address); ?></td>
+                            <td><?php echo e($patient->gender); ?></td>
                             <td>
-                                @php
+                                <?php
                                     $age = '';
                                     if ($patient->dob) {
                                         $dob = new DateTime($patient->dob);
@@ -99,37 +102,39 @@
                                         $diff = $now->diff($dob);
                                         $age = $diff->y . 'y ' . $diff->m . 'm';
                                     }
-                                @endphp
-                                {{ $age }}
+                                ?>
+                                <?php echo e($age); ?>
+
                             </td>
                             <td>
-                                <i class="fas fa-tint text-danger"></i> {{ $patient->blood_group }}
+                                <i class="fas fa-tint text-danger"></i> <?php echo e($patient->blood_group); ?>
+
                             </td>
-                            <td>{{ date('d M Y', strtotime($patient->reg_date)) }}</td>
+                            <td><?php echo e(date('d M Y', strtotime($patient->reg_date))); ?></td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    @if(isset($isArchived) && $isArchived)
-                                        <form action="{{ route('admin.patients.restore', $patient->id) }}" method="POST" class="d-inline">
-                                            @csrf
+                                    <?php if(isset($isArchived) && $isArchived): ?>
+                                        <form action="<?php echo e(route('admin.patients.restore', $patient->id)); ?>" method="POST" class="d-inline">
+                                            <?php echo csrf_field(); ?>
                                             <button type="submit" class="btn btn-success btn-sm" title="Restore Patient"><i class="fas fa-trash-restore"></i></button>
                                         </form>
-                                    @else
-                                        <a href="{{ route('admin.patients.show', $patient->id) }}" class="btn btn-info btn-sm" title="View"><i class="fas fa-eye"></i></a>
-                                        <a href="{{ route('admin.patients.edit', $patient->id) }}" class="btn btn-primary btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
-                                        <form action="{{ route('admin.patients.destroy', $patient->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to archive this patient? The record will be soft deleted.')">
-                                            @csrf
-                                            @method('DELETE')
+                                    <?php else: ?>
+                                        <a href="<?php echo e(route('admin.patients.show', $patient->id)); ?>" class="btn btn-info btn-sm" title="View"><i class="fas fa-eye"></i></a>
+                                        <a href="<?php echo e(route('admin.patients.edit', $patient->id)); ?>" class="btn btn-primary btn-sm" title="Edit"><i class="fas fa-edit"></i></a>
+                                        <form action="<?php echo e(route('admin.patients.destroy', $patient->id)); ?>" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to archive this patient? The record will be soft deleted.')">
+                                            <?php echo csrf_field(); ?>
+                                            <?php echo method_field('DELETE'); ?>
                                             <button type="submit" class="btn btn-danger btn-sm" style="border-radius: 0 5px 5px 0;" title="Archive (Soft Delete)"><i class="fas fa-archive"></i></button>
                                         </form>
-                                    @endif
+                                    <?php endif; ?>
                                 </div>
                             </td>
                         </tr>
-                        @empty
+                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="10" class="text-center py-2">No patients found</td>
                         </tr>
-                        @endforelse
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -137,18 +142,19 @@
             <!-- Pagination -->
             <div class="d-flex justify-content-between align-items-center mt-4">
                 <div>
-                    <span class="text-muted">Showing {{ $patients->firstItem() ?? 0 }} to {{ $patients->lastItem() ?? 0 }} of {{ $patients->total() ?? 0 }} entries</span>
+                    <span class="text-muted">Showing <?php echo e($patients->firstItem() ?? 0); ?> to <?php echo e($patients->lastItem() ?? 0); ?> of <?php echo e($patients->total() ?? 0); ?> entries</span>
                 </div>
                 <div>
-                    {{ $patients->appends(request()->query())->links('pagination::bootstrap-4') }}
+                    <?php echo e($patients->appends(request()->query())->links('pagination::bootstrap-4')); ?>
+
                 </div>
             </div>
         </div>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script>
     $(document).ready(function() {
         // Initialize tooltips
@@ -158,9 +164,9 @@
         });
     });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('styles')
+<?php $__env->startSection('styles'); ?>
 <style>
     .compact-table {
         font-size: 0.875rem;
@@ -205,4 +211,5 @@
         background-color: rgba(0, 123, 255, 0.05);
     }
 </style>
-@endsection 
+<?php $__env->stopSection(); ?> 
+<?php echo $__env->make('admin.layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\Users\aioli\Herd\diagnostic\resources\views/admin/registration/index.blade.php ENDPATH**/ ?>

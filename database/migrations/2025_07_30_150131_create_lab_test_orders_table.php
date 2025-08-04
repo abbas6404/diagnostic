@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('order_no')->unique()->index(); // LAB-yymmdd-001
             $table->unsignedBigInteger('invoice_id')->index();
-            $table->foreign('invoice_id')->references('id')->on('invoice')->onDelete('cascade');
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             $table->unsignedBigInteger('lab_test_id')->index();
             $table->foreign('lab_test_id')->references('id')->on('lab_tests')->onDelete('cascade');
             $table->unsignedBigInteger('patient_id')->index();

@@ -310,7 +310,7 @@ class OpdController extends Controller
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'invoice.invoice_date',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -365,7 +365,7 @@ class OpdController extends Controller
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'invoice.invoice_date',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -374,7 +374,7 @@ class OpdController extends Controller
                 ->where('invoice.invoice_type', 'opd')
                 ->where(function($q) use ($query) {
                     $q->where('invoice.invoice_no', 'like', "%{$query}%")
-                      ->orWhere('patients.name_en', 'like', "%{$query}%")
+                      ->orWhere('patients.name', 'like', "%{$query}%")
                       ->orWhere('patients.phone', 'like', "%{$query}%");
                 })
                 ->orderBy('invoice.created_at', 'desc')
@@ -423,7 +423,7 @@ class OpdController extends Controller
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'invoice.invoice_date',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -745,7 +745,7 @@ class OpdController extends Controller
         
         $patientId = DB::table('patients')->insertGetId([
             'patient_id' => $patientId,
-            'name_en' => $request->patient_name,
+            'name' => $request->patient_name,
             'phone' => $request->patient_phone,
             'address' => $request->patient_address ?? '',
             'dob' => $dob,

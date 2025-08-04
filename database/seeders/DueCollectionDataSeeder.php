@@ -13,7 +13,7 @@ class DueCollectionDataSeeder extends Seeder
     public function run(): void
     {
         // Add more OPD invoices with due amounts
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 23,
             'invoice_no' => 'OPD-250823-022',
             'patient_id' => 1,
@@ -26,7 +26,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 24,
             'invoice_no' => 'OPD-250723-023',
             'patient_id' => 2,
@@ -39,7 +39,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 25,
             'invoice_no' => 'OPD-250723-024',
             'patient_id' => 3,
@@ -53,7 +53,7 @@ class DueCollectionDataSeeder extends Seeder
         ]);
         
         // Add diagnostics invoices with due amounts
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 26,
             'invoice_no' => 'DIA-250723-022',
             'patient_id' => 1,
@@ -66,7 +66,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 27,
             'invoice_no' => 'DIA-250723-023',
             'patient_id' => 2,
@@ -79,7 +79,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 28,
             'invoice_no' => 'DIA-250723-024',
             'patient_id' => 3,
@@ -92,7 +92,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 29,
             'invoice_no' => 'DIA-250723-025',
             'patient_id' => 4,
@@ -105,7 +105,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 30,
             'invoice_no' => 'DIA-250723-026',
             'patient_id' => 5,
@@ -119,7 +119,7 @@ class DueCollectionDataSeeder extends Seeder
         ]);
         
         // Add more Consultant invoices with due amounts
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 31,
             'invoice_no' => 'CON-250723-003',
             'patient_id' => 1,
@@ -132,7 +132,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 32,
             'invoice_no' => 'CON-250723-004',
             'patient_id' => 2,
@@ -145,7 +145,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([ 
             'id' => 33,
             'invoice_no' => 'CON-250723-005',
             'patient_id' => 3,
@@ -158,7 +158,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([
             'id' => 34,
             'invoice_no' => 'CON-250723-006',
             'patient_id' => 4,
@@ -171,7 +171,7 @@ class DueCollectionDataSeeder extends Seeder
             'updated_by' => 1,
         ]);
         
-        DB::table('invoice')->insert([
+        DB::table('invoices')->insert([ 
             'id' => 35,
             'invoice_no' => 'CON-250723-007',
             'patient_id' => 5,

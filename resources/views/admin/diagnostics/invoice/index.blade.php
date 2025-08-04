@@ -50,7 +50,7 @@
                                     <div class="row mb-2">
                                         <label class="col-sm-4 col-form-label">Name:</label>
                                         <div class="col-sm-8">
-                                            <input type="text" class="form-control form-control-sm" name="name_en" id="patient_name" tabindex="2">
+                                            <input type="text" class="form-control form-control-sm" name="name" id="patient_name" tabindex="2">
                                         </div>
                                     </div>
                                     

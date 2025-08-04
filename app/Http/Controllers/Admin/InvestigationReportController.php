@@ -54,7 +54,7 @@ class InvestigationReportController extends Controller
 
         // Prepare report data
         $reportData = [
-            'patient_name' => $invoice->patient->name_en ?? 'N/A',
+            'patient_name' => $invoice->patient->name ?? 'N/A',
             'patient_id' => $invoice->patient->patient_id ?? 'N/A',
             'patient_age' => $invoice->patient->age ?? 'N/A',
             'patient_sex' => $invoice->patient->gender ?? 'N/A',

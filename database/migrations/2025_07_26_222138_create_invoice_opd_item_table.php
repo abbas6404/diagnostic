@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('invoice_opd_item', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('invoice_id')->index();   
-            $table->foreign('invoice_id')->references('id')->on('invoice');
+            $table->foreign('invoice_id')->references('id')->on('invoices');
             $table->unsignedBigInteger('opd_service_id')->index();   
             $table->foreign('opd_service_id')->references('id')->on('opd_services');
             $table->timestamps();

@@ -213,7 +213,7 @@
                 </div>
                 <div class="info-row">
                     <span class="info-label">Name:</span>
-                    <span class="info-value">{{ $patient->name_en ?? 'John Doe' }}</span>
+                    <span class="info-value">{{ $patient->name ?? 'John Doe' }}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Age:</span>

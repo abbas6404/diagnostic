@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoice', function (Blueprint $table) {
+        Schema::create('invoices', function (Blueprint $table) {
             $table->id();
             $table->string('invoice_no')->unique()->index(); //Invoice No (INV-yymmdd-001)
             $table->unsignedBigInteger('patient_id')->index(); //Patient
@@ -40,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoice');
+        Schema::dropIfExists('invoices');
     }
 };

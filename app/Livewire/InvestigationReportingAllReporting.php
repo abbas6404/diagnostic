@@ -153,7 +153,7 @@ class InvestigationReportingAllReporting extends Component
         
         // Populate patient form fields
         if ($this->selectedInvoice && $this->selectedInvoice->patient) {
-            $this->patientName = $this->selectedInvoice->patient->name_en ?? '';
+            $this->patientName = $this->selectedInvoice->patient->name ?? '';
             
             // Calculate age from DOB
             if ($this->selectedInvoice->patient->dob) {

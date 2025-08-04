@@ -12,19 +12,20 @@ class Patient extends Model
 
     protected $fillable = [
         'patient_id',
-        'name_en',
-        'name_bn',
+        'name',
+        'father_husband_name',
         'phone',
         'email',
+        'address',
         'dob',
         'gender',
         'blood_group',
-        'address',
-        'emergency_contact',
-        'emergency_phone',
+        'religion',
+        'occupation',
         'reg_date',
         'reg_fee',
-        'status',
+        'nationality',
+        'patient_type',
         'created_by',
         'updated_by'
     ];
@@ -197,6 +198,6 @@ class Patient extends Model
      */
     public function getFullNameAttribute()
     {
-        return $this->name_en ?? $this->name_bn ?? 'Unknown';
+        return $this->name ?? 'Unknown';
     }
 } 

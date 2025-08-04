@@ -166,7 +166,7 @@ class DiagnosticsController extends Controller
                     'invoice.due_amount',
                     'invoice.invoice_date',
                     'invoice.invoice_type',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -175,7 +175,7 @@ class DiagnosticsController extends Controller
                 ->where('invoice.invoice_type', 'dia') // Only diagnostics invoices
                 ->where(function($q) use ($query) {
                     $q->where('invoice.invoice_no', 'like', "%{$query}%")
-                      ->orWhere('patients.name_en', 'like', "%{$query}%")
+                      ->orWhere('patients.name', 'like', "%{$query}%")
                       ->orWhere('patients.phone', 'like', "%{$query}%");
                 })
                 ->where('invoice.paid_amount', '>', 0) // Only invoices with payments
@@ -225,7 +225,7 @@ class DiagnosticsController extends Controller
                     'invoice.due_amount',
                     'invoice.invoice_date',
                     'invoice.invoice_type',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -275,7 +275,7 @@ class DiagnosticsController extends Controller
                 ->join('patients', 'invoice.patient_id', '=', 'patients.id')
                 ->select([
                     'invoice.*',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -468,7 +468,7 @@ class DiagnosticsController extends Controller
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'invoice.invoice_date',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -525,7 +525,7 @@ class DiagnosticsController extends Controller
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'invoice.invoice_date',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',
@@ -534,7 +534,7 @@ class DiagnosticsController extends Controller
                 ->where('invoice.invoice_type', 'dia')
                 ->where(function($q) use ($query) {
                     $q->where('invoice.invoice_no', 'like', "%{$query}%")
-                      ->orWhere('patients.name_en', 'like', "%{$query}%")
+                      ->orWhere('patients.name', 'like', "%{$query}%")
                       ->orWhere('patients.phone', 'like', "%{$query}%");
                 })
                 ->orderBy('invoice.created_at', 'desc')
@@ -574,7 +574,7 @@ class DiagnosticsController extends Controller
                     'invoice.paid_amount',
                     'invoice.due_amount',
                     'invoice.invoice_date',
-                    'patients.name_en as patient_name',
+                    'patients.name as patient_name',
                     'patients.phone as patient_phone',
                     'patients.address as patient_address',
                     'patients.dob',

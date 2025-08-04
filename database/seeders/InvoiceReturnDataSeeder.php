@@ -165,9 +165,9 @@ class InvoiceReturnDataSeeder extends Seeder
         // Insert diagnostics invoices
         $orderCounter = 1;
         foreach ($diagnosticsInvoices as $invoice) {
-            $invoiceId = DB::table('invoice')->insertGetId($invoice);
+            $invoiceId = DB::table('invoices')->insertGetId($invoice);
             
-            // Create lab test orders for each invoice
+            // Create lab test orders for each invoice  
             $numTests = rand(2, 4); // 2-4 tests per invoice
             $selectedTests = array_rand($labTests, $numTests);
             

@@ -20,7 +20,7 @@ use App\Http\Controllers\User\DashboardController;
 
 // Redirect all traffic to login page
 Route::get('/', function () {
-    return redirect()->route('login');
+    return view('welcome');
 });
 
 // Add home route that redirects to admin dashboard
@@ -37,3 +37,5 @@ Route::fallback(function () {
 // Route::get('/about', [AboutController::class, 'index'])->name('about');
 // Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 // Route::post('/contact', [ContactController::class, 'submit'])->name('contact.submit');
+
+

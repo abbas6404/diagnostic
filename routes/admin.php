@@ -42,7 +42,6 @@ Route::prefix('registration')->group(function () {
     // New Patient
     Route::get('/', [PatientController::class, 'index'])->name('patients.index');  
     Route::get('/create', [PatientController::class, 'create'])->name('patients.create');
-    Route::post('/store', [PatientController::class, 'store'])->name('patients.store');
     Route::get('/show/{id}', [PatientController::class, 'show'])->name('patients.show');
     Route::get('/edit/{id}', [PatientController::class, 'edit'])->name('patients.edit');
     Route::put('/update/{id}', [PatientController::class, 'update'])->name('patients.update');
@@ -150,19 +149,12 @@ Route::prefix('doctor')->group(function () {
  
     // Due Collection
     Route::get('/duecollection', [DoctorController::class, 'dueCollection'])->name('doctor.duecollection');
-    Route::post('/duecollection/store', [DoctorController::class, 'storePayment'])->name('doctor.duecollection.store');
-    Route::get('/duecollection/patient/{patientId}/invoices', [DoctorController::class, 'getPatientDueInvoices'])->name('doctor.duecollection.patient.invoices');
-    Route::get('/duecollection/invoice/{invoiceId}/tickets', [DoctorController::class, 'getConsultantTickets'])->name('doctor.duecollection.invoice.tickets');
-    Route::get('/duecollection/invoice/{invoiceId}/full-data', [DoctorController::class, 'getInvoiceFullData'])->name('doctor.duecollection.invoice.full-data');
-    Route::get('/duecollection/invoice/{invoiceId}/payment-history', [DoctorController::class, 'getPaymentHistory'])->name('doctor.duecollection.invoice.payment-history');
     
     // Report
     Route::get('/report', [DoctorController::class, 'report'])->name('doctor.report');
     
     // Re-Print
     Route::get('/reprint', [DoctorController::class, 'rePrint'])->name('doctor.reprint');
-    Route::get('/reprint/default-invoices', [DoctorController::class, 'getDefaultInvoicesForReprint'])->name('doctor.reprint.default');
-    Route::get('/reprint/search', [DoctorController::class, 'searchInvoicesForReprint'])->name('doctor.reprint.search');
   
 });
 

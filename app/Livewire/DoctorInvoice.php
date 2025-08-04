@@ -124,7 +124,7 @@ class DoctorInvoice extends Component
         $patients = DB::table('patients')
             ->where(function($query) use ($searchTerm) {
                 $query->where('patient_id', 'like', "%{$searchTerm}%")
-                      ->orWhere('name_en', 'like', "%{$searchTerm}%")
+                      ->orWhere('name', 'like', "%{$searchTerm}%")
                       ->orWhere('phone', 'like', "%{$searchTerm}%")
                       ->orWhere('address', 'like', "%{$searchTerm}%");
             })
@@ -197,7 +197,7 @@ class DoctorInvoice extends Component
         $patient = DB::table('patients')->find($patientId);
         if ($patient) {
             $this->patient_id = $patient->id;
-            $this->patient_name = $patient->name_en;
+            $this->patient_name = $patient->name;
             $this->patient_phone = $patient->phone;
             $this->patient_address = $patient->address;
             $this->patient_search = $patient->patient_id;
@@ -589,7 +589,7 @@ class DoctorInvoice extends Component
 
         return DB::table('patients')->insertGetId([
             'patient_id' => $patientId,
-            'name_en' => $this->patient_name,
+            'name' => $this->patient_name,
             'phone' => $this->patient_phone,
             'address' => $this->patient_address ?? '',
             'dob' => $dob,
@@ -604,138 +604,17 @@ class DoctorInvoice extends Component
 
     private function generatePatientId()
     {
-        $patientPrefix = \App\Models\SystemSetting::getValue('patient_prefix', 'P');
-        $today = now();
-        $datePrefix = $today->format('ymd'); // Format: YYMMDD
-        
-        // Get the last patient ID for today
-        $lastPatientToday = DB::table('patients')
-            ->where('patient_id', 'like', $patientPrefix . $datePrefix . '%')
-            ->orderBy('patient_id', 'desc')
-            ->first();
-
-        $nextId = 1;
-        if ($lastPatientToday) {
-            // Extract the sequential number from the last patient ID
-            $lastNumber = substr($lastPatientToday->patient_id, strlen($patientPrefix . $datePrefix));
-            if (is_numeric($lastNumber)) {
-                $nextId = intval($lastNumber) + 1;
-            }
-        }
-
-        return $patientPrefix . $datePrefix . str_pad($nextId, 3, '0', STR_PAD_LEFT);
+        return \App\Helpers\PatientIdHelper::generatePatientIdConsistent();
     }
 
     private function generateInvoiceNumber()
     {
-        $invoicePrefix = \App\Models\SystemSetting::getValue('consultant_invoice_prefix', 'CON');
-        $invoiceFormat = \App\Models\SystemSetting::getValue('consultant_invoice_format', 'prefix-yymmdd-number');
-        $today = now();
-        
-        // Get the next sequential number for today
-        $lastInvoiceToday = DB::table('invoice')
-            ->where('invoice_no', 'like', $invoicePrefix . $today->format('ymd') . '%')
-            ->orderBy('id', 'desc')
-            ->first();
-
-        $nextId = 1;
-        if ($lastInvoiceToday) {
-            // Extract only the sequential number (last 3 digits)
-            $lastNumber = substr($lastInvoiceToday->invoice_no, -3);
-            if (is_numeric($lastNumber)) {
-                $nextId = intval($lastNumber) + 1;
-            }
-        }
-
-        // Apply format based on setting
-        switch ($invoiceFormat) {
-            case 'prefix-yymmdd-number':
-                $datePrefix = $today->format('ymd');
-                return $invoicePrefix . $datePrefix . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixyymmddnumber':
-                $datePrefix = $today->format('ymd');
-                return $invoicePrefix . $datePrefix . $nextId;
-            
-            case 'prefix-yymm-number':
-                $datePrefix = $today->format('ym');
-                return $invoicePrefix . $datePrefix . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixyymmnumber':
-                $datePrefix = $today->format('ym');
-                return $invoicePrefix . $datePrefix . $nextId;
-            
-            case 'prefix-yy-number':
-                $datePrefix = $today->format('y');
-                return $invoicePrefix . $datePrefix . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixyynumber':
-                $datePrefix = $today->format('y');
-                return $invoicePrefix . $datePrefix . $nextId;
-            
-            case 'prefix-number':
-                return $invoicePrefix . '-' . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixnumber':
-                return $invoicePrefix . $nextId;
-            
-            default:
-                // Default to prefix-yymmdd-number
-                $datePrefix = $today->format('ymd');
-                return $invoicePrefix . $datePrefix . str_pad($nextId, 3, '0', STR_PAD_LEFT);
-        }
+        return \App\Helpers\ConsultantInvoiceHelper::generateConsultantInvoiceNumber();
     }
 
     private function generateTicketNumber($doctorId)
     {
-        $ticketPrefix = \App\Models\SystemSetting::getValue('doctor_ticket_prefix', 'DT');
-        $ticketFormat = \App\Models\SystemSetting::getValue('doctor_ticket_format', 'prefix-yymmdd-number');
-        $today = now();
-        
-        // Get the next sequential number for this doctor today
-        $ticketCount = DB::table('consultant_tickets')
-            ->where('doctor_id', $doctorId)
-            ->whereDate('ticket_date', $today->toDateString())
-            ->count();
-
-        $nextTicketNumber = $ticketCount + 1;
-
-        // Apply format based on setting
-        switch ($ticketFormat) {
-            case 'prefix-yymmdd-number':
-                $datePrefix = $today->format('ymd');
-                return $ticketPrefix . $datePrefix . str_pad($nextTicketNumber, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixyymmddnumber':
-                $datePrefix = $today->format('ymd');
-                return $ticketPrefix . $datePrefix . $nextTicketNumber;
-            
-            case 'prefix-yymm-number':
-                $datePrefix = $today->format('ym');
-                return $ticketPrefix . $datePrefix . '-' . str_pad($nextTicketNumber, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixyymmnumber':
-                $datePrefix = $today->format('ym');
-                return $ticketPrefix . $datePrefix . $nextTicketNumber;
-            
-            case 'prefix-yy-number':
-                $datePrefix = $today->format('y');
-                return $ticketPrefix . $datePrefix . '-' . str_pad($nextTicketNumber, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixyynumber':
-                $datePrefix = $today->format('y');
-                return $ticketPrefix . $datePrefix . $nextTicketNumber;
-            
-            case 'prefix-number':
-                return $ticketPrefix . '-' . str_pad($nextTicketNumber, 3, '0', STR_PAD_LEFT);
-            
-            case 'prefixnumber':
-                return $ticketPrefix . $nextTicketNumber;
-            
-            default:
-                // Default to simple format for tickets
-                return $ticketPrefix . '-' . str_pad($nextTicketNumber, 3, '0', STR_PAD_LEFT);
-        }
+        return \App\Helpers\DoctorTicketHelper::generateTicketNumber($doctorId);
     }
 
     public function render()
