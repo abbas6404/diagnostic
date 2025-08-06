@@ -88,8 +88,8 @@ class PatientController extends Controller
             ->first();
         
         if (!$patient) {
-            return redirect()->route('admin.patients.index')
-                ->with('error', 'Patient not found');
+            alert_error('Patient not found');
+            return redirect()->route('admin.patients.index');
         }
         
         return view('admin.registration.show', compact('patient'));
@@ -109,8 +109,8 @@ class PatientController extends Controller
             ->first();
         
         if (!$patient) {
-            return redirect()->route('admin.patients.index')
-                ->with('error', 'Patient not found');
+            alert_error('Patient not found');
+            return redirect()->route('admin.patients.index');
         }
         
         // Calculate age from DOB if available
@@ -177,8 +177,8 @@ class PatientController extends Controller
             
             // Ensure calculated DOB is not in the future
             if ($dob->isFuture()) {
-                return back()->withInput()
-                    ->with('error', 'Invalid age values. Please check the age or date of birth.');
+                alert_error('Invalid age values. Please check the age or date of birth.');
+                return back()->withInput();
             }
             
             $validated['dob'] = $dob->format('Y-m-d');
@@ -197,11 +197,11 @@ class PatientController extends Controller
             ->update($validated);
         
         if ($updated) {
-            return redirect()->route('admin.patients.index')
-                ->with('success', 'Patient updated successfully');
+            alert_success('Patient updated successfully');
+            return redirect()->route('admin.patients.index');
         } else {
-            return back()->withInput()
-                ->with('error', 'Error updating patient. Please try again.');
+            alert_error('Error updating patient. Please try again.');
+            return back()->withInput();
         }
     }
     
@@ -223,11 +223,11 @@ class PatientController extends Controller
             ]);
         
         if ($deleted) {
-            return redirect()->route('admin.patients.index')
-                ->with('success', 'Patient archived successfully');
+            alert_success('Patient archived successfully');
+            return redirect()->route('admin.patients.index');
         } else {
-            return redirect()->route('admin.patients.index')
-                ->with('error', 'Error archiving patient');
+            alert_error('Error archiving patient');
+            return redirect()->route('admin.patients.index');
         }
     }
 
@@ -249,11 +249,11 @@ class PatientController extends Controller
             ]);
         
         if ($restored) {
-            return redirect()->route('admin.patients.index')
-                ->with('success', 'Patient restored successfully');
+            alert_success('Patient restored successfully');
+            return redirect()->route('admin.patients.index');
         } else {
-            return redirect()->route('admin.patients.index')
-                ->with('error', 'Error restoring patient');
+            alert_error('Error restoring patient');
+            return redirect()->route('admin.patients.index');
         }
     }
 } 

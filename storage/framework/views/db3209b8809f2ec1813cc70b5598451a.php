@@ -23,6 +23,8 @@
 
     <!-- Custom styles -->
     <link href="<?php echo e(asset('css/admin-layout.css')); ?>" rel="stylesheet">
+    
+
         
         <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::styles(); ?>
 
@@ -50,26 +52,6 @@
 
             <!-- Main Content -->
             <div class="main-content">
-                <?php if(session('success')): ?>
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <div><?php echo e(session('success')); ?></div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-
-                <?php if(session('error')): ?>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <div><?php echo e(session('error')); ?></div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                <?php endif; ?>
-
                 <?php echo $__env->yieldContent('content'); ?>
             </div>
 
@@ -89,7 +71,145 @@
     <?php echo \Livewire\Mechanisms\FrontendAssets\FrontendAssets::scripts(); ?>
 
     
-    <script src="<?php echo e(asset('js/admin-layout.js')); ?>"></script>
+    <!-- Custom JavaScript -->
+    <script src="<?php echo e(asset('js/admin-layout.js')); ?>?v=3.0"></script>
+    
+    <!-- Global Notification System -->
+    <script>
+        // Global alert function
+        function showAlert(type, message) {
+            if (type === 'success') {
+                Swal.fire({
+                    icon: type,
+                    html: message,
+                    position: 'center',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    customClass: {
+                        icon: 'swal2-icon-large',
+                        popup: 'swal2-popup-with-icon'
+                    },
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: type,
+                    html: message,
+                    position: 'center',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4361ee',
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    customClass: {
+                        icon: 'swal2-icon-large',
+                        popup: 'swal2-popup-with-icon'
+                    }
+                });
+            }
+        }
+
+        // Global Livewire Alert Handler
+        document.addEventListener('livewire:init', () => {
+            console.log('Livewire initialized, setting up alert handler...');
+            
+            Livewire.on('show-alert', (data) => {
+                console.log('Livewire alert received:', data);
+                
+                // Fix: Extract data properly from array
+                let alertData;
+                if (Array.isArray(data)) {
+                    alertData = data[0]; // Get first element if it's an array
+                } else {
+                    alertData = data; // Use as is if it's an object
+                }
+                
+                const { type, message } = alertData;
+                console.log('Extracted data:', { type, message });
+                
+                if (type === 'success') {
+                    console.log('Showing success alert with message:', message);
+                    Swal.fire({
+                        icon: type,
+                        html: message,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        allowOutsideClick: true,
+                        allowEscapeKey: true,
+                        customClass: {
+                            icon: 'swal2-icon-large',
+                            popup: 'swal2-popup-with-icon'
+                        },
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                } else {
+                    console.log('Showing alert with message:', message);
+                    Swal.fire({
+                        icon: type,
+                        html: message,
+                        position: 'center',
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4361ee',
+                        allowOutsideClick: true,
+                        allowEscapeKey: true,
+                        customClass: {
+                            icon: 'swal2-icon-large',
+                            popup: 'swal2-popup-with-icon'
+                        }
+                    });
+                }
+            });
+        });
+
+        // Session-based notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for session messages
+            <?php if(session('success')): ?>
+                showAlert('success', '<?php echo e(session('success')); ?>');
+            <?php endif; ?>
+
+            <?php if(session('error')): ?>
+                showAlert('error', '<?php echo e(session('error')); ?>');
+            <?php endif; ?>
+
+            <?php if(session('warning')): ?>
+                showAlert('warning', '<?php echo e(session('warning')); ?>');
+            <?php endif; ?>
+
+            <?php if(session('info')): ?>
+                showAlert('info', '<?php echo e(session('info')); ?>');
+            <?php endif; ?>
+        });
+
+        // Global helper functions
+        window.globalSuccess = function(message) {
+            showAlert('success', message);
+        };
+
+        window.globalError = function(message) {
+            showAlert('error', message);
+        };
+
+        window.globalWarning = function(message) {
+            showAlert('warning', message);
+        };
+
+        window.globalInfo = function(message) {
+            showAlert('info', message);
+        };
+    </script>
     
     <?php echo $__env->yieldContent('scripts'); ?>
 </body>

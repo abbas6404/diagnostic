@@ -571,43 +571,7 @@ body {
     transform: translateY(-2px);
 }
 
-/* Notification Icon */
-.notification-icon {
-    position: relative;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.03);
-    border-radius: 8px;
-    transition: all 0.2s;
-    color: #555;
-}
 
-.notification-icon:hover {
-    background: rgba(67, 97, 238, 0.1);
-    color: var(--primary-color);
-    transform: translateY(-2px);
-}
-
-.notification-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: var(--warning-color);
-    color: white;
-    font-size: 0.65rem;
-    height: 18px;
-    width: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    font-weight: 600;
-    border: 2px solid white;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
 
 /* Profile Dropdown */
 .profile-dropdown .dropdown-toggle {
@@ -790,53 +754,7 @@ body {
     box-shadow: none !important;
 }
 
-/* Custom SweetAlert2 Styling */
-.swal2-popup-custom {
-    border-radius: 15px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
-}
 
-.swal2-title-custom {
-    font-size: 20px !important;
-    font-weight: 600 !important;
-    color: #2c3e50 !important;
-    line-height: 1.4 !important;
-    margin: 10px 0 !important;
-    text-align: center !important;
-}
-
-.swal2-icon {
-    margin: 20px auto 15px !important;
-}
-
-.swal2-icon.swal2-success {
-    border-color: #28a745 !important;
-}
-
-.swal2-icon.swal2-success [class^='swal2-success-line'] {
-    background-color: #28a745 !important;
-}
-
-.swal2-icon.swal2-success .swal2-success-ring {
-    border-color: #28a745 !important;
-}
-
-.swal2-backdrop-show {
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-    background-color: rgba(0, 0, 0, 0.3) !important;
-}
-
-.swal2-popup {
-    margin: 20px !important;
-    max-width: 450px !important;
-    width: auto !important;
-    padding: 30px 20px !important;
-}
-
-.swal2-timer-progress-bar {
-    background: linear-gradient(90deg, #28a745, #20c997) !important;
-}
 
 /* ===== COMPONENT-SPECIFIC STYLES ===== */
 
@@ -1112,15 +1030,7 @@ body {
     padding: 0.3rem 0.6rem;
 }
 
-.alert-info {
-    border-left: 4px solid #17a2b8;
-    background-color: rgba(23, 162, 184, 0.1);
-    color: #17a2b8;
-}
 
-.alert-info .fas {
-    color: #17a2b8;
-}
 
 
 
@@ -1219,11 +1129,7 @@ body {
     border-radius: 0.5rem;
 }
 
-.alert {
-    border-radius: 0.75rem;
-    border: none;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
+
 
 /* Search Results */
 .search-results {
@@ -1517,21 +1423,7 @@ body {
     color: #17a2b8;
 }
 
-.maintenance-alert {
-    background-color: #fff3cd;
-    border: 1px solid #ffeaa7;
-    border-radius: 4px;
-    padding: 8px;
-    margin-top: 8px;
-}
 
-.calibration-alert {
-    background-color: #d1ecf1;
-    border: 1px solid #bee5eb;
-    border-radius: 4px;
-    padding: 8px;
-    margin-top: 8px;
-}
 
 /* Patient and Test Cards */
 .patient-info-card {

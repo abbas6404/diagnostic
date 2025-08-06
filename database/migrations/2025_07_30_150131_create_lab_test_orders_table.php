@@ -23,6 +23,7 @@ return new class extends Migration
             $table->unsignedBigInteger('referred_by')->nullable()->index(); // Doctor who referred
             $table->foreign('referred_by')->references('id')->on('users')->onDelete('cascade');
             $table->decimal('charge', 10, 2)->default(0);
+            $table->integer('quantity')->default(1);
             $table->enum('status', ['pending', 'in_progress', 'completed', 'cancelled'])->default('pending')->index();
             $table->date('collection_date')->nullable();
             $table->time('collection_time')->nullable();

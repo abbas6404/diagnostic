@@ -50,6 +50,8 @@ Route::prefix('registration')->group(function () {
     
 });
 
+// Search routes removed - handled by Livewire components internally
+
 // Hospital routes
 Route::prefix('hospital')->group(function () {
     // Admission
@@ -88,34 +90,19 @@ Route::prefix('laboratory')->group(function () {
 
 // Diagnostics routes
 Route::prefix('diagnostics')->group(function () {
-    // Invoice
+    // Invoice - Now handled by Livewire component
     Route::get('/invoice', [DiagnosticsController::class, 'invoice'])->name('diagnostics.invoice');
     
     // Invoice Return
     Route::get('/invoice-return', [DiagnosticsController::class, 'invoiceReturn'])->name('diagnostics.invoice-return');
-    Route::get('/invoice-return/search', [DiagnosticsController::class, 'searchInvoicesForReturn'])->name('diagnostics.invoice-return.search');
-    Route::get('/invoice-return/invoice/{invoiceId}/details', [DiagnosticsController::class, 'getInvoiceDetailsForReturn'])->name('diagnostics.invoice-return.invoice.details');
-    Route::get('/invoice-return/default-invoices', [DiagnosticsController::class, 'getDefaultInvoices'])->name('diagnostics.invoice-return.default');
     
     // Due Collection
     Route::get('/duecollection', [DiagnosticsController::class, 'dueCollection'])->name('diagnostics.duecollection');
-    Route::post('/duecollection/store', [DiagnosticsController::class, 'storePayment'])->name('diagnostics.duecollection.store');
-    Route::get('/duecollection/patient/{patientId}/invoices', [DiagnosticsController::class, 'getPatientDueInvoices'])->name('diagnostics.duecollection.patient.invoices');
-    Route::get('/duecollection/invoice/{invoiceId}/details', [DiagnosticsController::class, 'getInvoiceDetails'])->name('diagnostics.duecollection.invoice.details');
-    Route::get('/duecollection/invoice/{invoiceId}/full-data', [DiagnosticsController::class, 'getInvoiceFullData'])->name('diagnostics.duecollection.invoice.full-data');
     
     // Report
     Route::get('/report', [DiagnosticsController::class, 'report'])->name('diagnostics.report');
     // Re-Print
     Route::get('/reprint', [DiagnosticsController::class, 'rePrint'])->name('diagnostics.reprint');
-    
-
-    // Diagnostics Re-Print Routes
-    Route::get('/reprint/default-invoices', [DiagnosticsController::class, 'getDefaultInvoicesForReprint'])->name('diagnostics.reprint.default');
-    Route::get('/reprint/search', [DiagnosticsController::class, 'searchInvoicesForReprint'])->name('diagnostics.reprint.search');
-    Route::get('/reprint/invoice/{id}/details', [DiagnosticsController::class, 'getInvoiceDetailsForReprint'])->name('diagnostics.reprint.details');
-    Route::post('/reprint/print', [DiagnosticsController::class, 'printInvoice'])->name('diagnostics.reprint.print');
-    Route::post('/reprint/print-item', [DiagnosticsController::class, 'printSingleItem'])->name('diagnostics.reprint.print-item');
 });
 
 // OPD routes
@@ -266,11 +253,12 @@ Route::group(['prefix' => 'invoice-templates'], function() {
     Route::get('/laboratory', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showLaboratory'])->name('admin.invoice-templates.laboratory');
     
     Route::get('/test', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showTest'])->name('admin.invoice-templates.test');
-    
+    //doctor consultant
     Route::get('/doctor-consultant', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDoctorConsultant'])->name('admin.invoice-templates.doctor-consultant');
     
     Route::get('/due-collection', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDueCollection'])->name('admin.invoice-templates.due-collection');
-
+    //diagnosis invoice
+    Route::get('/diagnosis-invoice', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'showDiagnosisInvoice'])->name('admin.invoice-templates.diagnosis-invoice');
     // API routes for invoice data
     Route::get('/invoice-data/{invoiceId}', [App\Http\Controllers\Admin\InvoiceTemplateController::class, 'getInvoiceData'])->name('admin.invoice-templates.invoice-data');
     

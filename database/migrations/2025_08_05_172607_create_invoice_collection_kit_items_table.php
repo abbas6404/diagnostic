@@ -11,23 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invoice_templates', function (Blueprint $table) {
+        Schema::create('invoice_collection_kit_items', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->index();
-            $table->text('header_content')->nullable();
-            $table->text('footer_content')->nullable();
-            $table->text('css_styles')->nullable();
-            $table->json('settings')->nullable();
-            $table->text('body_template')->nullable();
-            $table->text('variables')->nullable();
-            $table->boolean('is_default')->default(false);
-            $table->timestamps();
-            $table->softDeletes();
-
+            $table->unsignedBigInteger('invoice_id')->index();
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
+            $table->unsignedBigInteger('collection_kit_id')->index();
+            $table->foreign('collection_kit_id')->references('id')->on('collection_kits')->onDelete('cascade');
+            $table->integer('quantity')->default(1);
+            $table->decimal('charge', 10, 2)->default(0);
+            $table->decimal('total', 10, 2)->default(0);
             $table->unsignedBigInteger('created_by')->nullable()->index();
             $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
             $table->unsignedBigInteger('updated_by')->nullable();
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -36,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invoice_templates');
+        Schema::dropIfExists('invoice_collection_kit_items');
     }
-}; 
+};

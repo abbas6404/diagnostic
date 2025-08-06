@@ -200,6 +200,161 @@ class InvoiceTemplateController extends Controller
         }
     }
 
+    /**
+     * Show the diagnosis invoice template with data.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function showDiagnosisInvoice(Request $request)
+    {
+        // Get invoice ID from request
+        $invoiceId = $request->get('invoice_id');
+        
+        \Log::info('Diagnosis Invoice Template accessed', [
+            'invoice_id' => $invoiceId,
+            'request_params' => $request->all()
+        ]);
+        
+        if (!$invoiceId) {
+            // Return template with sample data for preview
+            return view('admin.invoice-templates.diagnosis-invoice', [
+                'invoice' => (object)[
+                    'invoice_no' => 'DIA-001',
+                    'invoice_date' => date('d/m/Y'),
+                    'invoice_type' => 'dia',
+                    'total_amount' => 1500,
+                    'payable_amount' => 1500,
+                    'paid_amount' => 1500,
+                    'due_amount' => 0,
+                    'discount_amount' => 0,
+                    'discount_percentage' => 0,
+                    'remarks' => 'Sample diagnostics invoice'
+                ],
+                'patient' => (object)[
+                    'patient_id' => 'P-001',
+                    'name' => 'John Doe',
+                    'age_years' => 25,
+                    'age_months' => 6,
+                    'age_days' => 15,
+                    'phone' => '+880-1XXX-XXXXXX',
+                    'address' => 'Dhaka, Bangladesh',
+                    'gender' => 'Male'
+                ],
+                'labTests' => [
+                    (object)[
+                        'name' => 'Blood Test',
+                        'code' => 'BT-001',
+                        'charge' => 500,
+                        'quantity' => 1,
+                        'total' => 500,
+                        'delivery_date' => date('Y-m-d', strtotime('+1 day')),
+                        'department_name' => 'Pathology',
+                        'department_id' => 1
+                    ],
+                    (object)[
+                        'name' => 'Urine Test',
+                        'code' => 'UT-001',
+                        'charge' => 300,
+                        'quantity' => 1,
+                        'total' => 300,
+                        'delivery_date' => date('Y-m-d', strtotime('+1 day')),
+                        'department_name' => 'Biochemistry',
+                        'department_id' => 2
+                    ]
+                ],
+                'collectionKits' => [
+                    (object)[
+                        'name' => 'Blood Collection Kit',
+                        'code' => 'BCK-001',
+                        'charge' => 50,
+                        'quantity' => 1,
+                        'total' => 50
+                    ]
+                ],
+                'departmentSerials' => [
+                    1 => [
+                        'department_name' => 'Pathology',
+                        'serial_number' => 1
+                    ],
+                    2 => [
+                        'department_name' => 'Biochemistry',
+                        'serial_number' => 1
+                    ]
+                ]
+            ]);
+        }
+
+        try {
+            // Get invoice details
+            $invoice = DB::table('invoices')->where('id', $invoiceId)->first();
+            
+            if (!$invoice) {
+                abort(404, 'Invoice not found');
+            }
+
+            // Get patient details
+            $patient = DB::table('patients')->where('id', $invoice->patient_id)->first();
+            
+            // Calculate age from date of birth
+            if ($patient && $patient->dob) {
+                $age = $this->calculateAge($patient->dob);
+                $patient->age_years = $age['years'];
+                $patient->age_months = $age['months'];
+                $patient->age_days = $age['days'];
+            } else {
+                $patient->age_years = 0;
+                $patient->age_months = 0;
+                $patient->age_days = 0;
+            }
+
+            // Get lab test orders
+            $labTests = DB::table('lab_test_orders')
+                ->join('lab_tests', 'lab_test_orders.lab_test_id', '=', 'lab_tests.id')
+                ->join('departments', 'lab_tests.department_id', '=', 'departments.id')
+                ->where('lab_test_orders.invoice_id', $invoiceId)
+                ->select(
+                    'lab_tests.name',
+                    'lab_tests.code',
+                    'lab_test_orders.charge',
+                    'lab_test_orders.quantity',
+                    DB::raw('lab_test_orders.charge * lab_test_orders.quantity as total'),
+                    'lab_test_orders.collection_date as delivery_date',
+                    'departments.name as department_name',
+                    'departments.id as department_id'
+                )
+                ->get();
+
+            // Get collection kit items
+            $collectionKits = DB::table('invoice_collection_kit_items')
+                ->join('collection_kits', 'invoice_collection_kit_items.collection_kit_id', '=', 'collection_kits.id')
+                ->where('invoice_collection_kit_items.invoice_id', $invoiceId)
+                ->select(
+                    'collection_kits.name',
+                    'collection_kits.pcode as code',
+                    'invoice_collection_kit_items.charge',
+                    'invoice_collection_kit_items.quantity',
+                    'invoice_collection_kit_items.total'
+                )
+                ->get();
+
+            // Generate department serials for this invoice
+            $departmentSerials = \App\Helpers\DepartmentSerialHelper::generateInvoiceDepartmentSerials($invoiceId);
+
+            return view('admin.invoice-templates.diagnosis-invoice', [
+                'invoice' => $invoice,
+                'patient' => $patient,
+                'labTests' => $labTests,
+                'collectionKits' => $collectionKits,
+                'departmentSerials' => $departmentSerials
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error in showDiagnosisInvoice: ' . $e->getMessage());
+            abort(500, 'Error loading invoice template');
+        }
+    }
+
     public function showDueCollection(Request $request)
     {
         // Get collection ID from request

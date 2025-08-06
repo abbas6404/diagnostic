@@ -95,6 +95,19 @@
                 <div class="col-md-4 mb-4">
                     <div class="card h-100">
                         <div class="card-body text-center">
+                            <i class="fas fa-vial fa-3x text-success mb-3"></i>
+                            <h6>Diagnostics Template</h6>
+                            <p class="text-muted small">Lab tests and diagnostics invoice</p>
+                            <a href="{{ route('admin.admin.invoice-templates.diagnosis-invoice') }}" class="btn btn-success btn-sm">
+                                <i class="fas fa-eye me-1"></i> View Template
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body text-center">
                             <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
                             <h6>Test Template</h6>
                             <p class="text-muted small">Simple test template</p>

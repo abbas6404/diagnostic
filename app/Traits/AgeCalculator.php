@@ -12,7 +12,7 @@ trait AgeCalculator
      * @param  string|null  $dob
      * @return array
      */
-    private function calculateAge($dob)
+    public function calculateAge($dob)
     {
         if (!$dob) {
             return ['years' => 0, 'months' => 0, 'days' => 0];
@@ -48,7 +48,7 @@ trait AgeCalculator
      * @param  int|null  $days
      * @return string
      */
-    private function formatAge($years, $months, $days)
+    public function formatAge($years, $months, $days)
     {
         $years = $years ?? 0;
         $months = $months ?? 0;

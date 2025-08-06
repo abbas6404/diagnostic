@@ -23,6 +23,8 @@
 
     <!-- Custom styles -->
     <link href="{{ asset('css/admin-layout.css') }}" rel="stylesheet">
+    
+
         
         @livewireStyles
         
@@ -49,26 +51,6 @@
 
             <!-- Main Content -->
             <div class="main-content">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-check-circle me-2"></i>
-                            <div>{{ session('success') }}</div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <div class="d-flex align-items-center">
-                            <i class="fas fa-exclamation-circle me-2"></i>
-                            <div>{{ session('error') }}</div>
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
                 @yield('content')
             </div>
 
@@ -87,7 +69,145 @@
     <!-- Custom Scripts -->
     @livewireScripts
     
-    <script src="{{ asset('js/admin-layout.js') }}"></script>
+    <!-- Custom JavaScript -->
+    <script src="{{ asset('js/admin-layout.js') }}?v=3.0"></script>
+    
+    <!-- Global Notification System -->
+    <script>
+        // Global alert function
+        function showAlert(type, message) {
+            if (type === 'success') {
+                Swal.fire({
+                    icon: type,
+                    html: message,
+                    position: 'center',
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    customClass: {
+                        icon: 'swal2-icon-large',
+                        popup: 'swal2-popup-with-icon'
+                    },
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer)
+                        toast.addEventListener('mouseleave', Swal.resumeTimer)
+                    }
+                });
+            } else {
+                Swal.fire({
+                    icon: type,
+                    html: message,
+                    position: 'center',
+                    showConfirmButton: true,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#4361ee',
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    customClass: {
+                        icon: 'swal2-icon-large',
+                        popup: 'swal2-popup-with-icon'
+                    }
+                });
+            }
+        }
+
+        // Global Livewire Alert Handler
+        document.addEventListener('livewire:init', () => {
+            console.log('Livewire initialized, setting up alert handler...');
+            
+            Livewire.on('show-alert', (data) => {
+                console.log('Livewire alert received:', data);
+                
+                // Fix: Extract data properly from array
+                let alertData;
+                if (Array.isArray(data)) {
+                    alertData = data[0]; // Get first element if it's an array
+                } else {
+                    alertData = data; // Use as is if it's an object
+                }
+                
+                const { type, message } = alertData;
+                console.log('Extracted data:', { type, message });
+                
+                if (type === 'success') {
+                    console.log('Showing success alert with message:', message);
+                    Swal.fire({
+                        icon: type,
+                        html: message,
+                        position: 'center',
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true,
+                        allowOutsideClick: true,
+                        allowEscapeKey: true,
+                        customClass: {
+                            icon: 'swal2-icon-large',
+                            popup: 'swal2-popup-with-icon'
+                        },
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                } else {
+                    console.log('Showing alert with message:', message);
+                    Swal.fire({
+                        icon: type,
+                        html: message,
+                        position: 'center',
+                        showConfirmButton: true,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#4361ee',
+                        allowOutsideClick: true,
+                        allowEscapeKey: true,
+                        customClass: {
+                            icon: 'swal2-icon-large',
+                            popup: 'swal2-popup-with-icon'
+                        }
+                    });
+                }
+            });
+        });
+
+        // Session-based notifications
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for session messages
+            @if(session('success'))
+                showAlert('success', '{{ session('success') }}');
+            @endif
+
+            @if(session('error'))
+                showAlert('error', '{{ session('error') }}');
+            @endif
+
+            @if(session('warning'))
+                showAlert('warning', '{{ session('warning') }}');
+            @endif
+
+            @if(session('info'))
+                showAlert('info', '{{ session('info') }}');
+            @endif
+        });
+
+        // Global helper functions
+        window.globalSuccess = function(message) {
+            showAlert('success', message);
+        };
+
+        window.globalError = function(message) {
+            showAlert('error', message);
+        };
+
+        window.globalWarning = function(message) {
+            showAlert('warning', message);
+        };
+
+        window.globalInfo = function(message) {
+            showAlert('info', message);
+        };
+    </script>
     
     @yield('scripts')
 </body>

@@ -9,10 +9,11 @@ use Livewire\WithFileUploads;
 use Carbon\Carbon;
 use App\Helpers\PatientIdHelper;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\AgeCalculator;
 
 class PatientRegistration extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, AgeCalculator;
 
     // Form fields
     public $reg_date;
@@ -51,11 +52,11 @@ class PatientRegistration extends Component
         'phone' => 'required|string|max:20',
         'email' => 'nullable|email|max:255',
         'address' => 'nullable|string|max:500',
-        'dob' => 'nullable|date',
+        'dob' => 'nullable|date|nullable',
         'age_year' => 'nullable|integer|min:0|max:150',
         'age_month' => 'nullable|integer|min:0|max:12',
         'age_day' => 'nullable|integer|min:0|max:31',
-        'gender' => 'nullable|string|in:Male,Female,Other',
+        'gender' => 'required|string|in:Male,Female,Other',
         'blood_group' => 'nullable|string|in:A+,A-,B+,B-,AB+,AB-,O+,O-',
         'religion' => 'nullable|string|max:100',
         'occupation' => 'nullable|string|max:100',
@@ -67,6 +68,7 @@ class PatientRegistration extends Component
     protected $messages = [
         'name.required' => 'Patient name is required.',
         'phone.required' => 'Phone number is required.',
+        'gender.required' => 'Patient sex is required.',
         'reg_date.required' => 'Registration date is required.',
         'reg_date.date' => 'Please enter a valid date.',
         'dob.date' => 'Please enter a valid date of birth.',
@@ -77,11 +79,14 @@ class PatientRegistration extends Component
         'email.email' => 'Please enter a valid email address.',
     ];
 
+
+
     public function mount()
     {
         $this->reg_date = date('Y-m-d');
         $this->patient_id = PatientIdHelper::generatePatientIdConsistent();
-        $this->phone = '+88';
+        $this->phone = '';
+        $this->dob = ''; // Initialize DOB
         
         $this->loadRecentPatients();
     }
@@ -96,15 +101,17 @@ class PatientRegistration extends Component
 
     public function updatedDob()
     {
-        if ($this->dob) {
-            $dob = new \DateTime($this->dob);
-            $now = new \DateTime();
-            $diff = $now->diff($dob);
+        if ($this->dob && trim($this->dob) !== '') {
+            // Ensure DOB is in Y-m-d format
+            $this->dob = Carbon::parse($this->dob)->format('Y-m-d');
             
-            $this->age_year = $diff->y;
-            $this->age_month = $diff->m;
-            $this->age_day = $diff->d;
+            $age = $this->calculateAge($this->dob);
+            
+            $this->age_year = $age['years'];
+            $this->age_month = $age['months'];
+            $this->age_day = $age['days'];
         } else {
+            $this->dob = null; // Set to null if empty
             $this->age_year = 0;
             $this->age_month = 0;
             $this->age_day = 0;
@@ -131,11 +138,14 @@ class PatientRegistration extends Component
     public function calculateDobFromAge()
     {
         if ((int)$this->age_year > 0 || (int)$this->age_month > 0 || (int)$this->age_day > 0) {
-            $now = new \DateTime();
-            $intervalString = 'P' . (int)$this->age_year . 'Y' . (int)$this->age_month . 'M' . (int)$this->age_day . 'D';
-            $now->sub(new \DateInterval($intervalString));
+            $now = Carbon::now();
+            $now->subYears((int)$this->age_year);
+            $now->subMonths((int)$this->age_month);
+            $now->subDays((int)$this->age_day);
             
             $this->dob = $now->format('Y-m-d');
+        } else {
+            $this->dob = null;
         }
     }
 
@@ -191,6 +201,12 @@ class PatientRegistration extends Component
             $this->showSearchResults = false;
             $this->searchQuery = '';
             $this->isPatientSelected = true;
+            
+            // Show info notification
+            $this->dispatch('show-alert', [
+                'type' => 'info',
+                'message' => 'Patient selected: ' . $patient->name . ' (ID: ' . $patient->patient_id . '). Form is now in view mode.'
+            ]);
         }
     }
 
@@ -201,16 +217,14 @@ class PatientRegistration extends Component
         $this->phone = $patient->phone;
         $this->email = $patient->email;
         $this->address = $patient->address;
-        $this->dob = $patient->dob;
+        $this->dob = $patient->dob ? Carbon::parse($patient->dob)->format('Y-m-d') : '';
         
         if ($patient->dob) {
-            $dob = new \DateTime($patient->dob);
-            $now = new \DateTime();
-            $diff = $now->diff($dob);
+            $age = $this->calculateAge($patient->dob);
             
-            $this->age_year = $diff->y;
-            $this->age_month = $diff->m;
-            $this->age_day = $diff->d;
+            $this->age_year = $age['years'];
+            $this->age_month = $age['months'];
+            $this->age_day = $age['days'];
         } else {
             $this->age_year = 0;
             $this->age_month = 0;
@@ -229,15 +243,21 @@ class PatientRegistration extends Component
     public function save()
     {
         if ($this->isPatientSelected) {
-            $this->dispatch('show-warning', 'A patient is already selected. Please reset the form to create a new patient.');
+            $this->dispatch('show-alert', [
+                'type' => 'warning',
+                'message' => 'A patient is already selected. Please reset the form to create a new patient.'
+            ]);
             return;
         }
 
-        $this->validate();
-
         try {
+            // Validate the form data
+            $this->validate();
+            
+            // Generate patient ID
             $this->patient_id = PatientIdHelper::generatePatientIdConsistent();
             
+            // Create the patient
             $patient = Patient::create([
                 'patient_id' => $this->patient_id,
                 'name' => $this->name,
@@ -245,7 +265,7 @@ class PatientRegistration extends Component
                 'phone' => $this->phone,
                 'email' => $this->email,
                 'address' => $this->address,
-                'dob' => $this->dob,
+                'dob' => $this->dob ?: null, // Convert empty string to null
                 'gender' => $this->gender,
                 'blood_group' => $this->blood_group,
                 'religion' => $this->religion,
@@ -258,21 +278,34 @@ class PatientRegistration extends Component
                 'updated_by' => Auth::id(),
             ]);
 
-            $this->dispatch('show-success', 'Patient registered successfully! Patient ID: ' . $this->patient_id);
-            $this->resetForm();
+            // Show success notification
+            $this->dispatch('show-alert', [
+                'type' => 'success',
+                'message' => '✅ Patient Registration Successful!<br><br>Patient ID: ' . $this->patient_id . '<br>Patient Name: ' . $this->name . '<br><br>Patient has been registered successfully!'
+            ]);
+            $this->resetForm(false); // Pass false to prevent showing notification
             
         } catch (\Illuminate\Validation\ValidationException $e) {
+            // Handle validation errors
             $errorMessages = [];
             foreach ($e->errors() as $field => $errors) {
-                $errorMessages[] = $field . ': ' . implode(', ', $errors);
+                $errorMessages[] = ucfirst($field) . ': ' . implode(', ', $errors);
             }
-            $this->dispatch('show-error', 'Validation failed: ' . implode('; ', $errorMessages));
+            $this->dispatch('show-alert', [
+                'type' => 'error',
+                'message' => '❌ Form Validation Failed!<br><br>Errors:<br>• ' . implode('<br>• ', $errorMessages) . '<br><br>Please fill in all required fields and try again.'
+            ]);
+            
         } catch (\Exception $e) {
-            $this->dispatch('show-error', 'Error registering patient: ' . $e->getMessage());
+            // Handle database errors
+            $this->dispatch('show-alert', [
+                'type' => 'error',
+                'message' => '❌ Error registering patient!<br><br>Error: ' . $e->getMessage() . '<br><br>Please try again or contact support.'
+            ]);
         }
     }
 
-    public function resetForm()
+    public function resetForm($showNotification = true)
     {
         $this->reset(['name', 'father_husband_name', 'phone', 'email', 'address', 'dob', 'gender', 'blood_group', 'religion', 'occupation', 'reg_fee', 'nationality', 'patient_type']);
         $this->age_year = 0;
@@ -282,6 +315,20 @@ class PatientRegistration extends Component
         $this->isPatientSelected = false;
         
         $this->loadRecentPatients();
+        
+        // No notification shown when form is reset
+    }
+
+
+    
+
+    
+    /**
+     * Get formatted DOB for display
+     */
+    public function getFormattedDobProperty()
+    {
+        return $this->dob && trim($this->dob) !== '' ? Carbon::parse($this->dob)->format('Y-m-d') : '';
     }
 
     public function render()

@@ -518,10 +518,10 @@ function savePrefixSettings(type, form) {
     .then(data => {
         console.log('Response data:', data);
         if (data.success) {
-            showAlert('Settings saved successfully!', 'success');
+                            showAlert('success', 'Settings saved successfully!');
             setTimeout(() => location.reload(), 1500);
         } else {
-            showAlert('Error: ' + data.message, 'error');
+            showAlert('error', 'Error: ' + data.message);
         }
     })
     .catch(error => {
@@ -766,25 +766,7 @@ function updateFormFields(settings) {
 
 
 
-function showAlert(message, type) {
-    // Create alert element
-    const alertDiv = document.createElement('div');
-    alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show position-fixed`;
-    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
-    alertDiv.innerHTML = `
-        ${message}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    `;
-    
-    document.body.appendChild(alertDiv);
-    
-    // Auto remove after 3 seconds
-    setTimeout(() => {
-        if (alertDiv.parentNode) {
-            alertDiv.remove();
-        }
-    }, 3000);
-}
+
 
 // Initialize previews on page load
 document.addEventListener('DOMContentLoaded', function() {

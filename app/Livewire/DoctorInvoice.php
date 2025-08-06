@@ -25,17 +25,13 @@ class DoctorInvoice extends Component
     public $ticket_time;
     public $doctor_id = '';
     public $patient_type = 'new';
-    public $consultation_fee = 0;
+    public $consultation_fee = 500;
     public $paid_amount = 0;
     public $due_amount = 0;
     public $referred_by = '';
     public $remarks = '';
 
     // UI state
-    public $showSuccess = false;
-    public $showError = false;
-    public $successMessage = '';
-    public $errorMessage = '';
     public $isSaving = false;
     public $shouldPrint = false;
 
@@ -74,7 +70,9 @@ class DoctorInvoice extends Component
     {
         $this->ticket_date = date('Y-m-d');
         $this->ticket_time = date('H:i');
-        $this->patient_phone = '+88'; // Set default contact value
+        $this->patient_phone = ''; // Remove default contact value
+        $this->consultation_fee = 500; // Set default consultation fee
+        $this->paid_amount = 500; // Set paid amount equal to consultation fee by default
         $this->calculateDueAmount();
         
         // Load default recent patients when component mounts
@@ -87,6 +85,7 @@ class DoctorInvoice extends Component
 
         if ($propertyName === 'consultation_fee') {
             $this->autoSetPaidAmount();
+            $this->calculateDueAmount();
         } elseif ($propertyName === 'paid_amount') {
             $this->calculateDueAmount();
         }
@@ -360,8 +359,11 @@ class DoctorInvoice extends Component
 
             DB::commit();
 
-            $this->successMessage = "Invoice saved successfully! Invoice No: {$invoiceNo}, Ticket No: {$ticketNo}";
-            $this->showSuccess = true;
+            // Show success notification using Livewire dispatch
+            $this->dispatch('show-alert', [
+                'type' => 'success',
+                'message' => "Invoice saved successfully! Invoice No: {$invoiceNo}, Ticket No: {$ticketNo}"
+            ]);
 
             // Reset form after successful save
             $this->resetForm();
@@ -372,8 +374,10 @@ class DoctorInvoice extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            $this->errorMessage = 'Error creating invoice: ' . $e->getMessage();
-            $this->showError = true;
+            $this->dispatch('show-alert', [
+                'type' => 'error',
+                'message' => 'Error creating invoice: ' . $e->getMessage()
+            ]);
         }
 
         $this->isSaving = false;
@@ -444,16 +448,21 @@ class DoctorInvoice extends Component
 
             DB::commit();
 
-            // Use SweetAlert2 success message for Save button only
-            $this->dispatch('show-success', message: "Invoice saved successfully! Invoice No: {$invoiceNo}, Ticket No: {$ticketNo}");
+            // Show success notification using Livewire dispatch
+            $this->dispatch('show-alert', [
+                'type' => 'success',
+                'message' => "Invoice saved successfully! Invoice No: {$invoiceNo}, Ticket No: {$ticketNo}"
+            ]);
 
             // Reset form after successful save
             $this->resetForm();
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Use SweetAlert2 error message for Save button only
-            $this->dispatch('show-error', message: 'Error creating invoice: ' . $e->getMessage());
+            $this->dispatch('show-alert', [
+                'type' => 'error',
+                'message' => 'Error creating invoice: ' . $e->getMessage()
+            ]);
         }
 
         $this->isSaving = false;
@@ -524,8 +533,11 @@ class DoctorInvoice extends Component
 
             DB::commit();
 
-            // Use SweetAlert2 success message for Save & Print button
-            $this->dispatch('show-success', message: "Invoice saved successfully! Invoice No: {$invoiceNo}, Ticket No: {$ticketNo}");
+            // Show success notification using Livewire dispatch
+            $this->dispatch('show-alert', [
+                'type' => 'success',
+                'message' => "Invoice saved successfully! Invoice No: {$invoiceNo}, Ticket No: {$ticketNo}"
+            ]);
 
             // Reset form after successful save
             $this->resetForm();
@@ -535,8 +547,10 @@ class DoctorInvoice extends Component
 
         } catch (\Exception $e) {
             DB::rollBack();
-            // Use SweetAlert2 error message for Save & Print button
-            $this->dispatch('show-error', message: 'Error creating invoice: ' . $e->getMessage());
+            $this->dispatch('show-alert', [
+                'type' => 'error',
+                'message' => 'Error creating invoice: ' . $e->getMessage()
+            ]);
         }
 
         $this->isSaving = false;
@@ -553,8 +567,8 @@ class DoctorInvoice extends Component
         ]);
         $this->patient_type = 'new';
         $this->gender = '';
-        $this->patient_phone = '+88'; // Set default contact value
-        $this->ticket_date = date('Y-m-d');
+        $this->patient_phone = ''; // Remove default contact value  
+        $this->ticket_date = date('Y-m-d'); 
         $this->ticket_time = date('H:i');
         $this->calculateDueAmount();
     }
@@ -564,17 +578,7 @@ class DoctorInvoice extends Component
         return redirect()->route('admin.dashboard');
     }
 
-    public function closeSuccess()
-    {
-        $this->showSuccess = false;
-        $this->successMessage = '';
-    }
 
-    public function closeError()
-    {
-        $this->showError = false;
-        $this->errorMessage = '';
-    }
 
     private function createNewPatient()
     {
